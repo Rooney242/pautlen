@@ -1,171 +1,194 @@
-#include <stdlib.h>
-#include <assert.h>
+/*
+ * =====================================================================================
+ *
+ *       Filename:  adjacency_matrix.c
+ *
+ *    Description:  Adjacency Matrix implementation using an Adjacency Matrix
+ *
+ *        Version:  1.0
+ *        Created:  15/04/2013 14:27:31
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Vitor Freitas (vfs), vitorfs@gmail.com
+ *        Company:  Universidade Federal de Juiz de Fora (UFJF)
+ *
+ * =====================================================================================
+ */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "graph.h"
 
-/* basic directed graph type */
-/* the implementation uses adjacency lists
- * represented as variable-length arrays */
+void init_graph(Adjacency_Matrix* g) {
+  g->vertex_count = 0;
+  g->arcs = NULL;
+  g->nodes = NULL;
+}
 
-/* these arrays may or may not be sorted: if one gets long enough
- * and you call graph_has_edge on its source, it will be */
+void free_graph(Adjacency_Matrix* g) {
+  int i;
+  for (i = 0; i < g->vertex_count; i++){
+    free_node(g->nodes[i]);
+  }
+  free(g->arcs);
+  free(g);
+}
 
-struct graph {
-    int n;              /* number of vertices */
-    int m;              /* number of edges */
-    struct successors {
-        int d;          /* number of successors */
-        int len;        /* number of slots in array */
-        char is_sorted; /* true if list is already sorted */
-        int list[1];    /* actual list of successors */
-    } *alist[1];
-};
 
-/* create a new graph with n vertices labeled 0..n-1 and no edges */
-Graph
-graph_create(int n)
-{
-    Graph g;
+Adjacency_Matrix* transpose_graph(Adjacency_Matrix* g) {
+  /*Adjacency_Matrix* transpose = (Adjacency_Matrix*) malloc(sizeof(Adjacency_Matrix));
+  init_graph(transpose);
+
+  int i, j;
+
+  for (i = 0 ; i < g->vertex_count ; i++)
+    for (j = 0 ; j < g->vertex_count ; j++)
+      if (g->arcs[i][j] == 0)
+        transpose->arcs[i][j] = 1;
+
+  return transpose;*/
+}
+
+int insert_arc(Adjacency_Matrix* g, int a1, int a2) {
+  if (a1 >= 0 && a1 < g->vertex_count && a2 >= 0 && a2 < g->vertex_count && g->arcs[a1][a2] == 0) {
+    g->arcs[a1][a2] = 1;
+    g->arcs[a2][a1] = 1;
+    return 0;
+  }
+  return -1;
+}
+
+int remove_arc(Adjacency_Matrix* g, int a1, int a2) {
+  int weight = -1;
+  if (a1 >= 0 && a1 < g->vertex_count && a2 >= 0 && a2 < g->vertex_count && g->arcs[a1][a2] > 0) {
+    weight = g->arcs[a1][a2];
+    g->arcs[a1][a2] = 0;
+    g->arcs[a2][a1] = 0;
+  }
+  return weight;
+}
+
+int exists_arc(Adjacency_Matrix* g, int a1, int a2) {
+  return g->arcs[a1][a2] > 0;
+}
+
+int* get_adjacency(Adjacency_Matrix* g, int v) {
+  int* adjacency = (int*) malloc(sizeof(int));
+  adjacency[0] = 0; // Using the first position of the pointer to determine the size of the array
+  
+  int i;
+  for (i = 0 ; i < g->vertex_count ; i++) {
+    if (g->arcs[i][v] > 0) {
+      adjacency[0]++;
+      adjacency = (int*) realloc(adjacency, adjacency[0] * sizeof(int));
+      adjacency[adjacency[0]] = i;
+    }
+  }
+
+  return adjacency;
+}
+
+void insert_vertex(Adjacency_Matrix* g, char* name) {
+  if (g->arcs == NULL) {
+    g->arcs = (int**) malloc(sizeof(int*));
+    g->arcs[0] = (int*) malloc(sizeof(int));
+    g->arcs[0][0] = 0;
+
+    g->nodes = (Node**) malloc(sizeof(Node*));
+    g->nodes[0] = init_node(name);
+    g->vertex_count = 1;
+  }else {
     int i;
+    g->vertex_count += 1;
+    g->arcs = (int**) realloc(g->arcs, g->vertex_count * sizeof(int*));
+    
+    for (i = 0 ; i < g->vertex_count - 1 ; i++)
+      g->arcs[i] = (int*) realloc(g->arcs[i], g->vertex_count * sizeof(int)); // realloc the part of the matrix which were used before
 
-    g = malloc(sizeof(struct graph) + sizeof(struct successors *) * (n-1));
-    assert(g);
+    for ( ; i < g->vertex_count ; i++) 
+      g->arcs[i] = (int*) malloc(g->vertex_count * sizeof(int)); // alloc the new part of the matrix
 
-    g->n = n;
-    g->m = 0;
-
-    for(i = 0; i < n; i++) {
-        g->alist[i] = malloc(sizeof(struct successors));
-        assert(g->alist[i]);
-
-        g->alist[i]->d = 0;
-        g->alist[i]->len = 1;
-        g->alist[i]->is_sorted= 1;
+    for (i = 0 ; i < g->vertex_count ; i++) {
+      g->arcs[i][g->vertex_count - 1] = 0;
+      g->arcs[g->vertex_count - 1][i] = 0;
     }
     
-    return g;
+    g->nodes = (Node**) realloc(g->nodes, g->vertex_count * sizeof(Node*));
+    g->nodes[g->vertex_count-1] = init_node(name);
+  }
 }
 
-/* free all space used by graph */
-void
-graph_destroy(Graph g)
-{
-    int i;
+int remove_vertex(Adjacency_Matrix* g, int v) {
+  int i, j;
 
-    for(i = 0; i < g->n; i++) free(g->alist[i]);
-    free(g);
-}
-
-/* add an edge to an existing graph */
-void
-graph_add_edge(Graph g, int u, int v)
-{
-    assert(u >= 0);
-    assert(u < g->n);
-    assert(v >= 0);
-    assert(v < g->n);
-
-    /* do we need to grow the list? */
-    while(g->alist[u]->d >= g->alist[u]->len) {
-        g->alist[u]->len *= 2;
-        g->alist[u] =
-            realloc(g->alist[u], 
-                sizeof(struct successors) + sizeof(int) * (g->alist[u]->len - 1));
+  for (i = 0 ; i < g->vertex_count - 1 ; i++)
+    for (j = v ; j < g->vertex_count ; j++) {
+      g->arcs[i][j] = g->arcs[i][j + 1];
     }
 
-    /* now add the new sink */
-    g->alist[u]->list[g->alist[u]->d++] = v;
-    g->alist[u]->is_sorted = 0;
-
-    /* bump edge count */
-    g->m++;
-}
-
-/* return the number of vertices in the graph */
-int
-graph_vertex_count(Graph g)
-{
-    return g->n;
-}
-
-/* return the number of vertices in the graph */
-int
-graph_edge_count(Graph g)
-{
-    return g->m;
-}
-
-/* return the out-degree of a vertex */
-int
-graph_out_degree(Graph g, int source)
-{
-    assert(source >= 0);
-    assert(source < g->n);
-
-    return g->alist[source]->d;
-}
-
-/* when we are willing to call bsearch */
-#define BSEARCH_THRESHOLD (10)
-
-static int
-intcmp(const void *a, const void *b)
-{
-    return *((const int *) a) - *((const int *) b);
-}
-
-/* return 1 if edge (source, sink) exists), 0 otherwise */
-int
-graph_has_edge(Graph g, int source, int sink)
-{
-    int i;
-
-    assert(source >= 0);
-    assert(source < g->n);
-    assert(sink >= 0);
-    assert(sink < g->n);
-
-    if(graph_out_degree(g, source) >= BSEARCH_THRESHOLD) {
-        /* make sure it is sorted */
-        if(! g->alist[source]->is_sorted) {
-            qsort(g->alist[source]->list,
-                    g->alist[source]->d,
-                    sizeof(int),
-                    intcmp);
-        }
-        
-        /* call bsearch to do binary search for us */
-        return 
-            bsearch(&sink,
-                    g->alist[source]->list,
-                    g->alist[source]->d,
-                    sizeof(int),
-                    intcmp)
-            != 0;
-    } else {
-        /* just do a simple linear search */
-        /* we could call lfind for this, but why bother? */
-        for(i = 0; i < g->alist[source]->d; i++) {
-            if(g->alist[source]->list[i] == sink) return 1;
-        }
-        /* else */
-        return 0;
+  for (i = v ; i < g->vertex_count - 1; i++){
+    for (j = 0 ; j < g->vertex_count ; j++){
+      g->arcs[i][j] = g->arcs[i + 1][j];
     }
+  }
+
+  for (i = v; i < g->vertex_count - 1; i++){
+    g->nodes[i] = g->nodes[i+1];
+  }
+  free_node(g->nodes[g->vertex_count]);
+
+
+
+  g->vertex_count--;
+
+  g->arcs = (int**) realloc(g->arcs, g->vertex_count * sizeof(int*));
+
+  for (i = 0 ; i < g->vertex_count ; i++){
+    g->arcs[i] = (int*) realloc(g->arcs[i], g->vertex_count * sizeof(int));
+  }
+
+  g->nodes = (Node**) realloc(g->nodes, g->vertex_count * sizeof(Node*));
 }
 
-/* invoke f on all edges (u,v) with source u */
-/* supplying data as final parameter to f */
-void
-graph_foreach(Graph g, int source,
-    void (*f)(Graph g, int source, int sink, void *data),
-    void *data)
-{
-    int i;
+void print_graph(Adjacency_Matrix* g) {
+  int i, j;
 
-    assert(source >= 0);
-    assert(source < g->n);
-
-    for(i = 0; i < g->alist[source]->d; i++) {
-        f(g, source, g->alist[source]->list[i], data);
+  for (i = 0 ; i < g->vertex_count ; i++) {
+    for (j = 0 ; j < g->vertex_count ; j++) {
+      printf("[%d]", g->arcs[i][j]);
     }
+    printf("\n");
+  }
+  printf("\n");
+  for (i = 0 ; i < g->vertex_count ; i++){
+    printf("[%d, %s] ", i, g->nodes[i]->name);
+  }
+}
+
+void print_adjacency(int* a) {
+  int i;
+
+  for (i = 1 ; i <= a[0] ; i++)
+    printf("[%d]", a[i]);
+
+  printf("\n");
+}
+
+Node* init_node(char* name){
+  Node* node;
+  node = (Node*) malloc(sizeof(Node));
+  node->name = (char*) malloc(strlen(name) * sizeof(char));
+  strcpy(node->name, name);
+  return node;
+}
+
+void free_node(Node* node){
+  free(node->name);
+  free(node);
+}
+
+char* get_node_name(Node* node){
+  return node->name;
 }

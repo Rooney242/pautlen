@@ -1,34 +1,47 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  adjacency_matrix.h
+ *
+ *    Description:  Adjacency Matrix Header with the required methods
+ *
+ *        Version:  1.0
+ *        Created:  17/04/2013 10:37:30
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Vitor Freitas (vfs), vitorfs@gmail.com
+ *        Company:  Universidade Federal de Juiz de Fora (UFJF)
+ *
+ * =====================================================================================
+ */
+
 #ifndef GRAPH_H
 #define GRAPH_H
-/* basic directed graph type */
 
-typedef struct graph *Graph;
+typedef struct {
+	char* name;
+} Node;
 
-/* create a new graph with n vertices labeled 0..n-1 and no edges */
-Graph graph_create(int n);
+typedef struct {
+	int vertex_count;
+  	int** arcs; // 0 represents the lack of adjacency
+  	Node** nodes;
+} Adjacency_Matrix;
 
-/* free all space used by graph */
-void graph_destroy(Graph);
+void init_graph(Adjacency_Matrix* g);
+void free_graph(Adjacency_Matrix* g);
+Adjacency_Matrix* transpose_graph(Adjacency_Matrix* g);
+int insert_arc(Adjacency_Matrix* g, int a1, int a2);
+int remove_arc(Adjacency_Matrix* g, int a1, int a2);
+int exists_arc(Adjacency_Matrix* g, int a1, int a2);
+int* get_adjacency(Adjacency_Matrix* g, int v);
+void insert_vertex(Adjacency_Matrix* g, char* name);
+int remove_vertex(Adjacency_Matrix* g, int v);
+void print_graph(Adjacency_Matrix* g);
+void print_adjacency(int* a);
 
-/* add an edge to an existing graph */
-/* doing this more than once may have unpredictable results */
-void graph_add_edge(Graph, int source, int sink);
-
-/* return the number of vertices/edges in the graph */
-int graph_vertex_count(Graph);
-int graph_edge_count(Graph);
-
-/* return the out-degree of a vertex */
-int graph_out_degree(Graph, int source);
-
-/* return 1 if edge (source, sink) exists), 0 otherwise */
-int graph_has_edge(Graph, int source, int sink);
-
-/* invoke f on all edges (u,v) with source u */
-/* supplying data as final parameter to f */
-/* no particular order is guaranteed */
-void graph_foreach(Graph g, int source,
-        void (*f)(Graph g, int source, int sink, void *data),
-        void *data);
-
+Node* init_node(char* name);
+void free_node(Node* node);
+char* get_node_name(Node* node);
 #endif

@@ -1,83 +1,111 @@
-#include <stdio.h>
-#include <assert.h>
+/*
+ * =====================================================================================
+ *
+ *       Filename:  graph.c
+ *
+ *    Description:  Main program to run Adjacency_Matrix application
+ *
+ *        Version:  1.0
+ *        Created:  17/04/2013 10:34:33
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  Vitor Freitas (vfs), vitorfs@gmail.com
+ *        Company:  Universidade Federal de Juiz de Fora (UFJF)
+ *
+ * =====================================================================================
+ */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "graph.h"
 
-#define TEST_SIZE (37)
+#define INSERT_VERTEX 1
+#define REMOVE_VERTEX 2
+#define INSERT_ARC 3
+#define REMOVE_ARC 4
+#define VERTEX_ADJACENCY 5
+#define TRANSPOSE_GRAPH 6
+#define PRINT_GRAPH 7
+#define EXIT 0
 
-/* never call this */
-static void
-match_sink(Graph g, int source, int sink, void *data)
-{
-    assert(data && sink == *((int *) data));
+void menu() {
+  system("clear");
+  printf("Graph Theory\n");
+  printf("[1] Insert Vertex\n");
+  printf("[2] Remove Vertex\n");
+  printf("[3] Insert Arc\n");
+  printf("[4] Remove Arc\n");
+  printf("[5] Get Vertex Adjacency\n");
+  printf("[6] Transpose Graph (not functional)\n");
+  printf("[7] Print Graph\n");
+  printf("[0] Exit\n");
 }
 
-int
-main(int argc, char **argv)
-{
-    Graph g;
-    int i;
-    int j;
+void pause() {
+  int ch;
+  while ((ch = getchar()) != '\n' && ch != EOF);
+  printf("Press enter to continue...");
+  getchar();
+}
 
-    g = graph_create(TEST_SIZE);
+int main(int argc, char* argv[]) {
+  Adjacency_Matrix* g = (Adjacency_Matrix*) malloc(sizeof(Adjacency_Matrix));
+  Adjacency_Matrix* tp;
+  int* adjacency;
+  init_graph(g);
 
-    assert(graph_vertex_count(g) == TEST_SIZE);
+  int option, v, a1, a2;
+  char *name;
 
-    /* check it's empty */
-    for(i = 0; i < TEST_SIZE; i++) {
-        for(j = 0; j < TEST_SIZE; j++) {
-            assert(graph_has_edge(g, i, j) == 0);
-        }
+  do {
+    menu();
+    scanf("%d", &option);
+    switch (option) {
+      case INSERT_VERTEX:
+        printf("Name of the vertex: ");
+        scanf("%s", name);
+        insert_vertex(g, name);
+        break;
+      case REMOVE_VERTEX:
+        printf("Which vertex would you like to remove? ");
+        scanf("%d", &v);
+        remove_vertex(g, v);
+        break;
+      case INSERT_ARC:
+        printf("First vertex: ");
+        scanf("%d", &a1);
+        printf("Second vertex: ");
+        scanf("%d", &a2);
+        insert_arc(g, a1, a2);
+        break;
+      case REMOVE_ARC:
+        printf("First vertex: ");
+        scanf("%d", &a1);
+        printf("Second vertex: ");
+        scanf("%d", &a2);
+        remove_arc(g, a1, a2);
+        break;
+      case VERTEX_ADJACENCY:
+        printf("Which vertex would you like to verify adjacency?");
+        scanf("%d", &v);
+        adjacency = get_adjacency(g, v);
+        print_adjacency(adjacency);
+        free(adjacency);
+        pause();
+        break;
+      case TRANSPOSE_GRAPH:
+        tp = transpose_graph(g);
+        print_graph(tp);
+        free(tp);
+        pause();
+        break;
+      case PRINT_GRAPH: 
+        print_graph(g);
+        pause();
+        break;
     }
+  } while (option != EXIT);
 
-    /* check it's empty again */
-    for(i = 0; i < TEST_SIZE; i++) {
-        assert(graph_out_degree(g, i) == 0);
-        graph_foreach(g, i, match_sink, 0);
-    }
-
-    /* check edge count */
-    assert(graph_edge_count(g) == 0);
-
-    /* fill in the diagonal */
-    for(i = 0; i < TEST_SIZE; i++) {
-        graph_add_edge(g, i, i);
-    }
-
-    /* check */
-    assert(graph_edge_count(g) == TEST_SIZE);
-
-    for(i = 0; i < TEST_SIZE; i++) {
-        for(j = 0; j < TEST_SIZE; j++) {
-            assert(graph_has_edge(g, i, j) == (i == j));
-        }
-    }
-
-    for(i = 0; i < TEST_SIZE; i++) {
-        assert(graph_out_degree(g, i) == 1);
-        graph_foreach(g, i, match_sink, &i);
-    }
-
-
-    /* fill in all the entries */
-    for(i = 0; i < TEST_SIZE; i++) {
-        for(j = 0; j < TEST_SIZE; j++) {
-            if(i != j) graph_add_edge(g, i, j);
-        }
-    }
-
-    /* test they are all there */
-    assert(graph_edge_count(g) == TEST_SIZE * TEST_SIZE);
-
-    for(i = 0; i < TEST_SIZE; i++) {
-        assert(graph_out_degree(g, i) == TEST_SIZE);
-        for(j = 0; j < TEST_SIZE; j++) {
-            assert(graph_has_edge(g, i, j) == 1);
-        }
-    }
-
-    /* free it */
-    graph_destroy(g);
-
-    return 0;
+  return 0;
 }
