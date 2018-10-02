@@ -32,12 +32,12 @@ typedef struct {
 void init_graph(Adjacency_Matrix* g);
 void free_graph(Adjacency_Matrix* g);
 Adjacency_Matrix* transpose_graph(Adjacency_Matrix* g);
-int insert_arc(Adjacency_Matrix* g, int a1, int a2);
-int remove_arc(Adjacency_Matrix* g, int a1, int a2);
-int exists_arc(Adjacency_Matrix* g, int a1, int a2);
-int* get_adjacency(Adjacency_Matrix* g, int v);
+int insert_arc(Adjacency_Matrix* g, char* name1, char* name2);
+int remove_arc(Adjacency_Matrix* g, char* name1, char* name2);
+int exists_arc(Adjacency_Matrix* g, char* name1, char* name2);
+int* get_adjacency(Adjacency_Matrix* g, char* name);
 void insert_vertex(Adjacency_Matrix* g, char* name);
-int remove_vertex(Adjacency_Matrix* g, int v);
+void remove_vertex(Adjacency_Matrix* g, char* name);
 void print_graph(Adjacency_Matrix* g);
 void print_adjacency(int* a);
 

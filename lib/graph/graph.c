@@ -30,9 +30,12 @@ void init_graph(Adjacency_Matrix* g) {
 void free_graph(Adjacency_Matrix* g) {
   int i;
   for (i = 0; i < g->vertex_count; i++){
+    free(g->arcs[i]);
     free_node(g->nodes[i]);
   }
+
   free(g->arcs);
+  free(g->nodes);
   free(g);
 }
 
@@ -50,8 +53,24 @@ Adjacency_Matrix* transpose_graph(Adjacency_Matrix* g) {
 
   return transpose;*/
 }
+int get_node_index(Adjacency_Matrix* g, char* name){
+  int i;
+  for(i = 0; i < g->vertex_count; i++){
+    if (!strcmp(name, g->nodes[i]->name)){
+      break;
+    }
+  }
+  if(i < g->vertex_count){
+    return i;
+  }else{
+    return -1;
+  }
+}
 
-int insert_arc(Adjacency_Matrix* g, int a1, int a2) {
+int insert_arc(Adjacency_Matrix* g, char* name1, char* name2) {
+  int a1, a2;
+  a1 = get_node_index(g, name1);
+  a2 = get_node_index(g, name2);
   if (a1 >= 0 && a1 < g->vertex_count && a2 >= 0 && a2 < g->vertex_count && g->arcs[a1][a2] == 0) {
     g->arcs[a1][a2] = 1;
     g->arcs[a2][a1] = 1;
@@ -60,7 +79,10 @@ int insert_arc(Adjacency_Matrix* g, int a1, int a2) {
   return -1;
 }
 
-int remove_arc(Adjacency_Matrix* g, int a1, int a2) {
+int remove_arc(Adjacency_Matrix* g, char* name1, char* name2) {
+  int a1, a2;
+  a1 = get_node_index(g, name1);
+  a2 = get_node_index(g, name2);
   int weight = -1;
   if (a1 >= 0 && a1 < g->vertex_count && a2 >= 0 && a2 < g->vertex_count && g->arcs[a1][a2] > 0) {
     weight = g->arcs[a1][a2];
@@ -70,24 +92,35 @@ int remove_arc(Adjacency_Matrix* g, int a1, int a2) {
   return weight;
 }
 
-int exists_arc(Adjacency_Matrix* g, int a1, int a2) {
-  return g->arcs[a1][a2] > 0;
+int exists_arc(Adjacency_Matrix* g, char* name1, char* name2) {
+  int a1, a2;
+  a1 = get_node_index(g, name1);
+  a2 = get_node_index(g, name2);
+  if (a1>=0 && a2>=0){
+    return g->arcs[a1][a2] > 0;
+  }else{ 
+    return -1;
+  }
 }
 
-int* get_adjacency(Adjacency_Matrix* g, int v) {
-  int* adjacency = (int*) malloc(sizeof(int));
-  adjacency[0] = 0; // Using the first position of the pointer to determine the size of the array
-  
-  int i;
-  for (i = 0 ; i < g->vertex_count ; i++) {
-    if (g->arcs[i][v] > 0) {
-      adjacency[0]++;
-      adjacency = (int*) realloc(adjacency, adjacency[0] * sizeof(int));
-      adjacency[adjacency[0]] = i;
+int* get_adjacency(Adjacency_Matrix* g, char* name) {
+  int v;
+  v = get_node_index(g, name);
+  if (v>=0){
+    int* adjacency = (int*) malloc(sizeof(int));
+    adjacency[0] = 0; // Using the first position of the pointer to determine the size of the array
+    
+    int i;
+    for (i = 0 ; i < g->vertex_count ; i++) {
+      if (g->arcs[i][v] > 0) {
+        adjacency[0]++;
+        adjacency = (int*) realloc(adjacency, adjacency[0] * sizeof(int));
+        adjacency[adjacency[0]] = i;
+      }
     }
-  }
 
-  return adjacency;
+    return adjacency;
+  }
 }
 
 void insert_vertex(Adjacency_Matrix* g, char* name) {
@@ -120,36 +153,41 @@ void insert_vertex(Adjacency_Matrix* g, char* name) {
   }
 }
 
-int remove_vertex(Adjacency_Matrix* g, int v) {
-  int i, j;
+//Loss of memory
+void remove_vertex(Adjacency_Matrix* g, char* name) {
+  int v;
+  v = get_node_index(g, name);
+  if (v >=0){
+    int i, j;
 
-  for (i = 0 ; i < g->vertex_count - 1 ; i++)
-    for (j = v ; j < g->vertex_count ; j++) {
-      g->arcs[i][j] = g->arcs[i][j + 1];
+    for (i = 0 ; i < g->vertex_count - 1 ; i++)
+      for (j = v ; j < g->vertex_count ; j++) {
+        g->arcs[i][j] = g->arcs[i][j + 1];
+      }
+
+    for (i = v ; i < g->vertex_count - 1; i++){
+      for (j = 0 ; j < g->vertex_count ; j++){
+        g->arcs[i][j] = g->arcs[i + 1][j];
+      }
+    }
+    printf("hola3\n");
+    for (i = v; i < g->vertex_count - 1; i++){
+      g->nodes[i] = g->nodes[i+1];
     }
 
-  for (i = v ; i < g->vertex_count - 1; i++){
-    for (j = 0 ; j < g->vertex_count ; j++){
-      g->arcs[i][j] = g->arcs[i + 1][j];
+    free_node(g->nodes[g->vertex_count - 1]);
+
+
+    g->vertex_count--;
+
+    g->arcs = (int**) realloc(g->arcs, g->vertex_count * sizeof(int*));
+
+    for (i = 0 ; i < g->vertex_count ; i++){
+      g->arcs[i] = (int*) realloc(g->arcs[i], g->vertex_count * sizeof(int));
     }
+
+    g->nodes = (Node**) realloc(g->nodes, g->vertex_count * sizeof(Node*));
   }
-
-  for (i = v; i < g->vertex_count - 1; i++){
-    g->nodes[i] = g->nodes[i+1];
-  }
-  free_node(g->nodes[g->vertex_count]);
-
-
-
-  g->vertex_count--;
-
-  g->arcs = (int**) realloc(g->arcs, g->vertex_count * sizeof(int*));
-
-  for (i = 0 ; i < g->vertex_count ; i++){
-    g->arcs[i] = (int*) realloc(g->arcs[i], g->vertex_count * sizeof(int));
-  }
-
-  g->nodes = (Node**) realloc(g->nodes, g->vertex_count * sizeof(Node*));
 }
 
 void print_graph(Adjacency_Matrix* g) {

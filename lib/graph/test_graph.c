@@ -56,40 +56,40 @@ int main(int argc, char* argv[]) {
   init_graph(g);
 
   int option, v, a1, a2;
-  char *name;
+  char name1[50], name2[50];
 
   do {
     menu();
     scanf("%d", &option);
     switch (option) {
       case INSERT_VERTEX:
-        printf("Name of the vertex: ");
-        scanf("%s", name);
-        insert_vertex(g, name);
+        printf("Name of the vertex22: ");
+        scanf("%s", name1);
+        insert_vertex(g, name1);
         break;
       case REMOVE_VERTEX:
         printf("Which vertex would you like to remove? ");
-        scanf("%d", &v);
-        remove_vertex(g, v);
+        scanf("%s", name1);
+        remove_vertex(g, name1);
         break;
       case INSERT_ARC:
         printf("First vertex: ");
-        scanf("%d", &a1);
+        scanf("%s", name1);
         printf("Second vertex: ");
-        scanf("%d", &a2);
-        insert_arc(g, a1, a2);
+        scanf("%s", name2);
+        insert_arc(g, name1, name2);
         break;
       case REMOVE_ARC:
         printf("First vertex: ");
-        scanf("%d", &a1);
+        scanf("%s", name1);
         printf("Second vertex: ");
-        scanf("%d", &a2);
-        remove_arc(g, a1, a2);
+        scanf("%s", name2);
+        remove_arc(g, name1, name2);
         break;
       case VERTEX_ADJACENCY:
         printf("Which vertex would you like to verify adjacency?");
-        scanf("%d", &v);
-        adjacency = get_adjacency(g, v);
+        scanf("%s", name1);
+        adjacency = get_adjacency(g, name1);
         print_adjacency(adjacency);
         free(adjacency);
         pause();
@@ -106,6 +106,8 @@ int main(int argc, char* argv[]) {
         break;
     }
   } while (option != EXIT);
+
+  free_graph(g);
 
   return 0;
 }
