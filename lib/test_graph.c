@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
     scanf("%d", &option);
     switch (option) {
       case INSERT_VERTEX:
-        printf("Name of the vertex22: ");
+        printf("Name of the vertex: ");
         scanf("%s", name1);
         insert_vertex(g, name1);
         break;

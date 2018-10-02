@@ -19,8 +19,11 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include "tsa.h"
+
 typedef struct {
 	char* name;
+	tsa* tsa;
 } Node;
 
 typedef struct {

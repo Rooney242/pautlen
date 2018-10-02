@@ -170,7 +170,7 @@ void remove_vertex(Adjacency_Matrix* g, char* name) {
         g->arcs[i][j] = g->arcs[i + 1][j];
       }
     }
-    printf("hola3\n");
+    
     for (i = v; i < g->vertex_count - 1; i++){
       g->nodes[i] = g->nodes[i+1];
     }
@@ -217,12 +217,15 @@ void print_adjacency(int* a) {
 Node* init_node(char* name){
   Node* node;
   node = (Node*) malloc(sizeof(Node));
+
+  node->tsa = init_tsa(name);
   node->name = (char*) malloc(strlen(name) * sizeof(char));
   strcpy(node->name, name);
   return node;
 }
 
 void free_node(Node* node){
+  free_tsa(node->tsa);
   free(node->name);
   free(node);
 }

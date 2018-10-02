@@ -16,7 +16,7 @@ typedef struct hash_elem_t {
 	char key[]; 	// Key of the stored element
 }hash_elem_t;
 
-//Hashtabe structure
+//Hashtable structure
 typedef struct  hashtable_t{
 	unsigned int capacity;	// Hashtable capacity (in terms of hashed keys)
 	unsigned int e_num;	// Number of element currently stored in the hashtable
