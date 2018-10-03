@@ -24,3 +24,133 @@ void escribir_fin(FILE* fpasm){
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable){
 	fprintf(fpasm,"")
 }
+
+
+void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
+
+	// Sacamos las variables de pila
+	fprintf(fpasm, "pop dword eax\n\tpop dword edx\n\t");
+
+	// Comprobamos si los operandos son referencias o valores explicitos
+	if (!es_variable_1) {
+		fprintf(fpasm, "mov eax, [eax]\n\t");
+	}
+	if (!es_variable_2) {
+		fprintf(fpasm, "mov edx, [edx]\n\t");
+	}
+
+	// Realizamos operacion y almacenamos en eax
+	fprintf(fpasm, "add eax, edx\n\t");
+
+	// Metemos eax en pila
+	fprintf(fpasm, "push dword eax\n\t");
+}
+
+void restar(FILE* fpasm, int es_variable_1, int es_variable_2) {
+
+	// Sacamos las variables de pila
+	fprintf(fpasm, "pop dword eax\n\tpop dword edx\n\t");
+
+	// Comprobamos si los operandos son referencias o valores explicitos
+	if (!es_variable_1) {
+		fprintf(fpasm, "mov eax, [eax]\n\t");
+	}
+	if (!es_variable_2) {
+		fprintf(fpasm, "mov edx, [edx]\n\t");
+	}
+
+	// Realizamos operacion y almacenamos en eax
+	fprintf(fpasm, "sub eax, edx\n\t");
+
+	// Metemos eax en pila
+	fprintf(fpasm, "push dword eax\n\t");
+}
+
+void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
+
+	// Sacamos las variables de pila
+	fprintf(fpasm, "pop dword eax\n\tpop dword ecx\n\t");
+
+	// Comprobamos si los operandos son referencias o valores explicitos
+	if (!es_variable_1) {
+		fprintf(fpasm, "mov eax, [eax]\n\t");
+	}
+	if (!es_variable_2) {
+		fprintf(fpasm, "mov ecx, [ecx]\n\t");
+	}
+
+	// Realizamos operacion y almacenamos en eax
+	fprintf(fpasm, "imul ecx\n\t");
+
+	// Metemos eax en pila
+	fprintf(fpasm, "push dword eax\n\t");
+}
+
+// TODO Comprobar si el divisor es 0, en cuyo caso:
+// saltar a la rutina de error controlado (restaurando 
+// el puntero de pila en ese caso y comprobando en el retorno 
+// que no se produce “Segmentation Fault”)
+
+void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
+
+	// Sacamos las variables de pila
+	fprintf(fpasm, "pop dword eax\n\tpop dword ecx\n\t");
+
+	// Comprobamos si los operandos son referencias o valores explicitos
+	if (!es_variable_1) {
+		fprintf(fpasm, "mov eax, [eax]\n\t");
+	}
+	if (!es_variable_2) {
+		fprintf(fpasm, "mov ecx, [ecx]\n\t");
+	}
+
+	// Realizamos operacion y almacenamos en eax
+	fprintf(fpasm, "cdq\n\tidiv ecex\n\t")
+
+	// Metemos eax en pila
+	fprintf(fpasm, "push dword eax\n\t");
+}
+
+
+void o(FILE* fpasm, int es_variable_1, int es_variable_2) {
+
+	// Sacamos las variables de pila
+	fprintf(fpasm, "pop dword eax\n\tpop dword edx\n\t");
+
+	// Comprobamos si los operandos son referencias o valores explicitos
+	if (!es_variable_1) {
+		fprintf(fpasm, "mov eax, [eax]\n\t");
+	}
+	if (!es_variable_2) {
+		fprintf(fpasm, "mov edx, [edx]\n\t");
+	}
+
+	// Realizamos operacion y almacenamos en eax
+	fprintf(fpasm, "or eax, edx\n\t");
+
+	// Metemos eax en pila
+	fprintf(fpasm, "push dword eax\n\t");
+}
+
+
+void y(FILE* fpasm, int es_variable_1, int es_variable_2) {
+
+	// Sacamos las variables de pila
+	fprintf(fpasm, "pop dword eax\n\tpop dword edx\n\t");
+
+	// Comprobamos si los operandos son referencias o valores explicitos
+	if (!es_variable_1) {
+		fprintf(fpasm, "mov eax, [eax]\n\t");
+	}
+	if (!es_variable_2) {
+		fprintf(fpasm, "mov edx, [edx]\n\t");
+	}
+
+	// Realizamos operacion y almacenamos en eax
+	fprintf(fpasm, "and eax, edx\n\t");
+
+	// Metemos eax en pila
+	fprintf(fpasm, "push dword eax\n\t");
+}
+
+
