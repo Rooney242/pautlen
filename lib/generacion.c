@@ -153,4 +153,21 @@ void y(FILE* fpasm, int es_variable_1, int es_variable_2) {
 	fprintf(fpasm, "push dword eax\n\t");
 }
 
+void cambiar_signo(FILE* fpasm, int es_variable) {
+
+	// Sacamos las variables de pila
+	fprintf(fpasm, "pop dword eax\n\t");
+
+	// Comprobamos si los operandos son referencias o valores explicitos
+	if (!es_variable) {
+		fprintf(fpasm, "mov eax, [eax]\n\t");
+	}
+
+	// Realizamos operacion y almacenamos en eax
+	fprintf(fpasm, "neg eax\n\t");
+
+	// Metemos eax en pila
+	fprintf(fpasm, "push dword eax\n\t");
+}
+
 
