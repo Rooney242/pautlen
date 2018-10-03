@@ -5,16 +5,16 @@
 
 
 tsa* init_tsa(char* name){
-	tsa* tsa;
-	tsa = (tsa*) malloc(sizeof(tsa));
+	tsa* tsam;
+	tsam = (tsa*) malloc(sizeof(tsa));
 
-	tsa->ambito = (char*)malloc(sizeof(char)*strlen(name))
-	strcpy(tsa->ambito, name)
+	tsam->ambito = (char*)malloc(sizeof(char)*strlen(name));
+	strcpy(tsam->ambito, name);
 
-	tsa->ppal = ht_create(TSA_TAM);
-	tsa->met = ht_create(TSA_TAM);
+	tsam->ppal = ht_create(TSA_TAM);
+	tsam->met = ht_create(TSA_TAM);
 
-	return tsa;
+	return tsam;
 }
 
 void free_tsa(tsa* tsa){
@@ -31,7 +31,7 @@ void* ppal_put(tsa* tsa, char* key, void* data){
 }
 
 void* ppal_get(tsa* tsa, char* key){
-	return ht_put(tsa->ppal, key);
+	return ht_get(tsa->ppal, key);
 }
 
 void* ppal_remove(tsa* tsa, char* key){
@@ -43,7 +43,7 @@ void* met_put(tsa* tsa, char* key, void* data){
 }
 
 void* met_get(tsa* tsa, char* key){
-	return ht_put(tsa->met, key);
+	return ht_get(tsa->met, key);
 }
 
 void* met_remove(tsa* tsa, char* key){

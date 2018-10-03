@@ -40,6 +40,7 @@ int remove_arc(Adjacency_Matrix* g, char* name1, char* name2);
 int exists_arc(Adjacency_Matrix* g, char* name1, char* name2);
 int* get_adjacency(Adjacency_Matrix* g, char* name);
 void insert_vertex(Adjacency_Matrix* g, char* name);
+void insert_class(Adjacency_Matrix* g, char* name, char** parents);
 void remove_vertex(Adjacency_Matrix* g, char* name);
 void print_graph(Adjacency_Matrix* g);
 void print_adjacency(int* a);

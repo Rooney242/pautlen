@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "graph.h"
+#include "tsa.h"
 
 void init_graph(Adjacency_Matrix* g) {
   g->vertex_count = 0;
@@ -73,7 +74,8 @@ int insert_arc(Adjacency_Matrix* g, char* name1, char* name2) {
   a2 = get_node_index(g, name2);
   if (a1 >= 0 && a1 < g->vertex_count && a2 >= 0 && a2 < g->vertex_count && g->arcs[a1][a2] == 0) {
     g->arcs[a1][a2] = 1;
-    g->arcs[a2][a1] = 1;
+    g->arcs[a2][a1] = 2;
+    // Un 2 significa que ese nodo es tu padre
     return 0;
   }
   return -1;
@@ -153,6 +155,19 @@ void insert_vertex(Adjacency_Matrix* g, char* name) {
   }
 }
 
+void insert_class(Adjacency_Matrix* g, char* name, char** parents){
+  if (parents == NULL){
+    insert_vertex(g, name);
+  }else{
+    int index, size;
+    size = sizeof(parents)/sizeof(parents[0]);
+    insert_vertex(g, name);
+    for(i = 0; i < size - 1; i++){
+      insert_arc(g, parents[i], name);
+    } 
+  }
+}
+
 //Loss of memory
 void remove_vertex(Adjacency_Matrix* g, char* name) {
   int v;
@@ -189,6 +204,21 @@ void remove_vertex(Adjacency_Matrix* g, char* name) {
     g->nodes = (Node**) realloc(g->nodes, g->vertex_count * sizeof(Node*));
   }
 }
+
+Node ** get_parents(Adjacency_Matrix* g, char* name){
+  Node ** parents;
+  int i, index, pind;
+  pind = 0;
+  index = get_node_index(g, name);
+  for (i = 0; i<g->vertex_count - 1; i++){
+    if (g->arcs[index][i] > 1){
+        parents[pind] = g->nodes[i];
+        pind++;
+    }
+  }
+  return parents;
+  //Queda apañar el insert class
+} 
 
 void print_graph(Adjacency_Matrix* g) {
   int i, j;
