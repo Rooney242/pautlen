@@ -37,76 +37,77 @@ void asignar(FILE* fpasm, char* nombre, int es_variable){
 		//Sacamos la variable de pila
 		fprintf(fpasm, "\tpop dword eax\n");
 		//La asignamos a la referencia
-		fprintf(fpasm, "\tmov dword [_%s] , [eax]", nombre);
+		fprintf(fpasm, "\tmov dword [_%s], [eax]\n", nombre);
 	}
 	if (es_variable == 0){
 		//Sacamos la variable de pila
 		fprintf(fpasm, "\tpop dword eax\n");
 		//La asignamos a la referencia
-		fprintf(fpasm, "\tmov dword [_%s] , eax", nombre);
+		fprintf(fpasm, "\tmov dword [_%s], eax\n", nombre);
 	}
 	
 }
+/* FUNCIONES ARITMÉTICO-LÓGICAS BINARIAS */
 
 
 void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Sacamos las variables de pila
-	fprintf(fpasm, "pop dword eax\n\tpop dword edx\n\t");
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (!es_variable_1) {
-		fprintf(fpasm, "mov eax, [eax]\n\t");
+	if (es_variable_2) {
+		fprintf(fpasm, "\tmov edx, [edx]\n");
 	}
-	if (!es_variable_2) {
-		fprintf(fpasm, "mov edx, [edx]\n\t");
+	if (es_variable_1) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
-	fprintf(fpasm, "add eax, edx\n\t");
+	fprintf(fpasm, "\tadd eax, edx\n");
 
 	// Metemos eax en pila
-	fprintf(fpasm, "push dword eax\n\t");
+	fprintf(fpasm, "\tpush dword eax\n");
 }
 
 void restar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Sacamos las variables de pila
-	fprintf(fpasm, "pop dword eax\n\tpop dword edx\n\t");
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (!es_variable_1) {
-		fprintf(fpasm, "mov eax, [eax]\n\t");
+	if (es_variable_2) {
+		fprintf(fpasm, "\tmov edx, [edx]\n");
 	}
-	if (!es_variable_2) {
-		fprintf(fpasm, "mov edx, [edx]\n\t");
+	if (es_variable_1) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
-	fprintf(fpasm, "sub eax, edx\n\t");
+	fprintf(fpasm, "\tsub eax, edx\n");
 
 	// Metemos eax en pila
-	fprintf(fpasm, "push dword eax\n\t");
+	fprintf(fpasm, "\tpush dword eax\n");
 }
 
 void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Sacamos las variables de pila
-	fprintf(fpasm, "pop dword eax\n\tpop dword ecx\n\t");
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (!es_variable_1) {
-		fprintf(fpasm, "mov eax, [eax]\n\t");
+	if (es_variable_2) {
+		fprintf(fpasm, "\tmov edx, [edx]\n");
 	}
-	if (!es_variable_2) {
-		fprintf(fpasm, "mov ecx, [ecx]\n\t");
+	if (es_variable_1) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
-	fprintf(fpasm, "imul ecx\n\t");
+	fprintf(fpasm, "\timul ecx\n");
 
 	// Metemos eax en pila
-	fprintf(fpasm, "push dword eax\n\t");
+	fprintf(fpasm, "\tpush dword eax\n");
 }
 
 // TODO Comprobar si el divisor es 0, en cuyo caso:
@@ -117,80 +118,123 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Sacamos las variables de pila
-	fprintf(fpasm, "pop dword eax\n\tpop dword ecx\n\t");
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (!es_variable_1) {
-		fprintf(fpasm, "mov eax, [eax]\n\t");
+	if (es_variable_2) {
+		fprintf(fpasm, "\tmov edx, [edx]\n");
 	}
-	if (!es_variable_2) {
-		fprintf(fpasm, "mov ecx, [ecx]\n\t");
+	if (es_variable_1) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
-	fprintf(fpasm, "cdq\n\tidiv ecex\n\t")
+	fprintf(fpasm, "\tcdq\n\tidiv ecex\n")
 
 	// Metemos eax en pila
-	fprintf(fpasm, "push dword eax\n\t");
+	fprintf(fpasm, "\tpush dword eax\n");
 }
 
 
 void o(FILE* fpasm, int es_variable_1, int es_variable_2) {
-
+	
 	// Sacamos las variables de pila
-	fprintf(fpasm, "pop dword eax\n\tpop dword edx\n\t");
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (!es_variable_1) {
-		fprintf(fpasm, "mov eax, [eax]\n\t");
+	if (es_variable_2) {
+		fprintf(fpasm, "\tmov edx, [edx]\n");
 	}
-	if (!es_variable_2) {
-		fprintf(fpasm, "mov edx, [edx]\n\t");
+	if (es_variable_1) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
-	fprintf(fpasm, "or eax, edx\n\t");
+	fprintf(fpasm, "\tor eax, edx\n");
 
 	// Metemos eax en pila
-	fprintf(fpasm, "push dword eax\n\t");
+	fprintf(fpasm, "\tpush dword eax\n");
 }
 
 
 void y(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Sacamos las variables de pila
-	fprintf(fpasm, "pop dword eax\n\tpop dword edx\n\t");
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (!es_variable_1) {
-		fprintf(fpasm, "mov eax, [eax]\n\t");
+	if (es_variable_2) {
+		fprintf(fpasm, "\tmov edx, [edx]\n");
 	}
-	if (!es_variable_2) {
-		fprintf(fpasm, "mov edx, [edx]\n\t");
+	if (es_variable_1) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
-	fprintf(fpasm, "and eax, edx\n\t");
+	fprintf(fpasm, "\tand eax, edx\n");
 
 	// Metemos eax en pila
-	fprintf(fpasm, "push dword eax\n\t");
+	fprintf(fpasm, "\tpush dword eax\n");
 }
 
 void cambiar_signo(FILE* fpasm, int es_variable) {
 
 	// Sacamos las variables de pila
-	fprintf(fpasm, "pop dword eax\n\t");
+	fprintf(fpasm, "\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (!es_variable) {
-		fprintf(fpasm, "mov eax, [eax]\n\t");
+	if (es_variable) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
-	fprintf(fpasm, "neg eax\n\t");
+	fprintf(fpasm, "\tneg eax\n");
 
 	// Metemos eax en pila
-	fprintf(fpasm, "push dword eax\n\t");
+	fprintf(fpasm, "\tpush dword eax\n");
 }
 
+/* FUNCIONES COMPARATIVAS */
+
+void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+	
+	// Sacamos las variables de pila
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
+
+	// Comprobamos si los operandos son referencias o valores explicitos
+	if (es_variable_2) {
+		fprintf(fpasm, "\tmov edx, [edx]\n");
+	}
+	if (es_variable_1) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
+	}
+	
+	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
+		etiquetas ni si he puesto bien la sintaxis de los jump*/
+		
+	fprintf(fpasm, "\tcmp eax, edx\n");
+	fprintf(fpasm, "\tje near _igual_%d\n",etiqueta);
+	fprintf(fpasm, "\tpush 0\n");
+	fprintf(fpasm, "\tjmp near _fin_igual_%d\n",etiqueta);
+	fprintf(fpasm, "_igual_%d:\n", etiqueta);
+	fprintf(fpasm, "\tpush 1\n");
+	fprintf(fpasm, "_fin_igual_%d:\n", etiqueta);
+	
+}
+void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+		//TODO
+}
+void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+		//TODO
+}
+void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+		//TODO
+}
+void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+		//TODO
+}
+void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+		//TODO
+}
+ 
 
