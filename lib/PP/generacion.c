@@ -35,7 +35,7 @@ void escribir_fin(FILE* fpasm){
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable){
 	//Si es una variable se escribe con los corchetes de direccion
 	if (es_variable == 1)
-		fprintf(fpasm,"\tpush dword [_%s]\n",nombre);
+		fprintf(fpasm,"\tpush dword _%s\n",nombre);
 	//Si no, se escibe tal como esta
 	if(es_variable == 0)
 		fprintf(fpasm,"\tpush dword %s\n",nombre);
@@ -46,8 +46,9 @@ void asignar(FILE* fpasm, char* nombre, int es_variable){
 	if (es_variable == 1){
 		//Sacamos la variable de pila
 		fprintf(fpasm, "\tpop dword eax\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 		//La asignamos a la referencia
-		fprintf(fpasm, "\tmov dword [_%s], [eax]\n", nombre);
+		fprintf(fpasm, "\tmov dword [_%s], eax\n", nombre);
 	}
 	if (es_variable == 0){
 		//Sacamos la variable de pila
@@ -67,10 +68,10 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable_2) {
-		fprintf(fpasm, "\tmov edx, [edx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable_1) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
@@ -87,10 +88,10 @@ void restar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable_2) {
-		fprintf(fpasm, "\tmov edx, [edx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable_1) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
@@ -107,14 +108,14 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable_2) {
-		fprintf(fpasm, "\tmov edx, [edx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable_1) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
-	fprintf(fpasm, "\timul ecx\n");
+	fprintf(fpasm, "\timul edx\n");
 
 	// Metemos eax en pila
 	fprintf(fpasm, "\tpush dword eax\n");
@@ -128,21 +129,21 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Sacamos las variables de pila
-	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
+	fprintf(fpasm, "\tpop dword ebx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable_2) {
-		fprintf(fpasm, "\tmov edx, [edx]\n");
+		fprintf(fpasm, "\tmov edx, dword [ebx]\n");
 	}
 	if (es_variable_1) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 
-	fprintf(fpasm, "\tcmp edx, 0\n");
-	fprintf(fpasm, "\tje error error_div_cero:\n");
+	fprintf(fpasm, "\tcmp ebx, 0\n");
+	fprintf(fpasm, "\tje error_div_cero\n");
 
 	// Realizamos operacion y almacenamos en eax
-	fprintf(fpasm, "\tcdq\n\tidiv edx\n");
+	fprintf(fpasm, "\tcdq\n\tidiv ebx\n");
 
 	// Metemos eax en pila
 	fprintf(fpasm, "\tpush dword eax\n");
@@ -156,10 +157,10 @@ void o(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable_2) {
-		fprintf(fpasm, "\tmov edx, [edx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable_1) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
@@ -177,10 +178,10 @@ void y(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable_2) {
-		fprintf(fpasm, "\tmov edx, [edx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable_1) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
@@ -197,7 +198,7 @@ void cambiar_signo(FILE* fpasm, int es_variable) {
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 
 	// Realizamos operacion y almacenamos en eax
@@ -214,7 +215,7 @@ void no(FILE* fpasm, int es_variable, int cuantos_no) {
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 	
 	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
@@ -238,10 +239,10 @@ void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable2) {
-		fprintf(fpasm, "\tmov edx, [edx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable1) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 	
 	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
@@ -264,10 +265,10 @@ void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable2) {
-		fprintf(fpasm, "\tmov edx, [edx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable1) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 	
 	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
@@ -290,12 +291,12 @@ void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable2) {
-		fprintf(fpasm, "\tmov edx, [edx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable1) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
-	
+
 	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
 		etiquetas ni si he puesto bien la sintaxis de los jump*/
 		
@@ -316,10 +317,10 @@ void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable2) {
-		fprintf(fpasm, "\tmov edx, [edx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable1) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 	
 	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
@@ -342,10 +343,10 @@ void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable2) {
-		fprintf(fpasm, "\tmov edx, [edx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable1) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 	
 	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
@@ -368,10 +369,10 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable2) {
-		fprintf(fpasm, "\tmov edx, [edx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable1) {
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 	
 	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
@@ -391,7 +392,7 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 
 void leer(FILE* fpasm, char* nombre, int tipo) {
 
-    fprintf(fpasm, "\tpush dword _%s\n", nombre);
+    fprintf(fpasm, "\tpush _%s\n", nombre);
 
     if(tipo == BOOLEANO){ 
     	fprintf(fpasm, "\tcall scan_boolean\n");
