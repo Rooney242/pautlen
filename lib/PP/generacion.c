@@ -1,8 +1,9 @@
 
 #include <stdio.h>
+#include "generacion.h"
 
 void escribir_cabecera_bss(FILE* fpasm){
-	fprintf(fpasm,"segment.bss\n\t__esp resd 1\n");
+	fprintf(fpasm,"\nsegment .bss\n\t__esp resd 1\n");
 }
 
 void escribir_subseccion_data(FILE* fpasm){
@@ -11,7 +12,7 @@ void escribir_subseccion_data(FILE* fpasm){
 }
 
 void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano){
-	fprintf(fpasm,"/t_%s resd %d\n",nombre,tamano);
+	fprintf(fpasm,"\t_%s resd %d\n",nombre,tamano);
 }
 
 void escribir_segmento_codigo(FILE* fpasm){
@@ -28,7 +29,7 @@ void escribir_fin(FILE* fpasm){
 
 	/* Gestion de las divisiones por 0 */
 	fprintf(fpasm, "error_div_cero:\n");
-	fprintf(fpasm, "\tpush dword msg_div_zero\n\tcall print_string\n\tadd esp, 4\n\tcall print_endofline\n\tret");
+	fprintf(fpasm, "\tpush dword msg_div_cero\n\tcall print_string\n\tadd esp, 4\n\tcall print_endofline\n\tret\n");
 }
 
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable){
@@ -141,7 +142,7 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
 	fprintf(fpasm, "\tje error error_div_cero:\n");
 
 	// Realizamos operacion y almacenamos en eax
-	fprintf(fpasm, "\tcdq\n\tidiv edx\n")
+	fprintf(fpasm, "\tcdq\n\tidiv edx\n");
 
 	// Metemos eax en pila
 	fprintf(fpasm, "\tpush dword eax\n");
@@ -236,10 +237,10 @@ void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (es_variable_2) {
+	if (es_variable2) {
 		fprintf(fpasm, "\tmov edx, [edx]\n");
 	}
-	if (es_variable_1) {
+	if (es_variable1) {
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 	
@@ -262,10 +263,10 @@ void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (es_variable_2) {
+	if (es_variable2) {
 		fprintf(fpasm, "\tmov edx, [edx]\n");
 	}
-	if (es_variable_1) {
+	if (es_variable1) {
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 	
@@ -288,10 +289,10 @@ void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (es_variable_2) {
+	if (es_variable2) {
 		fprintf(fpasm, "\tmov edx, [edx]\n");
 	}
-	if (es_variable_1) {
+	if (es_variable1) {
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 	
@@ -314,10 +315,10 @@ void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (es_variable_2) {
+	if (es_variable2) {
 		fprintf(fpasm, "\tmov edx, [edx]\n");
 	}
-	if (es_variable_1) {
+	if (es_variable1) {
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 	
@@ -340,10 +341,10 @@ void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (es_variable_2) {
+	if (es_variable2) {
 		fprintf(fpasm, "\tmov edx, [edx]\n");
 	}
-	if (es_variable_1) {
+	if (es_variable1) {
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 	
@@ -366,10 +367,10 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
 	// Comprobamos si los operandos son referencias o valores explicitos
-	if (es_variable_2) {
+	if (es_variable2) {
 		fprintf(fpasm, "\tmov edx, [edx]\n");
 	}
-	if (es_variable_1) {
+	if (es_variable1) {
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 	
@@ -392,7 +393,7 @@ void leer(FILE* fpasm, char* nombre, int tipo) {
 
     fprintf(fpasm, "\tpush dword _%s\n", nombre);
 
-    if(tipo==BOOLEANO){ 
+    if(tipo == BOOLEANO){ 
     	fprintf(fpasm, "\tcall scan_boolean\n");
     } else { 
     	fprintf(fpasm, "\tcall scan_int\n");
@@ -408,7 +409,7 @@ void escribir(FILE* fpasm, int es_variable, int tipo) {
     if(es_variable)
         fprintf(fpasm, "\tpop eax\n\tpush dword [eax]\n");
 
-    if (tipo == BOOLEANO) {
+    if (tipo == BOOLEANO){
     	fprintf(fpasm, "\tcall print_boolean\n");
     } else {
     	fprintf(fpasm, "\tcall print_int\n");
