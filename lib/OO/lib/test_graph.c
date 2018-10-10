@@ -23,10 +23,11 @@
 #define INSERT_VERTEX 1
 #define REMOVE_VERTEX 2
 #define INSERT_ARC 3
-#define REMOVE_ARC 4
-#define VERTEX_ADJACENCY 5
-#define TRANSPOSE_GRAPH 6
-#define PRINT_GRAPH 7
+#define INSERT_CLASS 4
+#define REMOVE_ARC 5
+#define VERTEX_ADJACENCY 6
+#define TRANSPOSE_GRAPH 7
+#define PRINT_GRAPH 8
 #define EXIT 0
 
 void menu() {
@@ -35,10 +36,11 @@ void menu() {
   printf("[1] Insert Vertex\n");
   printf("[2] Remove Vertex\n");
   printf("[3] Insert Arc\n");
-  printf("[4] Remove Arc\n");
-  printf("[5] Get Vertex Adjacency\n");
-  printf("[6] Transpose Graph (not functional)\n");
-  printf("[7] Print Graph\n");
+  printf("[4] Insert Class\n");
+  printf("[5] Remove Arc\n");
+  printf("[6] Get Vertex Adjacency\n");
+  printf("[7] Transpose Graph (not functional)\n");
+  printf("[8] Print Graph\n");
   printf("[0] Exit\n");
 }
 
@@ -57,6 +59,9 @@ int main(int argc, char* argv[]) {
 
   int option, v, a1, a2;
   char name1[50], name2[50];
+  char **parents;
+  parents = NULL;
+  int num, i;
 
   do {
     menu();
@@ -78,6 +83,32 @@ int main(int argc, char* argv[]) {
         printf("Second vertex: ");
         scanf("%s", name2);
         insert_arc(g, name1, name2);
+        break;
+      case INSERT_CLASS:
+        num=0;
+        printf("Class name: ");
+        scanf("%s", name1);
+        printf("Number of parents: ");
+        scanf("%d", &num);
+        if(num>0){
+          parents = (char**) malloc(num+sizeof(char*));
+          name2[0]='\0';
+          for (i=0; i<num; i++){
+            printf("Parent name(%d): ", i);
+            scanf("%s", name2);
+            parents[i] = (char*) malloc(strlen(name2)*sizeof(char));
+            strcpy(parents[i], name2);
+            name2[0]='\0';
+          }
+        }
+        insert_class(g, name1, parents, num);
+        if(num>0){
+          for (i=0; i<num; i++){
+            free(parents[i]);
+          }
+          free(parents);
+        }
+        parents = NULL;
         break;
       case REMOVE_ARC:
         printf("First vertex: ");
