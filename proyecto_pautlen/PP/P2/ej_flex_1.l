@@ -1,3 +1,9 @@
+%{ 
+#include "tokens.h"
+
+%}
+
+%option noyywrap
 %%
 main {return TOK_MAIN;}
 array {return TOK_ARRAY;}
