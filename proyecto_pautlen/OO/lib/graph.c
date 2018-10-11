@@ -72,6 +72,7 @@ int insert_arc(Adjacency_Matrix* g, char* name1, char* name2) {
   int a1, a2;
   a1 = get_node_index(g, name1);
   a2 = get_node_index(g, name2);
+  //printf("%d %d %d\n", a1, a2, g->arcs[a1][a2]);
   if (a1 >= 0 && a1 < g->vertex_count && a2 >= 0 && a2 < g->vertex_count && g->arcs[a1][a2] == 0) {
     g->arcs[a1][a2] = 1;
     g->arcs[a2][a1] = 2;
@@ -155,15 +156,26 @@ void insert_vertex(Adjacency_Matrix* g, char* name) {
   }
 }
 
-void insert_class(Adjacency_Matrix* g, char* name, char** parents){
+void insert_class(Adjacency_Matrix* g, char* name, char** parents, int size){
+  //Las dependencias tienen que ser añadidas en orden
+  int index, i, j;
   if (parents == NULL){
     insert_vertex(g, name);
   }else{
-    int index, size;
-    size = sizeof(parents)/sizeof(parents[0]);
+    //size = sizeof(parents)/sizeof(char*);
     insert_vertex(g, name);
-    for(i = 0; i < size - 1; i++){
+    printf("tamaño lista padres: %d\n", size);
+    for(i = 0; i < size; i++){
       insert_arc(g, parents[i], name);
+      index = get_node_index(g, parents[i]);
+      //ponemos los padres indirectos como un 3
+      for (j = 0; j<g->vertex_count; j++){
+        //printf("\npadre: %d \tind: %d ", index, j);
+        if (g->arcs[index][j] > 1 && g->arcs[g->vertex_count-1][j] == 0){
+          //printf("entro");
+          g->arcs[g->vertex_count-1][j] = 3;
+        }
+      }
     } 
   }
 }
@@ -210,7 +222,7 @@ Node ** get_parents(Adjacency_Matrix* g, char* name){
   int i, index, pind;
   pind = 0;
   index = get_node_index(g, name);
-  for (i = 0; i<g->vertex_count - 1; i++){
+  for (i = 0; i<g->vertex_count; i++){
     if (g->arcs[index][i] > 1){
         parents[pind] = g->nodes[i];
         pind++;
