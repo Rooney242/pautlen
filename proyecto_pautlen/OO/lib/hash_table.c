@@ -39,7 +39,7 @@ hashtable_t* ht_create(unsigned int capacity)
 }
 
 /* 	Store data in the hashtable. If data with the same key are already stored,
-	they are overwritten, and return by the function. Else it return NULL.
+	we return NULL. Else it return NULL.
 	Return HT_ERROR if there are memory alloc error*/
 void* ht_put(hashtable_t* hasht, char* key, void* data)
 {
@@ -52,9 +52,7 @@ void* ht_put(hashtable_t* hasht, char* key, void* data)
 	{
 		if(!strcmp(e->key, key))
 		{
-			void* ret = e->data;
-			e->data = data;
-			return ret;
+			return NULL;
 		}
 		e = e->next;
 	}
