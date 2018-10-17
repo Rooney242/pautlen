@@ -43,7 +43,25 @@ int main(int argc, char **argv){
 			case TOK_INT:
 				printf("RECONOCIDO TOK_INT: %s\n",yytext);
 				break;
-		}
+			case TOK_PYC:
+				printf("RECONOCIDO TOK_PYC: %s\n",yytext);
+				break;
+			case TOK_PI:
+				printf("RECONOCIDO TOK_PI: %s\n",yytext);
+				break;
+			case TOK_PD:
+				printf("RECONOCIDO TOK_PD: %s\n",yytext);
+				break;
+			case TOK_AST:
+				printf("RECONOCIDO TOK_AST: %s\n",yytext);
+				break;
+			case TOK_MAS:
+				printf("RECONOCIDO TOK_MAS: %s\n",yytext);
+				break;
+			case TOK_MOI:
+				printf("RECONOCIDO TOK_MOI: %s\n",yytext);
+				break;
+			}
 	}
 	printf("Fin del archivo\n");
 	fclose(yyin);
