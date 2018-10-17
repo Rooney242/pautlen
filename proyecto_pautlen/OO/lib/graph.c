@@ -164,7 +164,7 @@ void insert_class(Adjacency_Matrix* g, char* name, char** parents, int size){
   }else{
     //size = sizeof(parents)/sizeof(char*);
     insert_vertex(g, name);
-    printf("tamaño lista padres: %d\n", size);
+    //printf("tamaño lista padres: %d\n", size);
     for(i = 0; i < size; i++){
       insert_arc(g, parents[i], name);
       index = get_node_index(g, parents[i]);
@@ -172,8 +172,15 @@ void insert_class(Adjacency_Matrix* g, char* name, char** parents, int size){
       for (j = 0; j<g->vertex_count; j++){
         //printf("\npadre: %d \tind: %d ", index, j);
         if (g->arcs[index][j] > 1 && g->arcs[g->vertex_count-1][j] == 0){
-          //printf("entro");
-          g->arcs[g->vertex_count-1][j] = 3;
+          /*Se guarda ahora la distancia indirecta de los padres:
+            2 -> padres directos
+            3 -> padres segundos
+            4 -> padres terciarios
+            .
+            .
+            .
+          */
+          g->arcs[g->vertex_count-1][j] = g->arcs[index][j] + 1;
         }
       }
     } 
