@@ -1,9 +1,18 @@
 %{ 
 #include "tokens.h"
 
+int line_count = 1;
+int col_count = 0;
+
 %}
 
 %option noyywrap
+
+// PATRONES AQUI
+
+COMENTARIO "//".*\n
+
+
 %%
 none		{return TOK_NONE;}
 class		{return TOK_CLASS;}
