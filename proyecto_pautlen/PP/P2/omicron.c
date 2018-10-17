@@ -7,6 +7,9 @@ extern FILE* yyout;
 extern int yyleng;
 extern char* yytext;
 
+extern int line_count;
+extern int col_count;
+
 int main(int argc, char **argv){
 	
 	int token;
@@ -19,11 +22,16 @@ int main(int argc, char **argv){
 	if ((yyin = fopen(argv[1],"r")) == NULL){
 		printf("Error al abrir el fichero de entrada");
 	}
+
+	// Usar un File * aparte (fout)
 	yyout = fopen("salida.txt","w");
 	
 	while ((token = yylex())!= 0){
 		
 		switch (token){
+
+
+			// TOK_...\tret\tyytext\n
 			
 			case TOK_MAIN:
 				printf("RECONOCIDO TOK_MAIN: %s\n",yytext);
