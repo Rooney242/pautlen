@@ -217,19 +217,31 @@ void remove_vertex(Adjacency_Matrix* g, char* name) {
   }
 }
 
+//Hay que liberar memoria para lo que se devuelve
 Node ** get_parents(Adjacency_Matrix* g, char* name){
   Node ** parents;
-  int i, index, pind;
-  pind = 0;
-  index = get_node_index(g, name);
-  for (i = 0; i<g->vertex_count; i++){
-    if (g->arcs[index][i] > 1){
-        parents[pind] = g->nodes[i];
-        pind++;
+  int i, index, pind, tam;
+  pind = tam = 0;
+  if (name == NULL){
+    parents = (Node**) malloc(sizeof(Node*)*g->vertex_count);
+    for (i=0; i<g->vertex_count; i++){
+      parents[i] = g->nodes[i];
+    }
+  }else{
+    index = get_node_index(g, name);
+    for (i = 0; i<g->vertex_count; i++){
+      if (g->arcs[index][i] > 1){
+          if (pind == 0){
+            parents = (Node **) malloc(sizeof(Node*));
+          }else{
+            pind++;
+            parents = (Node **) realloc(parents, sizeof(Node*)*pind);
+          }
+            parents[pind-1] = g->nodes[i];
+      }
     }
   }
   return parents;
-  //Queda apañar el insert class
 } 
 
 void print_graph(Adjacency_Matrix* g) {
