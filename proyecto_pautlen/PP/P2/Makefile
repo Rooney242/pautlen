@@ -4,12 +4,10 @@ EJ = omicron
 
 LEX = lex.yy.c
 
-all: ej 
-
-ej:
+all: 
 	@echo Compilado del ejercicio
 	@flex $(EJ).l
-	@$(CC) -Wall -o $(EJ) $(EJ).c $(LEX)
+	@$(CC) -Wall -o pruebaMorfo $(EJ).c $(LEX)
 
 
 .PHONY : clean all

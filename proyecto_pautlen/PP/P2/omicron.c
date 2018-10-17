@@ -94,9 +94,6 @@ int main(int argc, char **argv){
 			case TOK_PRINTF:
 				fprintf(fout,"TOK_PRINTF\t%d\t%s\n",TOK_PRINTF,yytext);				
 				break;
-			case TOK_ELSE:
-				fprintf(fout,"TOK_ELSE\t%d\t%s\n",TOK_ELSE,yytext);
-				break;
 			case TOK_SCANF:
 				fprintf(fout,"TOK_SCANF\t%d\t%s\n",TOK_SCANF,yytext);	
 				break;
