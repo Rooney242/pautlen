@@ -17,7 +17,7 @@ IDENTIFICADOR 	{LETRA}({LETRA}|{DIGITO})*
 %%
 none				{col_count+=yyleng; return TOK_NONE;}
 class				{col_count+=yyleng; return TOK_CLASS;}
-inherits 			{col_count+=yyleng; return TOK_INHERITS;}
+inherits			{col_count+=yyleng; return TOK_INHERITS;}
 instance_of			{col_count+=yyleng; return TOK_INSTANCE_OF;}
 discard				{col_count+=yyleng; return TOK_DISCARD;}
 itself				{col_count+=yyleng; return TOK_ITSELF;}
@@ -37,8 +37,14 @@ else				{col_count+=yyleng; return TOK_ELSE;}
 while				{col_count+=yyleng; return TOK_WHILE;}
 scanf				{col_count+=yyleng; return TOK_SCANF;}
 false				{col_count+=yyleng; return TOK_FALSE;}
-true 				{col_count+=yyleng; return TOK_TRUE;}
-->					{col_count+=yyleng; return TOK_FLECHA;}
+true				{col_count+=yyleng; return TOK_TRUE;}
+"->"				{col_count+=yyleng; return TOK_FLECHA;}
+==					{col_count+=yyleng; return TOK_IGUAL;}
+"!="				{col_count+=yyleng; return TOK_DISTINTO;}
+"<="				{col_count+=yyleng; return TOK_MENORIGUAL;}
+">="				{col_count+=yyleng; return TOK_MAYORIGUAL;}
+"&&"				{col_count+=yyleng; return TOK_AND;}
+"||"				{col_count+=yyleng; return TOK_OR;}
 ";"					{col_count+=yyleng; return yytext[0];}
 "#"					{col_count+=yyleng; return yytext[0];}
 ","					{col_count+=yyleng; return yytext[0];}
@@ -59,16 +65,9 @@ true 				{col_count+=yyleng; return TOK_TRUE;}
 "&"					{col_count+=yyleng; return yytext[0];}
 "!"					{col_count+=yyleng; return yytext[0];}
 "."					{col_count+=yyleng; return yytext[0];}
-==					{col_count+=yyleng; return TOK_IGUAL;}
-"!="				{col_count+=yyleng; return TOK_DISTINTO;}
-"<="				{col_count+=yyleng; return TOK_MENORIGUAL;}
-">="				{col_count+=yyleng; return TOK_MAYORIGUAL;}
-"&&"				{col_count+=yyleng; return TOK_AND;}
-"||"				{col_count+=yyleng; return TOK_OR;}
+[ \t\r]				{col_count += yyleng;}
 {ENTERO}			{col_count+=yyleng; return TOK_CONSTANTE_ENTERA;}
 {COMENTARIO}|"\n"	{col_count = 0; line_count++;}
-" "					{col_count += yyleng;}
-\t					{col_count += yyleng;}
 {IDENTIFICADOR}		{
 						if (yyleng > MAX_LONG_ID) {
 							return TOK_ERROR;
@@ -77,7 +76,7 @@ true 				{col_count+=yyleng; return TOK_TRUE;}
 							return TOK_IDENTIFICADOR;
 						}
 					}
-.*					{col_count+=yyleng; return TOK_ERROR;}
+.					{col_count+=yyleng; return TOK_ERROR;}
 
 
 %%

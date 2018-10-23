@@ -1,7 +1,8 @@
-none
-class
+     
+none     
+class 
 inherits
-instance_of	
+instance_of
 discard
 itself
 hidden
@@ -9,12 +10,12 @@ secret
 exposed
 unique
 
-function
+function    
 return
 main
 int
 boolean
-array
+array    
 if
 else
 while
@@ -49,7 +50,7 @@ true
 &&
 ||
 
-->   
+->
 
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaa
