@@ -21,6 +21,10 @@
 
 #include "tsa.h"
 
+#define ES_HIJO -1
+#define ES_PADRE_DIRECTO 1
+#define ES_PADRE_INDIRECTO 2
+
 typedef struct {
 	char* name;
 	tsa* tsa;

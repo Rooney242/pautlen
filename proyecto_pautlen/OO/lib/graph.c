@@ -72,11 +72,9 @@ int insert_arc(Adjacency_Matrix* g, char* name1, char* name2) {
   int a1, a2;
   a1 = get_node_index(g, name1);
   a2 = get_node_index(g, name2);
-  //printf("%d %d %d\n", a1, a2, g->arcs[a1][a2]);
   if (a1 >= 0 && a1 < g->vertex_count && a2 >= 0 && a2 < g->vertex_count && g->arcs[a1][a2] == 0) {
-    g->arcs[a1][a2] = 1;
-    g->arcs[a2][a1] = 2;
-    // Un 2 significa que ese nodo es tu padre
+    g->arcs[a1][a2] = ES_HIJO;
+    g->arcs[a2][a1] = ES_PADRE_DIRECTO;
     return 0;
   }
   return -1;
@@ -162,20 +160,18 @@ void insert_class(Adjacency_Matrix* g, char* name, char** parents, int size){
   if (parents == NULL){
     insert_vertex(g, name);
   }else{
-    //size = sizeof(parents)/sizeof(char*);
     insert_vertex(g, name);
-    //printf("tamaño lista padres: %d\n", size);
     for(i = 0; i < size; i++){
       insert_arc(g, parents[i], name);
+      //Aqui surge el problema del orden en el que se escriben los padres, queda para mas adelante
+      //  la solucion mas comoda es que una vez definido un criterio se hiciera un sort o similar
       index = get_node_index(g, parents[i]);
-      //ponemos los padres indirectos como un 3
       for (j = 0; j<g->vertex_count; j++){
-        //printf("\npadre: %d \tind: %d ", index, j);
-        if (g->arcs[index][j] > 1 && g->arcs[g->vertex_count-1][j] == 0){
+        if (g->arcs[index][j] > 0 && g->arcs[g->vertex_count-1][j] == 0){
           /*Se guarda ahora la distancia indirecta de los padres:
-            2 -> padres directos
-            3 -> padres segundos
-            4 -> padres terciarios
+            1 -> padres directos
+            2 -> padres segundos
+            3 -> padres terciarios
             .
             .
             .
@@ -237,7 +233,8 @@ Node ** get_parents(Adjacency_Matrix* g, char* name){
   }else{
     index = get_node_index(g, name);
     for (i = 0; i<g->vertex_count; i++){
-      if (g->arcs[index][i] > 1){
+      //Es padre siempre que en la matriz aparezca un numero mayor que 0
+      if (g->arcs[index][i] > 0){
           if (pind == 0){
             parents = (Node **) malloc(sizeof(Node*));
           }else{
@@ -256,7 +253,11 @@ void print_graph(Adjacency_Matrix* g) {
 
   for (i = 0 ; i < g->vertex_count ; i++) {
     for (j = 0 ; j < g->vertex_count ; j++) {
-      printf("[%d]", g->arcs[i][j]);
+      if(g->arcs[i][j]>=0){
+        printf("[ %d]", g->arcs[i][j]);
+      }else{
+        printf("[%d]", g->arcs[i][j]);
+      }
     }
     printf("\n");
   }
