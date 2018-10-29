@@ -15,10 +15,10 @@ typedef struct {
 /*Reserva todos los recursos para crear una tabla de símbolos basada en un grafo e 
 	identificada con el nombre proporcionado como argumento.
 	La tabla se deja en el primer argumento*/
-int iniciarTablaSimbolosClases(tablaSimbolosClases** t, char * nombre);
+int iniciarTablaSimbolosClases(tablaSimbolosClases* t, char * nombre);
 
 /*Libera todos los recursos para la tabla de símbolos de clases*/
-int liberaTablaSimbolosClases(tablaSimbolosClases** t);
+int liberaTablaSimbolosClases(tablaSimbolosClases* t);
 
 /*Realiza las tareas de añadir al grafo una nueva raíz*/
 int abrirClase(tablaSimbolosClases* t, char* id_clase);

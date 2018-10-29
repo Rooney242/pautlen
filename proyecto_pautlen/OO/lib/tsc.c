@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include "macros.h"
 #include "graph.h"
 #include "tsa.h"
@@ -30,7 +31,7 @@ int iniciarTablaSimbolosClases(tablaSimbolosClases* t, char * nombre){
 		return ERROR;
 	}
 
-	reuturn OK;
+	return OK;
 }
 
 int liberaTablaSimbolosClases(tablaSimbolosClases* t){
@@ -55,22 +56,22 @@ int abrirClaseHereda(tablaSimbolosClases* t, char* id_clase, ...){
 	char* name;
 	int i, num, ret;
 
-	va_start(valist, id_clase);
+	va_start(names, id_clase);
 	num = 0;
-	va_arg(valist, char*);
+	va_arg(names, char*);
 	while(id_clase != NULL){
-		va_arg(valist, char*);
+		va_arg(names, char*);
 		num++;
 	}
-	va_end(valist);
+	va_end(names);
 
 	parents = (char**) malloc(num*sizeof(char*));
-	if(!parents) return ERROR
-	name = va_arg(id_clase, char*);
+	if(!parents) return ERROR;
+	name = va_arg(names, char*);
 	for (i = 0; i < num; i++){
-		parents[i] = va_arg(id_clase, char*);
+		parents[i] = va_arg(names, char*);
 	}
-	va_end(valist);
+	va_end(names);
 
 	ret = insert_class(t->grafo, name, parents, num);
 	free(parents);
@@ -78,6 +79,10 @@ int abrirClaseHereda(tablaSimbolosClases* t, char* id_clase, ...){
 }
 
 int cerrarClase(tablaSimbolosClases* t, char* id_clase, int num_atributos_clase, int num_atributos_instancia,
-				int num_metodos_sobreescribibles, int num_metodos_no_sobreescribibles);
+				int num_metodos_sobreescribibles, int num_metodos_no_sobreescribibles){
+	return 0;
+}
 
-void graph_enrouteParentsLastNode(tablaSimbolosClases * g);	
+void graph_enrouteParentsLastNode(tablaSimbolosClases * g){
+	return;
+}	
