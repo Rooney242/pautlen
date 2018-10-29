@@ -26,6 +26,7 @@ void free_tsa(tsa* tsa){
 	free(tsa);
 }
 
+/*En estos put manejaremos el hecho de que haya colisiones*/
 void* ppal_put(tsa* tsa, char* key, void* data){
 	return ht_put(tsa->ppal, key, data);
 }

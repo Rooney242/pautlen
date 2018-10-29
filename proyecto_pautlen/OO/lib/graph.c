@@ -1,31 +1,15 @@
-/*
- * =====================================================================================
- *
- *       Filename:  adjacency_matrix.c
- *
- *    Description:  Adjacency Matrix implementation using an Adjacency Matrix
- *
- *        Version:  1.0
- *        Created:  15/04/2013 14:27:31
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  Vitor Freitas (vfs), vitorfs@gmail.com
- *        Company:  Universidade Federal de Juiz de Fora (UFJF)
- *
- * =====================================================================================
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "graph.h"
+#include "macros.h"
 #include "tsa.h"
 
-void init_graph(Adjacency_Matrix* g) {
+Adjacency_Matrix* init_graph(Adjacency_Matrix* g) {
   g->vertex_count = 0;
   g->arcs = NULL;
   g->nodes = NULL;
+  return g;
 }
 
 void free_graph(Adjacency_Matrix* g) {
@@ -75,9 +59,9 @@ int insert_arc(Adjacency_Matrix* g, char* name1, char* name2) {
   if (a1 >= 0 && a1 < g->vertex_count && a2 >= 0 && a2 < g->vertex_count && g->arcs[a1][a2] == 0) {
     g->arcs[a1][a2] = ES_HIJO;
     g->arcs[a2][a1] = ES_PADRE_DIRECTO;
-    return 0;
+    return OK;
   }
-  return -1;
+  return ERROR;
 }
 
 int remove_arc(Adjacency_Matrix* g, char* name1, char* name2) {
@@ -97,10 +81,10 @@ int exists_arc(Adjacency_Matrix* g, char* name1, char* name2) {
   int a1, a2;
   a1 = get_node_index(g, name1);
   a2 = get_node_index(g, name2);
-  if (a1>=0 && a2>=0){
-    return g->arcs[a1][a2] > 0;
+  if (a1>=0 && a2>=0 && g->arcs[a1][a2] > 0){
+    return TRUE;
   }else{ 
-    return -1;
+    return FALSE;
   }
 }
 
@@ -124,14 +108,18 @@ int* get_adjacency(Adjacency_Matrix* g, char* name) {
   }
 }
 
-void insert_vertex(Adjacency_Matrix* g, char* name) {
+int insert_vertex(Adjacency_Matrix* g, char* name) {
   if (g->arcs == NULL) {
     g->arcs = (int**) malloc(sizeof(int*));
+    if(!g->arcs) return ERROR;
     g->arcs[0] = (int*) malloc(sizeof(int));
+    if(!g->arcs[0]) return ERROR;
     g->arcs[0][0] = 0;
 
     g->nodes = (Node**) malloc(sizeof(Node*));
+    if(!g->nodes) return ERROR;
     g->nodes[0] = init_node(name);
+    if(!g->nodes[0]) return ERROR;
     g->vertex_count = 1;
   }else {
     int i;
@@ -141,8 +129,11 @@ void insert_vertex(Adjacency_Matrix* g, char* name) {
     for (i = 0 ; i < g->vertex_count - 1 ; i++)
       g->arcs[i] = (int*) realloc(g->arcs[i], g->vertex_count * sizeof(int)); // realloc the part of the matrix which were used before
 
-    for ( ; i < g->vertex_count ; i++) 
+    for ( ; i < g->vertex_count ; i++){
       g->arcs[i] = (int*) malloc(g->vertex_count * sizeof(int)); // alloc the new part of the matrix
+      if(!g->arcs[i]) return ERROR;
+    }
+
 
     for (i = 0 ; i < g->vertex_count ; i++) {
       g->arcs[i][g->vertex_count - 1] = 0;
@@ -151,21 +142,24 @@ void insert_vertex(Adjacency_Matrix* g, char* name) {
     
     g->nodes = (Node**) realloc(g->nodes, g->vertex_count * sizeof(Node*));
     g->nodes[g->vertex_count-1] = init_node(name);
+    if(!g->nodes[g->vertex_count-1]) return ERROR;
   }
+  return OK;
 }
 
-void insert_class(Adjacency_Matrix* g, char* name, char** parents, int size){
+//parents = NULL para insertar un nodo raiz
+int insert_class(Adjacency_Matrix* g, char* name, char** parents, int size){
   //Las dependencias tienen que ser añadidas en orden
   int index, i, j;
-  if (parents == NULL){
-    insert_vertex(g, name);
-  }else{
-    insert_vertex(g, name);
+  if (parents == NULL && size == 0){
+    return insert_vertex(g, name);
+  }else if (parents != NULL && size > 0){
+    if(insert_vertex(g, name) == ERROR) return ERROR;
     for(i = 0; i < size; i++){
-      insert_arc(g, parents[i], name);
+      if(insert_arc(g, parents[i], name) == ERROR) return ERROR;
       //Aqui surge el problema del orden en el que se escriben los padres, queda para mas adelante
       //  la solucion mas comoda es que una vez definido un criterio se hiciera un sort o similar
-      index = get_node_index(g, parents[i]);
+      index = get_node_index(g, parents[i]);  
       for (j = 0; j<g->vertex_count; j++){
         if (g->arcs[index][j] > 0 && g->arcs[g->vertex_count-1][j] == 0){
           /*Se guarda ahora la distancia indirecta de los padres:
@@ -179,12 +173,14 @@ void insert_class(Adjacency_Matrix* g, char* name, char** parents, int size){
           g->arcs[g->vertex_count-1][j] = g->arcs[index][j] + 1;
         }
       }
-    } 
+    }
+  }else{
+    return ERROR;
   }
 }
 
 //Loss of memory
-void remove_vertex(Adjacency_Matrix* g, char* name) {
+int remove_vertex(Adjacency_Matrix* g, char* name) {
   int v;
   v = get_node_index(g, name);
   if (v >=0){
@@ -218,6 +214,7 @@ void remove_vertex(Adjacency_Matrix* g, char* name) {
 
     g->nodes = (Node**) realloc(g->nodes, g->vertex_count * sizeof(Node*));
   }
+  return OK;
 }
 
 //Hay que liberar memoria para lo que se devuelve
