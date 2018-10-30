@@ -28,7 +28,8 @@ int* get_adjacency(Adjacency_Matrix* g, char* name);
 int insert_vertex(Adjacency_Matrix* g, char* name);
 int insert_class(Adjacency_Matrix* g, char* name, char** parents, int size);
 int remove_vertex(Adjacency_Matrix* g, char* name);
-Node ** get_parents(Adjacency_Matrix* g, char* name);
+int get_parents(Adjacency_Matrix* g, Node** parents, char* name);
+int get_parents_names(Adjacency_Matrix* g, char** parents_names, char* name);
 void print_graph(Adjacency_Matrix* g);
 void print_adjacency(int* a);
 

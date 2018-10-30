@@ -16,7 +16,10 @@ TSA_DEPS = $(OBJ_FOLDER)hash_table.o $(MACROS)
 TSC = tsc
 TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)graph.o $(MACROS)
 
-all: hash graph tsa tsc
+DOT_GENERATOR = dot_generator
+DOT_GENERATOR_DEPS = $(OBJ_FOLDER)tsc.o $(OBJ_FOLDER)graph.o $(MACROS)
+
+all: hash graph tsa tsc dot
 
 all-test: hash-test graph-test
 
@@ -46,6 +49,10 @@ tsa: hash
 tsc: tsa graph 
 	@echo Compilando modulo de tsc...
 	@$(CC) -c $(LIBRARIES)$(TSC).c -o $(OBJ_FOLDER)$(TSC).o 
+
+dot: tsc graph 
+	@echo Compilando modulo de generador de ficheros .dot...
+	@$(CC) -c $(LIBRARIES)$(DOT_GENERATOR).c -o $(OBJ_FOLDER)$(DOT_GENERATOR).o 
 
 .PHONY : clean all
 clean :

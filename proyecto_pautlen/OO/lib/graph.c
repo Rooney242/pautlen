@@ -218,8 +218,7 @@ int remove_vertex(Adjacency_Matrix* g, char* name) {
 }
 
 //Hay que liberar memoria para lo que se devuelve
-Node ** get_parents(Adjacency_Matrix* g, char* name){
-  Node ** parents;
+int get_parents(Adjacency_Matrix* g, Node** parents, char* name){
   int i, index, pind, tam;
   pind = tam = 0;
   if (name == NULL){
@@ -242,8 +241,21 @@ Node ** get_parents(Adjacency_Matrix* g, char* name){
       }
     }
   }
-  return parents;
+  return pind;
 } 
+
+int get_parents_names(Adjacency_Matrix* g, char** parents_names, char* name){
+  Node ** parents;
+  int i, num_parents;
+  num_parents = get_parents(g, parents, name);
+  parents_names = (char**) malloc(num_parents*sizeof(char*));
+  for(i=0; i<num_parents; i++){
+    parents_names[i] = (char*) malloc(sizeof(char)+(strlen(parents[i]->name)+1));
+    strcpy(parents_names[i], parents[i]->name);
+  }
+  free(parents);
+  return num_parents;
+}
 
 void print_graph(Adjacency_Matrix* g) {
   int i, j;
