@@ -1,0 +1,2783 @@
+Terminales no usados en la gramática
+
+   TOK_FLECHA
+   TOK_ERROR
+
+
+Gramática
+
+    0 $accept: programa $end
+
+    1 programa: TOK_MAIN '{' declaraciones funciones sentencias '}'
+    2         | TOK_MAIN '{' funciones sentencias '}'
+
+    3 declaraciones: declaracion
+    4              | declaracion declaraciones
+
+    5 declaracion: modificador_acceso clase identificadores ';'
+    6            | modificador_acceso declaracion_clase ';'
+
+    7 modificador_acceso: %empty
+    8                   | TOK_HIDDEN TOK_UNIQUE
+    9                   | TOK_SECRET TOK_UNIQUE
+   10                   | TOK_EXPOSED TOK_UNIQUE
+   11                   | TOK_HIDDEN
+   12                   | TOK_SECRET
+   13                   | TOK_EXPOSED
+   14                   | TOK_UNIQUE
+
+   15 clase: clase_escalar
+   16      | clase_vector
+   17      | clase_objeto
+
+   18 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}'
+   19                  | modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'
+
+   20 modificadores_clase: %empty
+
+   21 clase_escalar: tipo
+
+   22 tipo: TOK_INT
+   23     | TOK_BOOLEAN
+
+   24 clase_objeto: '{' TOK_IDENTIFICADOR '}'
+
+   25 clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
+
+   26 identificadores: TOK_IDENTIFICADOR
+   27                | TOK_IDENTIFICADOR ',' identificadores
+
+   28 funciones: %empty
+   29          | funcion funciones
+
+   30 funcion: TOK_FUNCTION modificador_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
+
+   31 tipo_retorno: TOK_NONE
+   32             | tipo
+
+   33 parametros_funcion: parametro_funcion resto_parametros_funcion
+   34                   | %empty
+
+   35 resto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion
+   36                         | %empty
+
+   37 parametro_funcion: tipo TOK_IDENTIFICADOR
+
+   38 declaraciones_funcion: declaraciones
+   39                      | %empty
+
+   40 sentencias: sentencia
+   41           | sentencia sentencias
+
+   42 sentencia: sentencia_simple ';'
+   43          | bloque
+
+   44 sentencia_simple: asignacion
+   45                 | lectura
+   46                 | escritura
+   47                 | retorno_funcion
+   48                 | identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
+   49                 | TOK_IDENTIFICADOR '(' lista_expresiones ')'
+   50                 | destruir_objeto
+
+   51 destruir_objeto: TOK_DISCARD TOK_IDENTIFICADOR
+
+   52 bloque: condicional
+   53       | bucle
+
+   54 asignacion: TOK_IDENTIFICADOR '=' exp
+   55           | elemento_vector '=' exp
+   56           | elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
+   57           | TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
+   58           | identificador_clase '.' TOK_IDENTIFICADOR '=' exp
+
+   59 elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
+
+   60 condicional: TOK_IF '(' exp ')' '{' sentencias '}'
+   61            | TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'
+
+   62 bucle: TOK_WHILE '(' exp ')' '{' sentencias '}'
+
+   63 lectura: TOK_SCANF TOK_IDENTIFICADOR
+   64        | TOK_SCANF elemento_vector
+
+   65 escritura: TOK_PRINTF exp
+
+   66 retorno_funcion: TOK_RETURN exp
+   67                | TOK_RETURN TOK_NONE
+
+   68 exp: exp '+' exp
+   69    | exp '-' exp
+   70    | exp '/' exp
+   71    | exp '*' exp
+   72    | '-' exp
+   73    | exp TOK_AND exp
+   74    | exp TOK_OR exp
+   75    | '!' exp
+   76    | TOK_IDENTIFICADOR
+   77    | constante
+   78    | '(' exp ')'
+   79    | '(' comparacion ')'
+   80    | elemento_vector
+   81    | TOK_IDENTIFICADOR '(' lista_expresiones ')'
+   82    | identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
+   83    | identificador_clase '.' TOK_IDENTIFICADOR
+
+   84 identificador_clase: TOK_IDENTIFICADOR
+   85                    | TOK_ITSELF
+
+   86 lista_expresiones: exp resto_lista_expresiones
+   87                  | %empty
+
+   88 resto_lista_expresiones: ',' exp resto_lista_expresiones
+   89                        | %empty
+
+   90 comparacion: exp TOK_IGUAL exp
+   91            | exp TOK_DISTINTO exp
+   92            | exp TOK_MAYORIGUAL exp
+   93            | exp TOK_MENORIGUAL exp
+   94            | exp '>' exp
+   95            | exp '<' exp
+
+   96 constante: constante_logica
+   97          | TOK_CONSTANTE_ENTERA
+
+   98 constante_logica: TOK_TRUE
+   99                 | TOK_FALSE
+
+
+Terminales con las reglas donde aparecen
+
+$end (0) 0
+'!' (33) 75
+'(' (40) 30 48 49 56 57 60 61 62 78 79 81 82
+')' (41) 30 48 49 56 57 60 61 62 78 79 81 82
+'*' (42) 71
+'+' (43) 68
+',' (44) 27 88
+'-' (45) 69 72
+'.' (46) 48 58 82 83
+'/' (47) 70
+';' (59) 5 6 35 42
+'<' (60) 95
+'=' (61) 54 55 56 57 58
+'>' (62) 94
+'[' (91) 25 59
+']' (93) 25 59
+'{' (123) 1 2 18 19 24 30 60 61 62
+'}' (125) 1 2 18 19 24 30 60 61 62
+error (256)
+TOK_NONE (258) 31 67
+TOK_CLASS (259) 18 19
+TOK_INHERITS (260) 18
+TOK_INSTANCE_OF (261) 56 57
+TOK_DISCARD (262) 51
+TOK_ITSELF (263) 85
+TOK_FLECHA (264)
+TOK_HIDDEN (265) 8 11
+TOK_SECRET (266) 9 12
+TOK_EXPOSED (267) 10 13
+TOK_UNIQUE (268) 8 9 10 14
+TOK_FUNCTION (269) 30
+TOK_RETURN (270) 66 67
+TOK_MAIN (271) 1 2
+TOK_INT (272) 22
+TOK_BOOLEAN (273) 23
+TOK_ARRAY (274) 25
+TOK_IF (275) 60 61
+TOK_ELSE (276) 61
+TOK_WHILE (277) 62
+TOK_SCANF (278) 63 64
+TOK_PRINTF (279) 65
+TOK_IDENTIFICADOR (280) 18 19 24 26 27 30 37 48 49 51 54 56 57 58 59
+    63 76 81 82 83 84
+TOK_IGUAL (281) 90
+TOK_DISTINTO (282) 91
+TOK_MENORIGUAL (283) 93
+TOK_MAYORIGUAL (284) 92
+TOK_OR (285) 74
+TOK_AND (286) 73
+TOK_CONSTANTE_ENTERA (287) 25 97
+TOK_FALSE (288) 99
+TOK_TRUE (289) 98
+TOK_ERROR (290)
+MENOSU (291)
+
+
+No terminales con las reglas donde aparecen
+
+$accept (54)
+    en la izquierda: 0
+programa (55)
+    en la izquierda: 1 2, en la derecha: 0
+declaraciones (56)
+    en la izquierda: 3 4, en la derecha: 1 4 18 19 38
+declaracion (57)
+    en la izquierda: 5 6, en la derecha: 3 4
+modificador_acceso (58)
+    en la izquierda: 7 8 9 10 11 12 13 14, en la derecha: 5 6 30
+clase (59)
+    en la izquierda: 15 16 17, en la derecha: 5
+declaracion_clase (60)
+    en la izquierda: 18 19, en la derecha: 6
+modificadores_clase (61)
+    en la izquierda: 20, en la derecha: 18 19
+clase_escalar (62)
+    en la izquierda: 21, en la derecha: 15
+tipo (63)
+    en la izquierda: 22 23, en la derecha: 21 25 32 37
+clase_objeto (64)
+    en la izquierda: 24, en la derecha: 17
+clase_vector (65)
+    en la izquierda: 25, en la derecha: 16
+identificadores (66)
+    en la izquierda: 26 27, en la derecha: 5 18 27
+funciones (67)
+    en la izquierda: 28 29, en la derecha: 1 2 18 19 29
+funcion (68)
+    en la izquierda: 30, en la derecha: 29
+tipo_retorno (69)
+    en la izquierda: 31 32, en la derecha: 30
+parametros_funcion (70)
+    en la izquierda: 33 34, en la derecha: 30
+resto_parametros_funcion (71)
+    en la izquierda: 35 36, en la derecha: 33 35
+parametro_funcion (72)
+    en la izquierda: 37, en la derecha: 33 35
+declaraciones_funcion (73)
+    en la izquierda: 38 39, en la derecha: 30
+sentencias (74)
+    en la izquierda: 40 41, en la derecha: 1 2 30 41 60 61 62
+sentencia (75)
+    en la izquierda: 42 43, en la derecha: 40 41
+sentencia_simple (76)
+    en la izquierda: 44 45 46 47 48 49 50, en la derecha: 42
+destruir_objeto (77)
+    en la izquierda: 51, en la derecha: 50
+bloque (78)
+    en la izquierda: 52 53, en la derecha: 43
+asignacion (79)
+    en la izquierda: 54 55 56 57 58, en la derecha: 44
+elemento_vector (80)
+    en la izquierda: 59, en la derecha: 55 56 64 80
+condicional (81)
+    en la izquierda: 60 61, en la derecha: 52
+bucle (82)
+    en la izquierda: 62, en la derecha: 53
+lectura (83)
+    en la izquierda: 63 64, en la derecha: 45
+escritura (84)
+    en la izquierda: 65, en la derecha: 46
+retorno_funcion (85)
+    en la izquierda: 66 67, en la derecha: 47
+exp (86)
+    en la izquierda: 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83,
+    en la derecha: 54 55 58 59 60 61 62 65 66 68 69 70 71 72 73 74
+    75 78 86 88 90 91 92 93 94 95
+identificador_clase (87)
+    en la izquierda: 84 85, en la derecha: 48 58 82 83
+lista_expresiones (88)
+    en la izquierda: 86 87, en la derecha: 48 49 56 57 81 82
+resto_lista_expresiones (89)
+    en la izquierda: 88 89, en la derecha: 86 88
+comparacion (90)
+    en la izquierda: 90 91 92 93 94 95, en la derecha: 79
+constante (91)
+    en la izquierda: 96 97, en la derecha: 77
+constante_logica (92)
+    en la izquierda: 98 99, en la derecha: 96
+
+
+Estado 0
+
+    0 $accept: . programa $end
+
+    TOK_MAIN  desplazar e ir al estado 1
+
+    programa  ir al estado 2
+
+
+Estado 1
+
+    1 programa: TOK_MAIN . '{' declaraciones funciones sentencias '}'
+    2         | TOK_MAIN . '{' funciones sentencias '}'
+
+    '{'  desplazar e ir al estado 3
+
+
+Estado 2
+
+    0 $accept: programa . $end
+
+    $end  desplazar e ir al estado 4
+
+
+Estado 3
+
+    1 programa: TOK_MAIN '{' . declaraciones funciones sentencias '}'
+    2         | TOK_MAIN '{' . funciones sentencias '}'
+
+    TOK_HIDDEN    desplazar e ir al estado 5
+    TOK_SECRET    desplazar e ir al estado 6
+    TOK_EXPOSED   desplazar e ir al estado 7
+    TOK_UNIQUE    desplazar e ir al estado 8
+    TOK_FUNCTION  desplazar e ir al estado 9
+
+    TOK_CLASS    reduce usando la regla 7 (modificador_acceso)
+    TOK_INT      reduce usando la regla 7 (modificador_acceso)
+    TOK_BOOLEAN  reduce usando la regla 7 (modificador_acceso)
+    TOK_ARRAY    reduce usando la regla 7 (modificador_acceso)
+    '{'          reduce usando la regla 7 (modificador_acceso)
+    $default     reduce usando la regla 28 (funciones)
+
+    declaraciones       ir al estado 10
+    declaracion         ir al estado 11
+    modificador_acceso  ir al estado 12
+    funciones           ir al estado 13
+    funcion             ir al estado 14
+
+
+Estado 4
+
+    0 $accept: programa $end .
+
+    $default  aceptar
+
+
+Estado 5
+
+    8 modificador_acceso: TOK_HIDDEN . TOK_UNIQUE
+   11                   | TOK_HIDDEN .
+
+    TOK_UNIQUE  desplazar e ir al estado 15
+
+    $default  reduce usando la regla 11 (modificador_acceso)
+
+
+Estado 6
+
+    9 modificador_acceso: TOK_SECRET . TOK_UNIQUE
+   12                   | TOK_SECRET .
+
+    TOK_UNIQUE  desplazar e ir al estado 16
+
+    $default  reduce usando la regla 12 (modificador_acceso)
+
+
+Estado 7
+
+   10 modificador_acceso: TOK_EXPOSED . TOK_UNIQUE
+   13                   | TOK_EXPOSED .
+
+    TOK_UNIQUE  desplazar e ir al estado 17
+
+    $default  reduce usando la regla 13 (modificador_acceso)
+
+
+Estado 8
+
+   14 modificador_acceso: TOK_UNIQUE .
+
+    $default  reduce usando la regla 14 (modificador_acceso)
+
+
+Estado 9
+
+   30 funcion: TOK_FUNCTION . modificador_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
+
+    TOK_HIDDEN   desplazar e ir al estado 5
+    TOK_SECRET   desplazar e ir al estado 6
+    TOK_EXPOSED  desplazar e ir al estado 7
+    TOK_UNIQUE   desplazar e ir al estado 8
+
+    $default  reduce usando la regla 7 (modificador_acceso)
+
+    modificador_acceso  ir al estado 18
+
+
+Estado 10
+
+    1 programa: TOK_MAIN '{' declaraciones . funciones sentencias '}'
+
+    TOK_FUNCTION  desplazar e ir al estado 9
+
+    $default  reduce usando la regla 28 (funciones)
+
+    funciones  ir al estado 19
+    funcion    ir al estado 14
+
+
+Estado 11
+
+    3 declaraciones: declaracion .
+    4              | declaracion . declaraciones
+
+    TOK_HIDDEN   desplazar e ir al estado 5
+    TOK_SECRET   desplazar e ir al estado 6
+    TOK_EXPOSED  desplazar e ir al estado 7
+    TOK_UNIQUE   desplazar e ir al estado 8
+
+    TOK_CLASS    reduce usando la regla 7 (modificador_acceso)
+    TOK_INT      reduce usando la regla 7 (modificador_acceso)
+    TOK_BOOLEAN  reduce usando la regla 7 (modificador_acceso)
+    TOK_ARRAY    reduce usando la regla 7 (modificador_acceso)
+    '{'          reduce usando la regla 7 (modificador_acceso)
+    $default     reduce usando la regla 3 (declaraciones)
+
+    declaraciones       ir al estado 20
+    declaracion         ir al estado 11
+    modificador_acceso  ir al estado 12
+
+
+Estado 12
+
+    5 declaracion: modificador_acceso . clase identificadores ';'
+    6            | modificador_acceso . declaracion_clase ';'
+
+    TOK_INT      desplazar e ir al estado 21
+    TOK_BOOLEAN  desplazar e ir al estado 22
+    TOK_ARRAY    desplazar e ir al estado 23
+    '{'          desplazar e ir al estado 24
+
+    $default  reduce usando la regla 20 (modificadores_clase)
+
+    clase                ir al estado 25
+    declaracion_clase    ir al estado 26
+    modificadores_clase  ir al estado 27
+    clase_escalar        ir al estado 28
+    tipo                 ir al estado 29
+    clase_objeto         ir al estado 30
+    clase_vector         ir al estado 31
+
+
+Estado 13
+
+    2 programa: TOK_MAIN '{' funciones . sentencias '}'
+
+    TOK_DISCARD        desplazar e ir al estado 32
+    TOK_ITSELF         desplazar e ir al estado 33
+    TOK_RETURN         desplazar e ir al estado 34
+    TOK_IF             desplazar e ir al estado 35
+    TOK_WHILE          desplazar e ir al estado 36
+    TOK_SCANF          desplazar e ir al estado 37
+    TOK_PRINTF         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    sentencias           ir al estado 40
+    sentencia            ir al estado 41
+    sentencia_simple     ir al estado 42
+    destruir_objeto      ir al estado 43
+    bloque               ir al estado 44
+    asignacion           ir al estado 45
+    elemento_vector      ir al estado 46
+    condicional          ir al estado 47
+    bucle                ir al estado 48
+    lectura              ir al estado 49
+    escritura            ir al estado 50
+    retorno_funcion      ir al estado 51
+    identificador_clase  ir al estado 52
+
+
+Estado 14
+
+   29 funciones: funcion . funciones
+
+    TOK_FUNCTION  desplazar e ir al estado 9
+
+    $default  reduce usando la regla 28 (funciones)
+
+    funciones  ir al estado 53
+    funcion    ir al estado 14
+
+
+Estado 15
+
+    8 modificador_acceso: TOK_HIDDEN TOK_UNIQUE .
+
+    $default  reduce usando la regla 8 (modificador_acceso)
+
+
+Estado 16
+
+    9 modificador_acceso: TOK_SECRET TOK_UNIQUE .
+
+    $default  reduce usando la regla 9 (modificador_acceso)
+
+
+Estado 17
+
+   10 modificador_acceso: TOK_EXPOSED TOK_UNIQUE .
+
+    $default  reduce usando la regla 10 (modificador_acceso)
+
+
+Estado 18
+
+   30 funcion: TOK_FUNCTION modificador_acceso . tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
+
+    TOK_NONE     desplazar e ir al estado 54
+    TOK_INT      desplazar e ir al estado 21
+    TOK_BOOLEAN  desplazar e ir al estado 22
+
+    tipo          ir al estado 55
+    tipo_retorno  ir al estado 56
+
+
+Estado 19
+
+    1 programa: TOK_MAIN '{' declaraciones funciones . sentencias '}'
+
+    TOK_DISCARD        desplazar e ir al estado 32
+    TOK_ITSELF         desplazar e ir al estado 33
+    TOK_RETURN         desplazar e ir al estado 34
+    TOK_IF             desplazar e ir al estado 35
+    TOK_WHILE          desplazar e ir al estado 36
+    TOK_SCANF          desplazar e ir al estado 37
+    TOK_PRINTF         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    sentencias           ir al estado 57
+    sentencia            ir al estado 41
+    sentencia_simple     ir al estado 42
+    destruir_objeto      ir al estado 43
+    bloque               ir al estado 44
+    asignacion           ir al estado 45
+    elemento_vector      ir al estado 46
+    condicional          ir al estado 47
+    bucle                ir al estado 48
+    lectura              ir al estado 49
+    escritura            ir al estado 50
+    retorno_funcion      ir al estado 51
+    identificador_clase  ir al estado 52
+
+
+Estado 20
+
+    4 declaraciones: declaracion declaraciones .
+
+    $default  reduce usando la regla 4 (declaraciones)
+
+
+Estado 21
+
+   22 tipo: TOK_INT .
+
+    $default  reduce usando la regla 22 (tipo)
+
+
+Estado 22
+
+   23 tipo: TOK_BOOLEAN .
+
+    $default  reduce usando la regla 23 (tipo)
+
+
+Estado 23
+
+   25 clase_vector: TOK_ARRAY . tipo '[' TOK_CONSTANTE_ENTERA ']'
+
+    TOK_INT      desplazar e ir al estado 21
+    TOK_BOOLEAN  desplazar e ir al estado 22
+
+    tipo  ir al estado 58
+
+
+Estado 24
+
+   24 clase_objeto: '{' . TOK_IDENTIFICADOR '}'
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 59
+
+
+Estado 25
+
+    5 declaracion: modificador_acceso clase . identificadores ';'
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 60
+
+    identificadores  ir al estado 61
+
+
+Estado 26
+
+    6 declaracion: modificador_acceso declaracion_clase . ';'
+
+    ';'  desplazar e ir al estado 62
+
+
+Estado 27
+
+   18 declaracion_clase: modificadores_clase . TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}'
+   19                  | modificadores_clase . TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'
+
+    TOK_CLASS  desplazar e ir al estado 63
+
+
+Estado 28
+
+   15 clase: clase_escalar .
+
+    $default  reduce usando la regla 15 (clase)
+
+
+Estado 29
+
+   21 clase_escalar: tipo .
+
+    $default  reduce usando la regla 21 (clase_escalar)
+
+
+Estado 30
+
+   17 clase: clase_objeto .
+
+    $default  reduce usando la regla 17 (clase)
+
+
+Estado 31
+
+   16 clase: clase_vector .
+
+    $default  reduce usando la regla 16 (clase)
+
+
+Estado 32
+
+   51 destruir_objeto: TOK_DISCARD . TOK_IDENTIFICADOR
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 64
+
+
+Estado 33
+
+   85 identificador_clase: TOK_ITSELF .
+
+    $default  reduce usando la regla 85 (identificador_clase)
+
+
+Estado 34
+
+   66 retorno_funcion: TOK_RETURN . exp
+   67                | TOK_RETURN . TOK_NONE
+
+    TOK_NONE              desplazar e ir al estado 65
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 74
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 35
+
+   60 condicional: TOK_IF . '(' exp ')' '{' sentencias '}'
+   61            | TOK_IF . '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'
+
+    '('  desplazar e ir al estado 78
+
+
+Estado 36
+
+   62 bucle: TOK_WHILE . '(' exp ')' '{' sentencias '}'
+
+    '('  desplazar e ir al estado 79
+
+
+Estado 37
+
+   63 lectura: TOK_SCANF . TOK_IDENTIFICADOR
+   64        | TOK_SCANF . elemento_vector
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 80
+
+    elemento_vector  ir al estado 81
+
+
+Estado 38
+
+   65 escritura: TOK_PRINTF . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 82
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 39
+
+   49 sentencia_simple: TOK_IDENTIFICADOR . '(' lista_expresiones ')'
+   54 asignacion: TOK_IDENTIFICADOR . '=' exp
+   57           | TOK_IDENTIFICADOR . '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
+   59 elemento_vector: TOK_IDENTIFICADOR . '[' exp ']'
+   84 identificador_clase: TOK_IDENTIFICADOR .
+
+    '['  desplazar e ir al estado 83
+    '('  desplazar e ir al estado 84
+    '='  desplazar e ir al estado 85
+
+    $default  reduce usando la regla 84 (identificador_clase)
+
+
+Estado 40
+
+    2 programa: TOK_MAIN '{' funciones sentencias . '}'
+
+    '}'  desplazar e ir al estado 86
+
+
+Estado 41
+
+   40 sentencias: sentencia .
+   41           | sentencia . sentencias
+
+    TOK_DISCARD        desplazar e ir al estado 32
+    TOK_ITSELF         desplazar e ir al estado 33
+    TOK_RETURN         desplazar e ir al estado 34
+    TOK_IF             desplazar e ir al estado 35
+    TOK_WHILE          desplazar e ir al estado 36
+    TOK_SCANF          desplazar e ir al estado 37
+    TOK_PRINTF         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    $default  reduce usando la regla 40 (sentencias)
+
+    sentencias           ir al estado 87
+    sentencia            ir al estado 41
+    sentencia_simple     ir al estado 42
+    destruir_objeto      ir al estado 43
+    bloque               ir al estado 44
+    asignacion           ir al estado 45
+    elemento_vector      ir al estado 46
+    condicional          ir al estado 47
+    bucle                ir al estado 48
+    lectura              ir al estado 49
+    escritura            ir al estado 50
+    retorno_funcion      ir al estado 51
+    identificador_clase  ir al estado 52
+
+
+Estado 42
+
+   42 sentencia: sentencia_simple . ';'
+
+    ';'  desplazar e ir al estado 88
+
+
+Estado 43
+
+   50 sentencia_simple: destruir_objeto .
+
+    $default  reduce usando la regla 50 (sentencia_simple)
+
+
+Estado 44
+
+   43 sentencia: bloque .
+
+    $default  reduce usando la regla 43 (sentencia)
+
+
+Estado 45
+
+   44 sentencia_simple: asignacion .
+
+    $default  reduce usando la regla 44 (sentencia_simple)
+
+
+Estado 46
+
+   55 asignacion: elemento_vector . '=' exp
+   56           | elemento_vector . '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
+
+    '='  desplazar e ir al estado 89
+
+
+Estado 47
+
+   52 bloque: condicional .
+
+    $default  reduce usando la regla 52 (bloque)
+
+
+Estado 48
+
+   53 bloque: bucle .
+
+    $default  reduce usando la regla 53 (bloque)
+
+
+Estado 49
+
+   45 sentencia_simple: lectura .
+
+    $default  reduce usando la regla 45 (sentencia_simple)
+
+
+Estado 50
+
+   46 sentencia_simple: escritura .
+
+    $default  reduce usando la regla 46 (sentencia_simple)
+
+
+Estado 51
+
+   47 sentencia_simple: retorno_funcion .
+
+    $default  reduce usando la regla 47 (sentencia_simple)
+
+
+Estado 52
+
+   48 sentencia_simple: identificador_clase . '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
+   58 asignacion: identificador_clase . '.' TOK_IDENTIFICADOR '=' exp
+
+    '.'  desplazar e ir al estado 90
+
+
+Estado 53
+
+   29 funciones: funcion funciones .
+
+    $default  reduce usando la regla 29 (funciones)
+
+
+Estado 54
+
+   31 tipo_retorno: TOK_NONE .
+
+    $default  reduce usando la regla 31 (tipo_retorno)
+
+
+Estado 55
+
+   32 tipo_retorno: tipo .
+
+    $default  reduce usando la regla 32 (tipo_retorno)
+
+
+Estado 56
+
+   30 funcion: TOK_FUNCTION modificador_acceso tipo_retorno . TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 91
+
+
+Estado 57
+
+    1 programa: TOK_MAIN '{' declaraciones funciones sentencias . '}'
+
+    '}'  desplazar e ir al estado 92
+
+
+Estado 58
+
+   25 clase_vector: TOK_ARRAY tipo . '[' TOK_CONSTANTE_ENTERA ']'
+
+    '['  desplazar e ir al estado 93
+
+
+Estado 59
+
+   24 clase_objeto: '{' TOK_IDENTIFICADOR . '}'
+
+    '}'  desplazar e ir al estado 94
+
+
+Estado 60
+
+   26 identificadores: TOK_IDENTIFICADOR .
+   27                | TOK_IDENTIFICADOR . ',' identificadores
+
+    ','  desplazar e ir al estado 95
+
+    $default  reduce usando la regla 26 (identificadores)
+
+
+Estado 61
+
+    5 declaracion: modificador_acceso clase identificadores . ';'
+
+    ';'  desplazar e ir al estado 96
+
+
+Estado 62
+
+    6 declaracion: modificador_acceso declaracion_clase ';' .
+
+    $default  reduce usando la regla 6 (declaracion)
+
+
+Estado 63
+
+   18 declaracion_clase: modificadores_clase TOK_CLASS . TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}'
+   19                  | modificadores_clase TOK_CLASS . TOK_IDENTIFICADOR '{' declaraciones funciones '}'
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 97
+
+
+Estado 64
+
+   51 destruir_objeto: TOK_DISCARD TOK_IDENTIFICADOR .
+
+    $default  reduce usando la regla 51 (destruir_objeto)
+
+
+Estado 65
+
+   67 retorno_funcion: TOK_RETURN TOK_NONE .
+
+    $default  reduce usando la regla 67 (retorno_funcion)
+
+
+Estado 66
+
+   59 elemento_vector: TOK_IDENTIFICADOR . '[' exp ']'
+   76 exp: TOK_IDENTIFICADOR .
+   81    | TOK_IDENTIFICADOR . '(' lista_expresiones ')'
+   84 identificador_clase: TOK_IDENTIFICADOR .
+
+    '['  desplazar e ir al estado 83
+    '('  desplazar e ir al estado 98
+
+    '.'       reduce usando la regla 84 (identificador_clase)
+    $default  reduce usando la regla 76 (exp)
+
+
+Estado 67
+
+   97 constante: TOK_CONSTANTE_ENTERA .
+
+    $default  reduce usando la regla 97 (constante)
+
+
+Estado 68
+
+   99 constante_logica: TOK_FALSE .
+
+    $default  reduce usando la regla 99 (constante_logica)
+
+
+Estado 69
+
+   98 constante_logica: TOK_TRUE .
+
+    $default  reduce usando la regla 98 (constante_logica)
+
+
+Estado 70
+
+   72 exp: '-' . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 99
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 71
+
+   75 exp: '!' . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 100
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 72
+
+   78 exp: '(' . exp ')'
+   79    | '(' . comparacion ')'
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 101
+    identificador_clase  ir al estado 75
+    comparacion          ir al estado 102
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 73
+
+   80 exp: elemento_vector .
+
+    $default  reduce usando la regla 80 (exp)
+
+
+Estado 74
+
+   66 retorno_funcion: TOK_RETURN exp .
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 66 (retorno_funcion)
+
+
+Estado 75
+
+   82 exp: identificador_clase . '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
+   83    | identificador_clase . '.' TOK_IDENTIFICADOR
+
+    '.'  desplazar e ir al estado 109
+
+
+Estado 76
+
+   77 exp: constante .
+
+    $default  reduce usando la regla 77 (exp)
+
+
+Estado 77
+
+   96 constante: constante_logica .
+
+    $default  reduce usando la regla 96 (constante)
+
+
+Estado 78
+
+   60 condicional: TOK_IF '(' . exp ')' '{' sentencias '}'
+   61            | TOK_IF '(' . exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 110
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 79
+
+   62 bucle: TOK_WHILE '(' . exp ')' '{' sentencias '}'
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 111
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 80
+
+   59 elemento_vector: TOK_IDENTIFICADOR . '[' exp ']'
+   63 lectura: TOK_SCANF TOK_IDENTIFICADOR .
+
+    '['  desplazar e ir al estado 83
+
+    $default  reduce usando la regla 63 (lectura)
+
+
+Estado 81
+
+   64 lectura: TOK_SCANF elemento_vector .
+
+    $default  reduce usando la regla 64 (lectura)
+
+
+Estado 82
+
+   65 escritura: TOK_PRINTF exp .
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 65 (escritura)
+
+
+Estado 83
+
+   59 elemento_vector: TOK_IDENTIFICADOR '[' . exp ']'
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 112
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 84
+
+   49 sentencia_simple: TOK_IDENTIFICADOR '(' . lista_expresiones ')'
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    $default  reduce usando la regla 87 (lista_expresiones)
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 113
+    identificador_clase  ir al estado 75
+    lista_expresiones    ir al estado 114
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 85
+
+   54 asignacion: TOK_IDENTIFICADOR '=' . exp
+   57           | TOK_IDENTIFICADOR '=' . TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
+
+    TOK_INSTANCE_OF       desplazar e ir al estado 115
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 116
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 86
+
+    2 programa: TOK_MAIN '{' funciones sentencias '}' .
+
+    $default  reduce usando la regla 2 (programa)
+
+
+Estado 87
+
+   41 sentencias: sentencia sentencias .
+
+    $default  reduce usando la regla 41 (sentencias)
+
+
+Estado 88
+
+   42 sentencia: sentencia_simple ';' .
+
+    $default  reduce usando la regla 42 (sentencia)
+
+
+Estado 89
+
+   55 asignacion: elemento_vector '=' . exp
+   56           | elemento_vector '=' . TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
+
+    TOK_INSTANCE_OF       desplazar e ir al estado 117
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 118
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 90
+
+   48 sentencia_simple: identificador_clase '.' . TOK_IDENTIFICADOR '(' lista_expresiones ')'
+   58 asignacion: identificador_clase '.' . TOK_IDENTIFICADOR '=' exp
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 119
+
+
+Estado 91
+
+   30 funcion: TOK_FUNCTION modificador_acceso tipo_retorno TOK_IDENTIFICADOR . '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
+
+    '('  desplazar e ir al estado 120
+
+
+Estado 92
+
+    1 programa: TOK_MAIN '{' declaraciones funciones sentencias '}' .
+
+    $default  reduce usando la regla 1 (programa)
+
+
+Estado 93
+
+   25 clase_vector: TOK_ARRAY tipo '[' . TOK_CONSTANTE_ENTERA ']'
+
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 121
+
+
+Estado 94
+
+   24 clase_objeto: '{' TOK_IDENTIFICADOR '}' .
+
+    $default  reduce usando la regla 24 (clase_objeto)
+
+
+Estado 95
+
+   27 identificadores: TOK_IDENTIFICADOR ',' . identificadores
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 60
+
+    identificadores  ir al estado 122
+
+
+Estado 96
+
+    5 declaracion: modificador_acceso clase identificadores ';' .
+
+    $default  reduce usando la regla 5 (declaracion)
+
+
+Estado 97
+
+   18 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR . TOK_INHERITS identificadores '{' declaraciones funciones '}'
+   19                  | modificadores_clase TOK_CLASS TOK_IDENTIFICADOR . '{' declaraciones funciones '}'
+
+    TOK_INHERITS  desplazar e ir al estado 123
+    '{'           desplazar e ir al estado 124
+
+
+Estado 98
+
+   81 exp: TOK_IDENTIFICADOR '(' . lista_expresiones ')'
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    $default  reduce usando la regla 87 (lista_expresiones)
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 113
+    identificador_clase  ir al estado 75
+    lista_expresiones    ir al estado 125
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 99
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   72    | '-' exp .
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    $default  reduce usando la regla 72 (exp)
+
+
+Estado 100
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+   75    | '!' exp .
+
+    $default  reduce usando la regla 75 (exp)
+
+
+Estado 101
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+   78    | '(' exp . ')'
+   90 comparacion: exp . TOK_IGUAL exp
+   91            | exp . TOK_DISTINTO exp
+   92            | exp . TOK_MAYORIGUAL exp
+   93            | exp . TOK_MENORIGUAL exp
+   94            | exp . '>' exp
+   95            | exp . '<' exp
+
+    TOK_IGUAL       desplazar e ir al estado 126
+    TOK_DISTINTO    desplazar e ir al estado 127
+    TOK_MENORIGUAL  desplazar e ir al estado 128
+    TOK_MAYORIGUAL  desplazar e ir al estado 129
+    TOK_OR          desplazar e ir al estado 103
+    TOK_AND         desplazar e ir al estado 104
+    '+'             desplazar e ir al estado 105
+    '-'             desplazar e ir al estado 106
+    '*'             desplazar e ir al estado 107
+    '/'             desplazar e ir al estado 108
+    ')'             desplazar e ir al estado 130
+    '>'             desplazar e ir al estado 131
+    '<'             desplazar e ir al estado 132
+
+
+Estado 102
+
+   79 exp: '(' comparacion . ')'
+
+    ')'  desplazar e ir al estado 133
+
+
+Estado 103
+
+   74 exp: exp TOK_OR . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 134
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 104
+
+   73 exp: exp TOK_AND . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 135
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 105
+
+   68 exp: exp '+' . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 136
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 106
+
+   69 exp: exp '-' . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 137
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 107
+
+   71 exp: exp '*' . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 138
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 108
+
+   70 exp: exp '/' . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 139
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 109
+
+   82 exp: identificador_clase '.' . TOK_IDENTIFICADOR '(' lista_expresiones ')'
+   83    | identificador_clase '.' . TOK_IDENTIFICADOR
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 140
+
+
+Estado 110
+
+   60 condicional: TOK_IF '(' exp . ')' '{' sentencias '}'
+   61            | TOK_IF '(' exp . ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+    ')'      desplazar e ir al estado 141
+
+
+Estado 111
+
+   62 bucle: TOK_WHILE '(' exp . ')' '{' sentencias '}'
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+    ')'      desplazar e ir al estado 142
+
+
+Estado 112
+
+   59 elemento_vector: TOK_IDENTIFICADOR '[' exp . ']'
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+    ']'      desplazar e ir al estado 143
+
+
+Estado 113
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+   86 lista_expresiones: exp . resto_lista_expresiones
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+    ','      desplazar e ir al estado 144
+
+    $default  reduce usando la regla 89 (resto_lista_expresiones)
+
+    resto_lista_expresiones  ir al estado 145
+
+
+Estado 114
+
+   49 sentencia_simple: TOK_IDENTIFICADOR '(' lista_expresiones . ')'
+
+    ')'  desplazar e ir al estado 146
+
+
+Estado 115
+
+   57 asignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF . TOK_IDENTIFICADOR '(' lista_expresiones ')'
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 147
+
+
+Estado 116
+
+   54 asignacion: TOK_IDENTIFICADOR '=' exp .
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 54 (asignacion)
+
+
+Estado 117
+
+   56 asignacion: elemento_vector '=' TOK_INSTANCE_OF . TOK_IDENTIFICADOR '(' lista_expresiones ')'
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 148
+
+
+Estado 118
+
+   55 asignacion: elemento_vector '=' exp .
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 55 (asignacion)
+
+
+Estado 119
+
+   48 sentencia_simple: identificador_clase '.' TOK_IDENTIFICADOR . '(' lista_expresiones ')'
+   58 asignacion: identificador_clase '.' TOK_IDENTIFICADOR . '=' exp
+
+    '('  desplazar e ir al estado 149
+    '='  desplazar e ir al estado 150
+
+
+Estado 120
+
+   30 funcion: TOK_FUNCTION modificador_acceso tipo_retorno TOK_IDENTIFICADOR '(' . parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
+
+    TOK_INT      desplazar e ir al estado 21
+    TOK_BOOLEAN  desplazar e ir al estado 22
+
+    $default  reduce usando la regla 34 (parametros_funcion)
+
+    tipo                ir al estado 151
+    parametros_funcion  ir al estado 152
+    parametro_funcion   ir al estado 153
+
+
+Estado 121
+
+   25 clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA . ']'
+
+    ']'  desplazar e ir al estado 154
+
+
+Estado 122
+
+   27 identificadores: TOK_IDENTIFICADOR ',' identificadores .
+
+    $default  reduce usando la regla 27 (identificadores)
+
+
+Estado 123
+
+   18 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS . identificadores '{' declaraciones funciones '}'
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 60
+
+    identificadores  ir al estado 155
+
+
+Estado 124
+
+   19 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' . declaraciones funciones '}'
+
+    TOK_HIDDEN   desplazar e ir al estado 5
+    TOK_SECRET   desplazar e ir al estado 6
+    TOK_EXPOSED  desplazar e ir al estado 7
+    TOK_UNIQUE   desplazar e ir al estado 8
+
+    $default  reduce usando la regla 7 (modificador_acceso)
+
+    declaraciones       ir al estado 156
+    declaracion         ir al estado 11
+    modificador_acceso  ir al estado 12
+
+
+Estado 125
+
+   81 exp: TOK_IDENTIFICADOR '(' lista_expresiones . ')'
+
+    ')'  desplazar e ir al estado 157
+
+
+Estado 126
+
+   90 comparacion: exp TOK_IGUAL . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 158
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 127
+
+   91 comparacion: exp TOK_DISTINTO . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 159
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 128
+
+   93 comparacion: exp TOK_MENORIGUAL . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 160
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 129
+
+   92 comparacion: exp TOK_MAYORIGUAL . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 161
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 130
+
+   78 exp: '(' exp ')' .
+
+    $default  reduce usando la regla 78 (exp)
+
+
+Estado 131
+
+   94 comparacion: exp '>' . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 162
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 132
+
+   95 comparacion: exp '<' . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 163
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 133
+
+   79 exp: '(' comparacion ')' .
+
+    $default  reduce usando la regla 79 (exp)
+
+
+Estado 134
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+   74    | exp TOK_OR exp .
+
+    TOK_AND  desplazar e ir al estado 104
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 74 (exp)
+
+
+Estado 135
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   73    | exp TOK_AND exp .
+   74    | exp . TOK_OR exp
+
+    $default  reduce usando la regla 73 (exp)
+
+
+Estado 136
+
+   68 exp: exp . '+' exp
+   68    | exp '+' exp .
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    TOK_AND  desplazar e ir al estado 104
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 68 (exp)
+
+
+Estado 137
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   69    | exp '-' exp .
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    TOK_AND  desplazar e ir al estado 104
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 69 (exp)
+
+
+Estado 138
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   71    | exp '*' exp .
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    $default  reduce usando la regla 71 (exp)
+
+
+Estado 139
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   70    | exp '/' exp .
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    $default  reduce usando la regla 70 (exp)
+
+
+Estado 140
+
+   82 exp: identificador_clase '.' TOK_IDENTIFICADOR . '(' lista_expresiones ')'
+   83    | identificador_clase '.' TOK_IDENTIFICADOR .
+
+    '('  desplazar e ir al estado 164
+
+    $default  reduce usando la regla 83 (exp)
+
+
+Estado 141
+
+   60 condicional: TOK_IF '(' exp ')' . '{' sentencias '}'
+   61            | TOK_IF '(' exp ')' . '{' sentencias '}' TOK_ELSE '{' sentencias '}'
+
+    '{'  desplazar e ir al estado 165
+
+
+Estado 142
+
+   62 bucle: TOK_WHILE '(' exp ')' . '{' sentencias '}'
+
+    '{'  desplazar e ir al estado 166
+
+
+Estado 143
+
+   59 elemento_vector: TOK_IDENTIFICADOR '[' exp ']' .
+
+    $default  reduce usando la regla 59 (elemento_vector)
+
+
+Estado 144
+
+   88 resto_lista_expresiones: ',' . exp resto_lista_expresiones
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 167
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 145
+
+   86 lista_expresiones: exp resto_lista_expresiones .
+
+    $default  reduce usando la regla 86 (lista_expresiones)
+
+
+Estado 146
+
+   49 sentencia_simple: TOK_IDENTIFICADOR '(' lista_expresiones ')' .
+
+    $default  reduce usando la regla 49 (sentencia_simple)
+
+
+Estado 147
+
+   57 asignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR . '(' lista_expresiones ')'
+
+    '('  desplazar e ir al estado 168
+
+
+Estado 148
+
+   56 asignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR . '(' lista_expresiones ')'
+
+    '('  desplazar e ir al estado 169
+
+
+Estado 149
+
+   48 sentencia_simple: identificador_clase '.' TOK_IDENTIFICADOR '(' . lista_expresiones ')'
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    $default  reduce usando la regla 87 (lista_expresiones)
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 113
+    identificador_clase  ir al estado 75
+    lista_expresiones    ir al estado 170
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 150
+
+   58 asignacion: identificador_clase '.' TOK_IDENTIFICADOR '=' . exp
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 171
+    identificador_clase  ir al estado 75
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 151
+
+   37 parametro_funcion: tipo . TOK_IDENTIFICADOR
+
+    TOK_IDENTIFICADOR  desplazar e ir al estado 172
+
+
+Estado 152
+
+   30 funcion: TOK_FUNCTION modificador_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion . ')' '{' declaraciones_funcion sentencias '}'
+
+    ')'  desplazar e ir al estado 173
+
+
+Estado 153
+
+   33 parametros_funcion: parametro_funcion . resto_parametros_funcion
+
+    ';'  desplazar e ir al estado 174
+
+    $default  reduce usando la regla 36 (resto_parametros_funcion)
+
+    resto_parametros_funcion  ir al estado 175
+
+
+Estado 154
+
+   25 clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']' .
+
+    $default  reduce usando la regla 25 (clase_vector)
+
+
+Estado 155
+
+   18 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores . '{' declaraciones funciones '}'
+
+    '{'  desplazar e ir al estado 176
+
+
+Estado 156
+
+   19 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones . funciones '}'
+
+    TOK_FUNCTION  desplazar e ir al estado 9
+
+    $default  reduce usando la regla 28 (funciones)
+
+    funciones  ir al estado 177
+    funcion    ir al estado 14
+
+
+Estado 157
+
+   81 exp: TOK_IDENTIFICADOR '(' lista_expresiones ')' .
+
+    $default  reduce usando la regla 81 (exp)
+
+
+Estado 158
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+   90 comparacion: exp TOK_IGUAL exp .
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 90 (comparacion)
+
+
+Estado 159
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+   91 comparacion: exp TOK_DISTINTO exp .
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 91 (comparacion)
+
+
+Estado 160
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+   93 comparacion: exp TOK_MENORIGUAL exp .
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 93 (comparacion)
+
+
+Estado 161
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+   92 comparacion: exp TOK_MAYORIGUAL exp .
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 92 (comparacion)
+
+
+Estado 162
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+   94 comparacion: exp '>' exp .
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 94 (comparacion)
+
+
+Estado 163
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+   95 comparacion: exp '<' exp .
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 95 (comparacion)
+
+
+Estado 164
+
+   82 exp: identificador_clase '.' TOK_IDENTIFICADOR '(' . lista_expresiones ')'
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    $default  reduce usando la regla 87 (lista_expresiones)
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 113
+    identificador_clase  ir al estado 75
+    lista_expresiones    ir al estado 178
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 165
+
+   60 condicional: TOK_IF '(' exp ')' '{' . sentencias '}'
+   61            | TOK_IF '(' exp ')' '{' . sentencias '}' TOK_ELSE '{' sentencias '}'
+
+    TOK_DISCARD        desplazar e ir al estado 32
+    TOK_ITSELF         desplazar e ir al estado 33
+    TOK_RETURN         desplazar e ir al estado 34
+    TOK_IF             desplazar e ir al estado 35
+    TOK_WHILE          desplazar e ir al estado 36
+    TOK_SCANF          desplazar e ir al estado 37
+    TOK_PRINTF         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    sentencias           ir al estado 179
+    sentencia            ir al estado 41
+    sentencia_simple     ir al estado 42
+    destruir_objeto      ir al estado 43
+    bloque               ir al estado 44
+    asignacion           ir al estado 45
+    elemento_vector      ir al estado 46
+    condicional          ir al estado 47
+    bucle                ir al estado 48
+    lectura              ir al estado 49
+    escritura            ir al estado 50
+    retorno_funcion      ir al estado 51
+    identificador_clase  ir al estado 52
+
+
+Estado 166
+
+   62 bucle: TOK_WHILE '(' exp ')' '{' . sentencias '}'
+
+    TOK_DISCARD        desplazar e ir al estado 32
+    TOK_ITSELF         desplazar e ir al estado 33
+    TOK_RETURN         desplazar e ir al estado 34
+    TOK_IF             desplazar e ir al estado 35
+    TOK_WHILE          desplazar e ir al estado 36
+    TOK_SCANF          desplazar e ir al estado 37
+    TOK_PRINTF         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    sentencias           ir al estado 180
+    sentencia            ir al estado 41
+    sentencia_simple     ir al estado 42
+    destruir_objeto      ir al estado 43
+    bloque               ir al estado 44
+    asignacion           ir al estado 45
+    elemento_vector      ir al estado 46
+    condicional          ir al estado 47
+    bucle                ir al estado 48
+    lectura              ir al estado 49
+    escritura            ir al estado 50
+    retorno_funcion      ir al estado 51
+    identificador_clase  ir al estado 52
+
+
+Estado 167
+
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+   88 resto_lista_expresiones: ',' exp . resto_lista_expresiones
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+    ','      desplazar e ir al estado 144
+
+    $default  reduce usando la regla 89 (resto_lista_expresiones)
+
+    resto_lista_expresiones  ir al estado 181
+
+
+Estado 168
+
+   57 asignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' . lista_expresiones ')'
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    $default  reduce usando la regla 87 (lista_expresiones)
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 113
+    identificador_clase  ir al estado 75
+    lista_expresiones    ir al estado 182
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 169
+
+   56 asignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' . lista_expresiones ')'
+
+    TOK_ITSELF            desplazar e ir al estado 33
+    TOK_IDENTIFICADOR     desplazar e ir al estado 66
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 67
+    TOK_FALSE             desplazar e ir al estado 68
+    TOK_TRUE              desplazar e ir al estado 69
+    '-'                   desplazar e ir al estado 70
+    '!'                   desplazar e ir al estado 71
+    '('                   desplazar e ir al estado 72
+
+    $default  reduce usando la regla 87 (lista_expresiones)
+
+    elemento_vector      ir al estado 73
+    exp                  ir al estado 113
+    identificador_clase  ir al estado 75
+    lista_expresiones    ir al estado 183
+    constante            ir al estado 76
+    constante_logica     ir al estado 77
+
+
+Estado 170
+
+   48 sentencia_simple: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones . ')'
+
+    ')'  desplazar e ir al estado 184
+
+
+Estado 171
+
+   58 asignacion: identificador_clase '.' TOK_IDENTIFICADOR '=' exp .
+   68 exp: exp . '+' exp
+   69    | exp . '-' exp
+   70    | exp . '/' exp
+   71    | exp . '*' exp
+   73    | exp . TOK_AND exp
+   74    | exp . TOK_OR exp
+
+    TOK_OR   desplazar e ir al estado 103
+    TOK_AND  desplazar e ir al estado 104
+    '+'      desplazar e ir al estado 105
+    '-'      desplazar e ir al estado 106
+    '*'      desplazar e ir al estado 107
+    '/'      desplazar e ir al estado 108
+
+    $default  reduce usando la regla 58 (asignacion)
+
+
+Estado 172
+
+   37 parametro_funcion: tipo TOK_IDENTIFICADOR .
+
+    $default  reduce usando la regla 37 (parametro_funcion)
+
+
+Estado 173
+
+   30 funcion: TOK_FUNCTION modificador_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' . '{' declaraciones_funcion sentencias '}'
+
+    '{'  desplazar e ir al estado 185
+
+
+Estado 174
+
+   35 resto_parametros_funcion: ';' . parametro_funcion resto_parametros_funcion
+
+    TOK_INT      desplazar e ir al estado 21
+    TOK_BOOLEAN  desplazar e ir al estado 22
+
+    tipo               ir al estado 151
+    parametro_funcion  ir al estado 186
+
+
+Estado 175
+
+   33 parametros_funcion: parametro_funcion resto_parametros_funcion .
+
+    $default  reduce usando la regla 33 (parametros_funcion)
+
+
+Estado 176
+
+   18 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' . declaraciones funciones '}'
+
+    TOK_HIDDEN   desplazar e ir al estado 5
+    TOK_SECRET   desplazar e ir al estado 6
+    TOK_EXPOSED  desplazar e ir al estado 7
+    TOK_UNIQUE   desplazar e ir al estado 8
+
+    $default  reduce usando la regla 7 (modificador_acceso)
+
+    declaraciones       ir al estado 187
+    declaracion         ir al estado 11
+    modificador_acceso  ir al estado 12
+
+
+Estado 177
+
+   19 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones . '}'
+
+    '}'  desplazar e ir al estado 188
+
+
+Estado 178
+
+   82 exp: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones . ')'
+
+    ')'  desplazar e ir al estado 189
+
+
+Estado 179
+
+   60 condicional: TOK_IF '(' exp ')' '{' sentencias . '}'
+   61            | TOK_IF '(' exp ')' '{' sentencias . '}' TOK_ELSE '{' sentencias '}'
+
+    '}'  desplazar e ir al estado 190
+
+
+Estado 180
+
+   62 bucle: TOK_WHILE '(' exp ')' '{' sentencias . '}'
+
+    '}'  desplazar e ir al estado 191
+
+
+Estado 181
+
+   88 resto_lista_expresiones: ',' exp resto_lista_expresiones .
+
+    $default  reduce usando la regla 88 (resto_lista_expresiones)
+
+
+Estado 182
+
+   57 asignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones . ')'
+
+    ')'  desplazar e ir al estado 192
+
+
+Estado 183
+
+   56 asignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones . ')'
+
+    ')'  desplazar e ir al estado 193
+
+
+Estado 184
+
+   48 sentencia_simple: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')' .
+
+    $default  reduce usando la regla 48 (sentencia_simple)
+
+
+Estado 185
+
+   30 funcion: TOK_FUNCTION modificador_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' . declaraciones_funcion sentencias '}'
+
+    TOK_HIDDEN   desplazar e ir al estado 5
+    TOK_SECRET   desplazar e ir al estado 6
+    TOK_EXPOSED  desplazar e ir al estado 7
+    TOK_UNIQUE   desplazar e ir al estado 8
+
+    TOK_CLASS    reduce usando la regla 7 (modificador_acceso)
+    TOK_INT      reduce usando la regla 7 (modificador_acceso)
+    TOK_BOOLEAN  reduce usando la regla 7 (modificador_acceso)
+    TOK_ARRAY    reduce usando la regla 7 (modificador_acceso)
+    '{'          reduce usando la regla 7 (modificador_acceso)
+    $default     reduce usando la regla 39 (declaraciones_funcion)
+
+    declaraciones          ir al estado 194
+    declaracion            ir al estado 11
+    modificador_acceso     ir al estado 12
+    declaraciones_funcion  ir al estado 195
+
+
+Estado 186
+
+   35 resto_parametros_funcion: ';' parametro_funcion . resto_parametros_funcion
+
+    ';'  desplazar e ir al estado 174
+
+    $default  reduce usando la regla 36 (resto_parametros_funcion)
+
+    resto_parametros_funcion  ir al estado 196
+
+
+Estado 187
+
+   18 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones . funciones '}'
+
+    TOK_FUNCTION  desplazar e ir al estado 9
+
+    $default  reduce usando la regla 28 (funciones)
+
+    funciones  ir al estado 197
+    funcion    ir al estado 14
+
+
+Estado 188
+
+   19 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}' .
+
+    $default  reduce usando la regla 19 (declaracion_clase)
+
+
+Estado 189
+
+   82 exp: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')' .
+
+    $default  reduce usando la regla 82 (exp)
+
+
+Estado 190
+
+   60 condicional: TOK_IF '(' exp ')' '{' sentencias '}' .
+   61            | TOK_IF '(' exp ')' '{' sentencias '}' . TOK_ELSE '{' sentencias '}'
+
+    TOK_ELSE  desplazar e ir al estado 198
+
+    $default  reduce usando la regla 60 (condicional)
+
+
+Estado 191
+
+   62 bucle: TOK_WHILE '(' exp ')' '{' sentencias '}' .
+
+    $default  reduce usando la regla 62 (bucle)
+
+
+Estado 192
+
+   57 asignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' .
+
+    $default  reduce usando la regla 57 (asignacion)
+
+
+Estado 193
+
+   56 asignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')' .
+
+    $default  reduce usando la regla 56 (asignacion)
+
+
+Estado 194
+
+   38 declaraciones_funcion: declaraciones .
+
+    $default  reduce usando la regla 38 (declaraciones_funcion)
+
+
+Estado 195
+
+   30 funcion: TOK_FUNCTION modificador_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion . sentencias '}'
+
+    TOK_DISCARD        desplazar e ir al estado 32
+    TOK_ITSELF         desplazar e ir al estado 33
+    TOK_RETURN         desplazar e ir al estado 34
+    TOK_IF             desplazar e ir al estado 35
+    TOK_WHILE          desplazar e ir al estado 36
+    TOK_SCANF          desplazar e ir al estado 37
+    TOK_PRINTF         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    sentencias           ir al estado 199
+    sentencia            ir al estado 41
+    sentencia_simple     ir al estado 42
+    destruir_objeto      ir al estado 43
+    bloque               ir al estado 44
+    asignacion           ir al estado 45
+    elemento_vector      ir al estado 46
+    condicional          ir al estado 47
+    bucle                ir al estado 48
+    lectura              ir al estado 49
+    escritura            ir al estado 50
+    retorno_funcion      ir al estado 51
+    identificador_clase  ir al estado 52
+
+
+Estado 196
+
+   35 resto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion .
+
+    $default  reduce usando la regla 35 (resto_parametros_funcion)
+
+
+Estado 197
+
+   18 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones . '}'
+
+    '}'  desplazar e ir al estado 200
+
+
+Estado 198
+
+   61 condicional: TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE . '{' sentencias '}'
+
+    '{'  desplazar e ir al estado 201
+
+
+Estado 199
+
+   30 funcion: TOK_FUNCTION modificador_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias . '}'
+
+    '}'  desplazar e ir al estado 202
+
+
+Estado 200
+
+   18 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}' .
+
+    $default  reduce usando la regla 18 (declaracion_clase)
+
+
+Estado 201
+
+   61 condicional: TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' . sentencias '}'
+
+    TOK_DISCARD        desplazar e ir al estado 32
+    TOK_ITSELF         desplazar e ir al estado 33
+    TOK_RETURN         desplazar e ir al estado 34
+    TOK_IF             desplazar e ir al estado 35
+    TOK_WHILE          desplazar e ir al estado 36
+    TOK_SCANF          desplazar e ir al estado 37
+    TOK_PRINTF         desplazar e ir al estado 38
+    TOK_IDENTIFICADOR  desplazar e ir al estado 39
+
+    sentencias           ir al estado 203
+    sentencia            ir al estado 41
+    sentencia_simple     ir al estado 42
+    destruir_objeto      ir al estado 43
+    bloque               ir al estado 44
+    asignacion           ir al estado 45
+    elemento_vector      ir al estado 46
+    condicional          ir al estado 47
+    bucle                ir al estado 48
+    lectura              ir al estado 49
+    escritura            ir al estado 50
+    retorno_funcion      ir al estado 51
+    identificador_clase  ir al estado 52
+
+
+Estado 202
+
+   30 funcion: TOK_FUNCTION modificador_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}' .
+
+    $default  reduce usando la regla 30 (funcion)
+
+
+Estado 203
+
+   61 condicional: TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias . '}'
+
+    '}'  desplazar e ir al estado 204
+
+
+Estado 204
+
+   61 condicional: TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}' .
+
+    $default  reduce usando la regla 61 (condicional)

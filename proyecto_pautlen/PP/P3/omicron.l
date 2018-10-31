@@ -1,9 +1,11 @@
 %{ 
-#include "tokens.h"
+#include <stdlib.h>
+#include <stdio.h>
 #include "y.tab.h"
 
 int line_count = 1;
 int col_count = 0;
+extern FILE* fout;
 
 %}
 
@@ -70,14 +72,17 @@ true				{col_count+=yyleng; return TOK_TRUE;}
 {ENTERO}			{col_count+=yyleng; return TOK_CONSTANTE_ENTERA;}
 {COMENTARIO}|"\n"	{col_count = 0; line_count++;}
 {IDENTIFICADOR}		{
-						if (yyleng > MAX_LONG_ID) {
+						if (yyleng > 50) {
+							fprintf(stderr, "ERROR MORFOLOGICO:%d:%d:IDENTIFICADOR DEMASIADO LARGO (%s)\n", line_count, col_count, yytext);
 							return TOK_ERROR;
 						} else {
 							col_count += yyleng;
 							return TOK_IDENTIFICADOR;
 						}
 					}
-.					{col_count+=yyleng; return TOK_ERROR;}
+.					{col_count+=yyleng;
+						fprintf(stderr, "ERROR MORFOLOGICO:%d:%d:CARACTER INVALIDO (%s)\n", line_count, col_count, yytext);
+						return TOK_ERROR;}
 
 
 %%

@@ -1,14 +1,20 @@
 CC = gcc
 
-EJ = omicron
+EJ = pruebaSintactico
 
 LEX = lex.yy.c
 
-all: 
-	@echo Compilado del ejercicio
-	@flex $(EJ).l
-	@$(CC) -Wall -o pruebaMorfo $(EJ).c $(LEX)
+TAB = y.tab
 
+all: flex bison
+	@echo Compilado del ejercicio
+	@$(CC) -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c
+
+flex:
+	@flex omicron.l
+
+bison:
+	@bison -d -y -v omicron.y
 
 .PHONY : clean all
 clean :
@@ -16,4 +22,5 @@ clean :
 	@rm -f *.o
 	@rm -f residuo.txt
 	@rm -f $(LEX)
-
+	@rm -f $(TAB).c
+	@rm -f $(TAB).h
