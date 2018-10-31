@@ -21,4 +21,8 @@ void* met_put(tsa* tsa, char* key, void* data);
 void* met_get(tsa* tsa, char* key);
 void* met_remove(tsa* tsa, char* key);
 
+/*Realiza las operaciones de cierre necesarias para que la tabla de simbolos de clases quede consistente.
+	En nuestro caso de momento nada*/
+int close_tsa(tsa* t);
+
 #endif

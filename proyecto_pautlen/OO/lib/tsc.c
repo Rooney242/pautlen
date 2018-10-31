@@ -8,33 +8,34 @@
 #include "tsc.h"
 
 
-int iniciarTablaSimbolosClases(tablaSimbolosClases* t, char * nombre){
-	if(!nombre) return ERROR;
-	t = (tablaSimbolosClases*) malloc(sizeof(tablaSimbolosClases));
-	if (!t) return ERROR;
+tsc* init_tsc(char * nombre){
+	tsc* t;
+	if(!nombre) return NULL;
+	t = (tsc*) malloc(sizeof(tsc));
+	if (!t) return NULL;
 
 	t->nombre = (char*) malloc(sizeof(char)*(strlen(nombre)+1));
 	if(!t->nombre){
-		liberaTablaSimbolosClases(t);
-		return ERROR;
+		free_tsc(t);
+		return NULL;
 	}
 
 	t->main = init_tsa(TSA_MAIN);
 	if(!t->main){
-		liberaTablaSimbolosClases(t);
-		return ERROR;
+		free_tsc(t);
+		return NULL;
 	}
 
 	t->grafo = init_graph(t->grafo);
 	if(!t->grafo){
-		liberaTablaSimbolosClases(t);
-		return ERROR;
+		free_tsc(t);
+		return NULL;
 	}
 
-	return OK;
+	return t;
 }
 
-int liberaTablaSimbolosClases(tablaSimbolosClases* t){
+int free_tsc(tsc* t){
 	if(!t) return ERROR;
 	if(t->nombre) free(t->nombre);
 	if(t->main) free_tsa(t->main);
@@ -42,13 +43,13 @@ int liberaTablaSimbolosClases(tablaSimbolosClases* t){
 	return OK;
 }
 
-int abrirClase(tablaSimbolosClases* t, char* id_clase){
+int abrirClase(tsc* t, char* id_clase){
 	if(!t || !id_clase) return ERROR;
 	return insert_class(t->grafo, id_clase, NULL, 0);
 }
 
 /*Aqui viene el movidote de que decidir con las herencias, se toca en insert_class del grafo*/
-int abrirClaseHereda(tablaSimbolosClases* t, char* id_clase, ...){
+int abrirClaseHereda(tsc* t, char* id_clase, ...){
 	if(!t || !id_clase) return ERROR;
 
 	va_list names;
@@ -78,11 +79,24 @@ int abrirClaseHereda(tablaSimbolosClases* t, char* id_clase, ...){
 	return ret;
 }
 
-int cerrarClase(tablaSimbolosClases* t, char* id_clase, int num_atributos_clase, int num_atributos_instancia,
+int cerrarClase(tsc* t, char* id_clase, int num_atributos_clase, int num_atributos_instancia,
 				int num_metodos_sobreescribibles, int num_metodos_no_sobreescribibles){
-	return 0;
+	if(!t || !id_clase) return ERROR;
+	int index;
+	index = get_node_index(t->grafo, id_clase);
+	if(index == ERROR) return ERROR;
+	t->grafo->nodes[index]->num_atributos_clase = num_atributos_clase;
+	t->grafo->nodes[index]->num_atributos_instancia = num_atributos_instancia;
+	t->grafo->nodes[index]->num_metodos_sobreescribibles = num_metodos_sobreescribibles;
+	t->grafo->nodes[index]->num_metodos_no_sobreescribibles = num_metodos_no_sobreescribibles;
+	return OK;
 }
 
-void graph_enrouteParentsLastNode(tablaSimbolosClases * g){
+void graph_enrouteParentsLastNode(tsc * g){
+	//No deberiamos de tener que hacer nada por como esta hecho nuestro grafo
 	return;
+}
+
+int close_tsc(tsc* t){
+	return OK;
 }	
