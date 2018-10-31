@@ -38,19 +38,6 @@ Adjacency_Matrix* transpose_graph(Adjacency_Matrix* g) {
 
   return transpose;*/
 }
-int get_node_index(Adjacency_Matrix* g, char* name){
-  int i;
-  for(i = 0; i < g->vertex_count; i++){
-    if (!strcmp(name, g->nodes[i]->name)){
-      break;
-    }
-  }
-  if(i < g->vertex_count){
-    return i;
-  }else{
-    return -1;
-  }
-}
 
 int insert_arc(Adjacency_Matrix* g, char* name1, char* name2) {
   int a1, a2;
@@ -158,7 +145,7 @@ int insert_class(Adjacency_Matrix* g, char* name, char** parents, int size){
     for(i = 0; i < size; i++){
       if(insert_arc(g, parents[i], name) == ERROR) return ERROR;
       //Aqui surge el problema del orden en el que se escriben los padres, queda para mas adelante
-      //  la solucion mas comoda es que una vez definido un criterio se hiciera un sort o similar
+      //  la solucion mas comoda es que una vez definido un criterio se hiciera un sort o similar TODO
       index = get_node_index(g, parents[i]);  
       for (j = 0; j<g->vertex_count; j++){
         if (g->arcs[index][j] > 0 && g->arcs[g->vertex_count-1][j] == 0){
@@ -292,6 +279,8 @@ Node* init_node(char* name){
   node->tsa = init_tsa(name);
   node->name = (char*) malloc(strlen(name) * sizeof(char));
   strcpy(node->name, name);
+
+  node->num_atributos_clase = node->num_atributos_instancia = node->num_metodos_sobreescribibles = node->num_metodos_no_sobreescribibles = 0;
   return node;
 }
 
@@ -303,4 +292,18 @@ void free_node(Node* node){
 
 char* get_node_name(Node* node){
   return node->name;
+}
+
+int get_node_index(Adjacency_Matrix* g, char* name){
+  int i;
+  for(i = 0; i < g->vertex_count; i++){
+    if (!strcmp(name, g->nodes[i]->name)){
+      break;
+    }
+  }
+  if(i < g->vertex_count){
+    return i;
+  }else{
+    return ERROR;
+  }
 }

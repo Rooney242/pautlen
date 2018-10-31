@@ -14,7 +14,7 @@ TSA = tsa
 TSA_DEPS = $(OBJ_FOLDER)hash_table.o $(MACROS)
 
 TSC = tsc
-TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)graph.o $(MACROS)
+TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(MACROS)
 
 DOT_GENERATOR = dot_generator
 DOT_GENERATOR_DEPS = $(OBJ_FOLDER)tsc.o $(OBJ_FOLDER)graph.o $(MACROS)
@@ -44,11 +44,15 @@ graph-test: graph
 
 tsa: hash
 	@echo Compilando modulo de tsa...
-	@$(CC) -c $(LIBRARIES)$(TSA).c -o $(OBJ_FOLDER)$(TSA).o 
+	@$(CC) -c $(LIBRARIES)$(TSA).c -o $(OBJ_FOLDER)$(TSA).o
 	
 tsc: tsa graph 
 	@echo Compilando modulo de tsc...
-	@$(CC) -c $(LIBRARIES)$(TSC).c -o $(OBJ_FOLDER)$(TSC).o 
+	@$(CC) -c $(LIBRARIES)$(TSC).c -o $(OBJ_FOLDER)$(TSC).o
+
+tsc-test: tsc
+	@echo Compilando tester del modulo de tsc...
+	@$(CC) -o $(LIBRARIES)test_$(TSC) $(OBJ_FOLDER)$(TSC).o $(LIBRARIES)test_$(TSC).c $(TSC_DEPS)
 
 dot: tsc graph 
 	@echo Compilando modulo de generador de ficheros .dot...
@@ -58,4 +62,5 @@ dot: tsc graph
 clean :
 	@rm -f $(LIBRARIES)test_$(HASH)
 	@rm -f $(LIBRARIES)test_$(GRAPH)
+	@rm -f $(LIBRARIES)test_$(TSC)
 	@rm -f $(OBJ_FOLDER)*.o

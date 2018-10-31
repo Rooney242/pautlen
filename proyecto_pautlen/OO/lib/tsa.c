@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "macros.h"
+#include "hash_table.h"
 #include "tsa.h"
 
 
@@ -49,4 +51,8 @@ void* met_get(tsa* tsa, char* key){
 
 void* met_remove(tsa* tsa, char* key){
 	return ht_remove(tsa->met, key);
+}
+
+int close_tsa(tsa* t){
+	return OK;
 }

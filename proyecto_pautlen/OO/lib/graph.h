@@ -10,6 +10,11 @@
 typedef struct {
 	char* name;
 	tsa* tsa;
+	int num_atributos_clase;
+    int num_atributos_instancia; 
+    int num_metodos_sobreescribibles; 
+    int num_metodos_no_sobreescribibles;
+
 } Node;
 
 typedef struct {
@@ -36,4 +41,5 @@ void print_adjacency(int* a);
 Node* init_node(char* name);
 void free_node(Node* node);
 char* get_node_name(Node* node);
+int get_node_index(Adjacency_Matrix* g, char* name);
 #endif
