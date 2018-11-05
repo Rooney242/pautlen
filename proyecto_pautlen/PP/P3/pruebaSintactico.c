@@ -12,9 +12,7 @@ extern int col_count;
 FILE* fout;
 
 int main(int argc, char **argv){
-	
-	int token;
-	
+
 	if (argc!= 3){
 		printf("Especifica fichero de entrada y de salida");
 		return 0;

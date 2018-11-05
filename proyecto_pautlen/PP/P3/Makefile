@@ -24,3 +24,4 @@ clean :
 	@rm -f $(LEX)
 	@rm -f $(TAB).c
 	@rm -f $(TAB).h
+	@rm -f y.output
