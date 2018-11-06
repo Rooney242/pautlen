@@ -28,6 +28,7 @@ int main(int argc, char **argv){
 
 	yyout = fopen("residuo.txt","w");
 
+	yyparse();
 	
 	fclose(yyin);
 	fclose(yyout);

@@ -66,27 +66,27 @@ declaraciones:	declaracion
 				| declaracion declaraciones
 					{fprintf(fout, ";R:\tdeclaraciones:	declaracion declaraciones\n");}
 				;
-declaracion:	modificador_acceso clase identificadores ';'
-					{fprintf(fout, ";R:\tdeclaracion:	modificador_acceso clase identificadores ';'\n");}
-				| modificador_acceso declaracion_clase ';'
-					{fprintf(fout, ";R:\tdeclaracion:	modificador_acceso declaracion_clase ';'\n");}
+declaracion:	modificadores_acceso clase identificadores ';'
+					{fprintf(fout, ";R:\tdeclaracion:	modificadores_acceso clase identificadores ';'\n");}
+				| modificadores_acceso declaracion_clase ';'
+					{fprintf(fout, ";R:\tdeclaracion:	modificadores_acceso declaracion_clase ';'\n");}
 				;
-modificador_acceso: /*vacio*/
-						{fprintf(fout, ";R:\tmodificador_acceso: \n");}
+modificadores_acceso: /*vacio*/
+						{fprintf(fout, ";R:\tmodificadores_acceso: \n");}
 					| TOK_HIDDEN TOK_UNIQUE
-						{fprintf(fout, ";R:\tmodificador_acceso: TOK_HIDDEN TOK_UNIQUE\n");}
+						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_HIDDEN TOK_UNIQUE\n");}
 					| TOK_SECRET TOK_UNIQUE
-						{fprintf(fout, ";R:\tmodificador_acceso: TOK_SECRET TOK_UNIQUE\n");}
+						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_SECRET TOK_UNIQUE\n");}
 					| TOK_EXPOSED TOK_UNIQUE
-						{fprintf(fout, ";R:\tmodificador_acceso: TOK_EXPOSED TOK_UNIQUE\n");}
+						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_EXPOSED TOK_UNIQUE\n");}
 					| TOK_HIDDEN 
-						{fprintf(fout, ";R:\tmodificador_acceso: TOK_HIDDEN\n");}
+						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_HIDDEN\n");}
 					| TOK_SECRET
-						{fprintf(fout, ";R:\tmodificador_acceso: TOK_SECRET\n");}
+						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_SECRET\n");}
 					| TOK_EXPOSED
-						{fprintf(fout, ";R:\tmodificador_acceso: TOK_EXPOSED\n");}
+						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_EXPOSED\n");}
 					| TOK_UNIQUE
-						{fprintf(fout, ";R:\tmodificador_acceso: TOK_UNIQUE\n");}
+						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_UNIQUE\n");}
 					;
 clase:	clase_escalar
 			{fprintf(fout, ";R:\tclase:	clase_escalar\n");}
@@ -125,9 +125,9 @@ funciones: 	/*vacio*/
 			| funcion funciones
 				{fprintf(fout, ";R:\tfunciones: funcion funciones\n");}
 			;
-funcion: 	TOK_FUNCTION modificador_acceso tipo_retorno TOK_IDENTIFICADOR 
+funcion: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR 
 			'(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
-				{fprintf(fout, ";R:\tfuncion: 	TOK_FUNCTION modificador_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");}
+				{fprintf(fout, ";R:\tfuncion: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");}
 			;
 tipo_retorno:	TOK_NONE
 					{fprintf(fout, ";R:\ttipo_retorno:	TOK_NONE\n");}
@@ -296,5 +296,5 @@ constante_logica:	TOK_TRUE
 %%
 
 void yyerror(char* s) {
-	
+	fprintf(stdout,"ERROR SINTACTICO:%d:%d\n", line_count, col_count);
 }
