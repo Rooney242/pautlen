@@ -23,7 +23,7 @@ typedef struct {
   	Node** nodes;
 } Adjacency_Matrix;
 
-Adjacency_Matrix* init_graph(Adjacency_Matrix* g);
+Adjacency_Matrix* init_graph();
 void free_graph(Adjacency_Matrix* g);
 Adjacency_Matrix* transpose_graph(Adjacency_Matrix* g);
 int insert_arc(Adjacency_Matrix* g, char* name1, char* name2);

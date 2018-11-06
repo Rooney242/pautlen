@@ -40,6 +40,7 @@ int free_tsc(tsc* t){
 	if(t->nombre) free(t->nombre);
 	if(t->main) free_tsa(t->main);
 	if(t->grafo) free_graph(t->grafo);
+	free(t);
 	return OK;
 }
 
@@ -59,23 +60,24 @@ int abrirClaseHereda(tsc* t, char* id_clase, ...){
 
 	va_start(names, id_clase);
 	num = 0;
-	va_arg(names, char*);
-	while(id_clase != NULL){
-		va_arg(names, char*);
+	name = id_clase;
+	id_clase = va_arg(names, char*);
+	while(id_clase){
+		if(num==0){
+			parents = (char**) malloc(sizeof(char*));
+			if(!parents) return ERROR;
+		}else{
+			parents = (char**) realloc(parents, (num+1)*sizeof(char*));
+			if(!parents) return ERROR;
+		}
+		parents[num] = id_clase;
 		num++;
-	}
-	va_end(names);
-
-	parents = (char**) malloc(num*sizeof(char*));
-	if(!parents) return ERROR;
-	name = va_arg(names, char*);
-	for (i = 0; i < num; i++){
-		parents[i] = va_arg(names, char*);
+		id_clase = va_arg(names, char*);
 	}
 	va_end(names);
 
 	ret = insert_class(t->grafo, name, parents, num);
-	free(parents);
+	if(parents) free(parents);
 	return ret;
 }
 

@@ -52,10 +52,10 @@ void pause() {
 }
 
 int main(int argc, char* argv[]) {
-  Adjacency_Matrix* g = (Adjacency_Matrix*) malloc(sizeof(Adjacency_Matrix));
+  Adjacency_Matrix* g;
   Adjacency_Matrix* tp;
   int* adjacency;
-  init_graph(g);
+  g = init_graph();
 
   int option, v, a1, a2;
   char name1[50], name2[50];
@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
           for (i=0; i<num; i++){
             printf("Parent name(%d): ", i);
             scanf("%s", name2);
-            parents[i] = (char*) malloc(strlen(name2)*sizeof(char));
+            parents[i] = (char*) malloc((strlen(name2)+1)*sizeof(char));
             strcpy(parents[i], name2);
             name2[0]='\0';
           }

@@ -10,7 +10,7 @@ tsa* init_tsa(char* name){
 	tsa* tsam;
 	tsam = (tsa*) malloc(sizeof(tsa));
 
-	tsam->ambito = (char*)malloc(sizeof(char)*strlen(name));
+	tsam->ambito = (char*)malloc(sizeof(char)*(strlen(name)+1));
 	strcpy(tsam->ambito, name);
 
 	tsam->ppal = ht_create(TSA_TAM);

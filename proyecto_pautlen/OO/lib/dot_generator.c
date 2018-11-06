@@ -7,7 +7,7 @@
 #include "graph.h"
 
 
-int generar_dot(tablaSimbolosClases* tabla, char* file_name){
+int generar_dot(tsc* tabla, char* file_name){
 	if(!tabla) return ERROR;
 	FILE * pf;
 	int i, k, num_parents, num_clases;
