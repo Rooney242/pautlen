@@ -9,7 +9,7 @@
 int main(int argc, char* argv[])
 {
     int error = 0;
-    int num_funciones = 10;
+    int num_funciones = 11;
     tsc* p_omicron;
 
     /* Inicializar la tabla de las clases */
@@ -35,6 +35,8 @@ int main(int argc, char* argv[])
     error+=abrirAmbitoEnClase(p_omicron, "AA", "mA1@1", METODO_SOBREESCRIBIBLE, ACCESO_TODOS, INT, 0, 0);
 
     //int vlmA1;
+    error+=insertarSimboloEnAmbitoEnClase(p_omicron, "AA", "mA1@1", "vlmA1", VARIABLE, INT, 0, 
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NINGUNO, 0, 0, 0, 0, 0, 0, 0, NULL);
     //printf v1;       //CASO 20: SE BUSCA UN ID NO CUALIFICADO v1 QUE NO ESTÁ EN LA JERARQUÍA.. ESTÁ EN MAIN ==> OK
     //return x;        //CASO 21: SE BUSCA UN ID NO CUALIFICADO x QUE NO ESTÁ EN NINGÚN LADO ==> ERR
 

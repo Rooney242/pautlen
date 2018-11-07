@@ -215,3 +215,48 @@ int insertarSimboloEnMain(tsc* t, char* simbolo, int categoria, int tipo,						i
 	return OK;
 
 }
+
+int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char* simbolo, int categoria,
+	int tipo,	int estructura,
+	int direcciones,					int numero_parametros,
+	int numero_variables_locales,		int posicion_variable_local,
+	int posicion_parametro,			int dimension,
+	int tamanio,					int filas,
+	int columnas,					int capacidad,
+	int numero_atributos_clase,			int numero_atributos_instancia,
+	int numero_metodos_sobreescribibles,	int numero_metodos_no_sobreescribibles,
+	int tipo_acceso,  				int tipo_miembro, 
+	int posicion_atributo_instancia,		int posicion_metodo_sobreescribible,
+	int num_acumulado_atributos_instancia,	int num_acumulado_metodos_sobreescritura,
+	int posicion_acumulada_atributos_instancia,
+	int posicion_acumulada_metodos_sobreescritura,
+	int * tipo_args){
+
+	tsa_elem* elem;
+	tsa* clase;
+	clase = get_class(t, id_clase);	
+	if(!t || !clase) return ERROR;
+	
+	elem = ppal_get(clase, id_ambito);
+	if(!elem) return ERROR;
+	if(elem->simbolo_cerrado == TRUE) return ERROR;
+
+	elem = init_tsa_elem();
+	set_tsa_elem(elem, categoria, tipo,	estructura,
+	direcciones,					 numero_parametros,
+	numero_variables_locales,		posicion_variable_local,
+	posicion_parametro,			dimension,
+	tamanio,					filas,
+	columnas,					capacidad,
+	numero_atributos_clase,		numero_atributos_instancia,
+	numero_metodos_sobreescribibles,	numero_metodos_no_sobreescribibles,
+	tipo_acceso,  				tipo_miembro, 
+	posicion_atributo_instancia,		posicion_metodo_sobreescribible,
+	num_acumulado_atributos_instancia,	num_acumulado_metodos_sobreescritura,
+	posicion_acumulada_atributos_instancia,
+	posicion_acumulada_metodos_sobreescritura,
+	tipo_args, TRUE);
+	if(!met_put(clase, simbolo, elem)) return ERROR;
+	return OK;
+
+}
