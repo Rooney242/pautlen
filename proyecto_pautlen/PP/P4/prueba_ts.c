@@ -21,7 +21,7 @@
 #define TOK_NOMBRE_ID					"nombre_id" 
 #define TOK_NOMBRE_CLASE_DESDE 			"nombre_clase_desde"
 #define TOK_NOMBRE_MIEMBRO 				"nombre_miembro"
-#define TOK_declarar_id_local_metodo	"declarar_id_local_metodo"
+#define TOK_DECLARAR_ID_LOCAL_METODO	"declarar_id_local_metodo"
 #define TOK_NOMBRE_CLASE 				"nombre_clase"
 #define TOK_JERARQUIA 					"jerarquia"
 #define TOK_ID_NO_CUALIFICADO 			"id_no_cualificado"
