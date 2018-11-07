@@ -9,10 +9,48 @@
 // Inititalize hashtable iterator on hashtable 'ht'
 #define HT_ITERATOR(ht) {ht, 0, ht->table[0]}
 
+typedef struct {
+	int categoria; /* VARIABLE PARAMETRO FUNCION CLASE 
+	METODO_SOBREESCRIBIBLE METODO_NO_SOBREESCRIBIBLE 
+	ATRIBUTO_CLASE ATRIBUTO_INSTANCIA */
+	int tipo;/* INT FLOAT (no este curso) BOOLEAN Y PARA LAS 
+	CLASES, ALGÚN MECANISMO (-índice en el vector del 
+	grafo??)  */	    
+	int estructura; 
+	int direcciones;        /* >=1  SI ES VARIABLE 1*/
+	int numero_parametros;  /* >=0 */
+	int numero_variables_locales;	/* >=0 */
+	int posicion_variable_local;	/* >=1 */
+	int posicion_parametro;			/* >=0 */
+	int dimension;		/* 1,2 (no este curso) */
+	int tamanio;		/* 1-64 */
+	int filas;			/* 1-64 (no este curso) */
+	int columnas;		/* 1-64 (no este curso)*/
+	int capacidad;		/* 1-64 (no este curso) */
+	/* INFORMACION PARA CLASES */
+	int numero_atributos_clase;
+	int numero_atributos_instancia;
+	int numero_metodos_sobreescribibles;
+	int numero_metodos_no_sobreescribibles;
+	int tipo_acceso;/*NINGUNO (exposed) ACCESO_CLASE (hidden) 
+	ACCESO_HERENCIA	(secret) ACCESO_TODOS (exposed) */
+	int tipo_miembro;/*MIEMBRO_UNICO (unique) MIEMBRO_NO_UNICO*/
+	int posicion_atributo_instancia;
+	int posicion_metodo_sobreescribible;
+	int num_acumulado_atributos_instancia;
+	int num_acumulado_metodos_sobreescritura;
+	int posicion_acumulada_atributos_instancia;
+	int posicion_acumulada_metodos_sobreescritura;
+	int * tipo_args;
+	int simbolo_cerrado;
+   
+}tsa_elem;
+
+
 //Hashtable element structure
 typedef struct hash_elem_t {
 	struct hash_elem_t* next; // Next element in case of a collision
-	void* data;	// Pointer to the stored element
+	tsa_elem* data;	// Pointer to the stored element
 	char key[]; 	// Key of the stored element
 }hash_elem_t;
 
@@ -44,10 +82,10 @@ hashtable_t* ht_create(unsigned int capacity);
 /* 	Store data in the hashtable. If data with the same key are already stored,
 	they are overwritten, and return by the function. Else it return NULL.
 	Return HT_ERROR if there are memory alloc error*/
-void* ht_put(hashtable_t* hasht, char* key, void* data);
+void* ht_put(hashtable_t* hasht, char* key, tsa_elem* data);
 
 /* Retrieve data from the hashtable */
-void* ht_get(hashtable_t* hasht, char* key);
+tsa_elem* ht_get(hashtable_t* hasht, char* key);
 
 /* 	Remove data from the hashtable. Return the data removed from the table
 	so that we can free memory if needed */
@@ -76,6 +114,27 @@ void ht_clear(hashtable_t* hasht, int free_data);
 /* 	Destroy the hash table, and free memory.
 	Data still stored are freed*/
 void ht_destroy(hashtable_t* hasht);
+
+/************************************************************************************************************/
+
+/*Funciones de los elementos de la TSA. De momento sin control de errorres*/
+tsa_elem* init_tsa_elem();
+tsa_elem* set_tsa_elem(tsa_elem* elem, int categoria, int tipo,						int estructura,
+	int direcciones,					int numero_parametros,
+	int numero_variables_locales,		int posicion_variable_local,
+	int posicion_parametro,			int dimension,
+	int tamanio,					int filas,
+	int columnas,					int capacidad,
+	int numero_atributos_clase,			int numero_atributos_instancia,
+	int numero_metodos_sobreescribibles,	int numero_metodos_no_sobreescribibles,
+	int tipo_acceso,  				int tipo_miembro, 
+	int posicion_atributo_instancia,		int posicion_metodo_sobreescribible,
+	int num_acumulado_atributos_instancia,	int num_acumulado_metodos_sobreescritura,
+	int posicion_acumulada_atributos_instancia,
+	int posicion_acumulada_metodos_sobreescritura,
+	int * tipo_args, int simbolo_cerrado);
+
+tsa_elem* get_tsa_elem(hashtable_t* table, char* clave);
 
 
 
