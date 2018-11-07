@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "macros.h"
 #include "hash_table.h"
 
 char err_ptr;
@@ -41,7 +42,7 @@ hashtable_t* ht_create(unsigned int capacity)
 /* 	Store data in the hashtable. If data with the same key are already stored,
 	we return NULL. Else it return NULL.
 	Return HT_ERROR if there are memory alloc error*/
-void* ht_put(hashtable_t* hasht, char* key, void* data)
+void* ht_put(hashtable_t* hasht, char* key, tsa_elem* data)
 {
 	if(data == NULL)
 		return NULL;
@@ -52,11 +53,12 @@ void* ht_put(hashtable_t* hasht, char* key, void* data)
 	{
 		if(!strcmp(e->key, key))
 		{
-			return NULL;
+			if(e->data->simbolo_cerrado) return NULL;
+			e->data = data;
+			return e;
 		}
 		e = e->next;
 	}
-
 	// Getting here means the key doesn't already exist
 
 	if((e = malloc(sizeof(hash_elem_t)+strlen(key)+1)) == NULL)
@@ -69,11 +71,11 @@ void* ht_put(hashtable_t* hasht, char* key, void* data)
 	hasht->table[h] = e;
 	hasht->e_num ++;
 
-	return NULL;
+	return e;
 }
 
 /* Retrieve data from the hashtable */
-void* ht_get(hashtable_t* hasht, char* key)
+tsa_elem* ht_get(hashtable_t* hasht, char* key)
 {
 	unsigned int h = ht_calc_hash(key) % hasht->capacity;
 	hash_elem_t* e = hasht->table[h];
@@ -203,4 +205,97 @@ void ht_destroy(hashtable_t* hasht)
 	ht_clear(hasht, 1); // Delete and free all.
 	free(hasht->table);
 	free(hasht);
+}
+
+/*Funciones de los elementos de la TSA. De momento sin control de errorres*/
+
+tsa_elem* init_tsa_elem(){
+	tsa_elem* elem;
+	elem = (tsa_elem*) malloc(sizeof(tsa_elem));
+	if(!elem) return NULL;
+	elem->categoria = 0;
+	elem->tipo = 0;
+	elem->estructura = 0;
+	elem->direcciones = 0;
+	elem->numero_parametros = 0;
+	elem->numero_variables_locales = 0;
+	elem->posicion_variable_local = 0;
+	elem->posicion_parametro = 0;
+	elem->dimension = 0;
+	elem->tamanio = 0;
+	elem->filas = 0;
+	elem->columnas = 0;
+	elem->capacidad = 0;
+	elem->numero_atributos_clase = 0;
+	elem->numero_atributos_instancia = 0;
+	elem->numero_metodos_sobreescribibles = 0;
+	elem->numero_metodos_no_sobreescribibles = 0;
+	elem->tipo_acceso = 0;
+	elem->tipo_miembro = 0;
+	elem->posicion_atributo_instancia = 0;
+	elem->posicion_metodo_sobreescribible = 0;
+	elem->num_acumulado_atributos_instancia = 0;
+	elem->num_acumulado_metodos_sobreescritura = 0;
+	elem->posicion_acumulada_atributos_instancia = 0;
+	elem->posicion_acumulada_metodos_sobreescritura = 0;
+	elem->tipo_args = NULL;
+	elem->simbolo_cerrado = FALSE;
+
+	return elem;
+}
+
+
+tsa_elem* set_tsa_elem(tsa_elem* elem, int categoria, int tipo,						int estructura,
+	int direcciones,					int numero_parametros,
+	int numero_variables_locales,		int posicion_variable_local,
+	int posicion_parametro,			int dimension,
+	int tamanio,					int filas,
+	int columnas,					int capacidad,
+	int numero_atributos_clase,			int numero_atributos_instancia,
+	int numero_metodos_sobreescribibles,	int numero_metodos_no_sobreescribibles,
+	int tipo_acceso,  				int tipo_miembro, 
+	int posicion_atributo_instancia,		int posicion_metodo_sobreescribible,
+	int num_acumulado_atributos_instancia,	int num_acumulado_metodos_sobreescritura,
+	int posicion_acumulada_atributos_instancia,
+	int posicion_acumulada_metodos_sobreescritura,
+	int * tipo_args, int simbolo_cerrado){
+		if(!elem) return NULL;
+
+		elem->categoria = categoria;
+		elem->tipo = tipo;
+		elem->estructura = estructura;
+		elem->direcciones = direcciones;
+		elem->numero_parametros = numero_parametros;
+		elem->numero_variables_locales = numero_variables_locales;
+		elem->posicion_variable_local = posicion_variable_local;
+		elem->posicion_parametro = posicion_parametro;
+		elem->dimension = dimension;
+		elem->tamanio = tamanio;
+		elem->filas = filas;
+		elem->columnas = columnas;
+		elem->capacidad = capacidad;
+		elem->numero_atributos_clase = numero_atributos_clase;
+		elem->numero_atributos_instancia = numero_atributos_instancia;
+		elem->numero_metodos_sobreescribibles = numero_metodos_sobreescribibles;
+		elem->numero_metodos_no_sobreescribibles = numero_metodos_no_sobreescribibles;
+		elem->tipo_acceso = tipo_acceso;
+		elem->tipo_miembro = tipo_miembro;
+		elem->posicion_atributo_instancia = posicion_atributo_instancia;
+		elem->posicion_metodo_sobreescribible = posicion_metodo_sobreescribible;
+		elem->num_acumulado_atributos_instancia = num_acumulado_atributos_instancia;
+		elem->num_acumulado_metodos_sobreescritura = num_acumulado_metodos_sobreescritura;
+		elem->posicion_acumulada_atributos_instancia = posicion_acumulada_atributos_instancia;
+		elem->posicion_acumulada_metodos_sobreescritura = posicion_acumulada_metodos_sobreescritura;
+		elem->tipo_args = tipo_args;
+		elem->simbolo_cerrado = simbolo_cerrado;
+
+		return elem;
+}
+
+tsa_elem* get_tsa_elem(hashtable_t* table, char* clave){
+	return ht_get(table, clave); 
+}
+
+int put_tsa_elem(hashtable_t* table, char* clave, tsa_elem* elem){
+	if(!ht_put(table, clave, elem)) return ERROR;
 }

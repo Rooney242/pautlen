@@ -5,6 +5,6 @@
 
 #define OUTPUT_FILE "grafo"
 
-int generar_dot(tablaSimbolosClases* tabla, char* file_name);
+int generar_dot(tsc* tabla, char* file_name);
 
 #endif

@@ -5,7 +5,14 @@
 #include "macros.h"
 #include "tsa.h"
 
-Adjacency_Matrix* init_graph(Adjacency_Matrix* g) {
+Adjacency_Matrix* init_graph() {
+  Adjacency_Matrix* g;
+  g = (Adjacency_Matrix*) malloc(sizeof(Adjacency_Matrix));
+  if (!g){
+    free_graph(g);
+    return NULL;
+  }
+
   g->vertex_count = 0;
   g->arcs = NULL;
   g->nodes = NULL;
@@ -277,10 +284,8 @@ Node* init_node(char* name){
   node = (Node*) malloc(sizeof(Node));
 
   node->tsa = init_tsa(name);
-  node->name = (char*) malloc(strlen(name) * sizeof(char));
+  node->name = (char*) malloc((strlen(name)+1) * sizeof(char));
   strcpy(node->name, name);
-
-  node->num_atributos_clase = node->num_atributos_instancia = node->num_metodos_sobreescribibles = node->num_metodos_no_sobreescribibles = 0;
   return node;
 }
 
@@ -306,4 +311,12 @@ int get_node_index(Adjacency_Matrix* g, char* name){
   }else{
     return ERROR;
   }
+}
+
+
+tsa* get_node_tsa(Adjacency_Matrix* g, char* name){
+  int index;
+  index = get_node_index(g, name);
+  if(index == ERROR) return NULL;
+  return g->nodes[index]->tsa;
 }

@@ -32,7 +32,7 @@ hash:
 
 hash-test: hash
 	@echo Compilando tester del modulo de la tabla hash...
-	@$(CC) -o $(LIBRARIES)test_$(HASH) $(LIBRARIES)$(HASH).o $(LIBRARIES)test_$(HASH).c
+	@$(CC) -o $(LIBRARIES)test_$(HASH) $(OBJ_FOLDER)$(HASH).o $(LIBRARIES)test_$(HASH).c $(HASH_DEPS)
 
 graph: tsa
 	@echo Compilando modulo de grafos...
