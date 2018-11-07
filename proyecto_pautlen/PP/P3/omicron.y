@@ -95,10 +95,10 @@ clase:	clase_escalar
 		| clase_objeto
 			{fprintf(fout, ";R:\tclase:	clase_objeto\n");}
 		;
-declaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}'
-						{fprintf(fout, ";R:\tdeclaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}'\n");}
-					| modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'
-						{fprintf(fout, ";R:\tdeclaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'\n");}
+declaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'
+						{fprintf(fout, ";R:\tdeclaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'\n");}
+					| modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones_funcion funciones '}'
+						{fprintf(fout, ";R:\tdeclaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones_funcion funciones '}'\n");}
 					;
 modificadores_clase: /*vacio*/
 						{fprintf(fout, ";R:\tmodificadores_clase: \n");}
