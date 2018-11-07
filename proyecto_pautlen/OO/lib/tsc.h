@@ -94,5 +94,8 @@ int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char
 	int * tipo_args);
 
 
+int buscarTablaSimbolosAmbitosConPrefijos(tsc* t, char* id, char* id_ambito);
+
+
 
 #endif

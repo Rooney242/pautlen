@@ -9,7 +9,7 @@
 // Inititalize hashtable iterator on hashtable 'ht'
 #define HT_ITERATOR(ht) {ht, 0, ht->table[0]}
 
-typedef struct {
+typedef struct { //TODO: añadir clase
 	int categoria; /* VARIABLE PARAMETRO FUNCION CLASE 
 	METODO_SOBREESCRIBIBLE METODO_NO_SOBREESCRIBIBLE 
 	ATRIBUTO_CLASE ATRIBUTO_INSTANCIA */

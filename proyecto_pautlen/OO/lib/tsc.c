@@ -8,6 +8,17 @@
 #include "tsc.h"
 #include "hash_table.h"
 
+char* _concat_prefix(char* prefix, char* symbol){
+	char*  full_symbol;
+	full_symbol = (char*)malloc(sizeof(char)*(strlen(prefix)+strlen(symbol)+2));
+	if(!full_symbol) return NULL;
+	strcpy(full_symbol, prefix);
+	full_symbol = strcat(full_symbol, "_");
+	full_symbol = strcat(full_symbol, symbol);
+
+	return full_symbol;
+
+}
 
 tsc* init_tsc(char * nombre){
 	tsc* t;
@@ -121,18 +132,30 @@ void graph_enrouteParentsLastNode(tsc * g){
 
 int abrirAmbitoEnClase(tsc * t, char * id_clase, char* id_ambito, int categoria, int acceso_metodo, int tipo_metodo, int posicion_metodo_sobreescribible, 	int tamanio){
 	tsa* clase;
+	int ret;
+	char* pref_simbolo;
 	clase = get_class(t, id_clase);
 	if(!t || !clase) return ERROR;
 
-	return open_scope_met(clase, id_ambito, categoria, acceso_metodo, tipo_metodo, posicion_metodo_sobreescribible, tamanio);
+	pref_simbolo = _concat_prefix(id_clase, id_ambito);
+
+	ret = open_scope_met(clase, pref_simbolo, categoria, acceso_metodo, tipo_metodo, posicion_metodo_sobreescribible, tamanio);
+	free(pref_simbolo);
+	return ret;
 }
 
 int cerrarAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito){
 	tsa* clase;
+	int ret;
+	char* pref_simbolo;
 	clase = get_class(t, id_clase);
 	if(!t || !clase) return ERROR;
 
-	return close_scope_met(clase, id_ambito);
+	pref_simbolo = _concat_prefix(id_clase, id_ambito);
+
+	ret = close_scope_met(clase, pref_simbolo);
+	free(pref_simbolo);
+	return ret;
 
 }
 
@@ -153,6 +176,7 @@ int insertarSimboloEnClase(tsc* t, char* id_clase, char* simbolo, int categoria,
 
 	tsa_elem* elem;
 	tsa* clase;
+	char* pref_simbolo;
 	clase = get_class(t, id_clase);	
 	if(!t || !clase) return ERROR;
 	elem = init_tsa_elem();
@@ -172,7 +196,11 @@ int insertarSimboloEnClase(tsc* t, char* id_clase, char* simbolo, int categoria,
 	posicion_acumulada_atributos_instancia,
 	posicion_acumulada_metodos_sobreescritura,
 	tipo_args, TRUE);
-	if(!ppal_put(clase, simbolo, elem)) return ERROR;
+
+	pref_simbolo = _concat_prefix(id_clase, simbolo);
+
+	if(!ppal_put(clase, pref_simbolo, elem)) return ERROR;
+	free(pref_simbolo);
 	return OK;
 
 }
@@ -193,7 +221,7 @@ int insertarSimboloEnMain(tsc* t, char* simbolo, int categoria, int tipo,						i
 	int * tipo_args){
 
 	tsa_elem* elem;
-	tsa* clase;
+	char* pref_simbolo;
 
 	elem = init_tsa_elem();
 	if(!elem) return ERROR;
@@ -211,7 +239,11 @@ int insertarSimboloEnMain(tsc* t, char* simbolo, int categoria, int tipo,						i
 	posicion_acumulada_atributos_instancia,
 	posicion_acumulada_metodos_sobreescritura,
 	tipo_args, TRUE);
-	if(!ppal_put(t->main, simbolo, elem)) return ERROR;
+
+	pref_simbolo = _concat_prefix(TSA_MAIN, simbolo);
+
+	if(!ppal_put(t->main, pref_simbolo, elem)) return ERROR;
+	free(pref_simbolo);
 	return OK;
 
 }
@@ -234,6 +266,7 @@ int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char
 
 	tsa_elem* elem;
 	tsa* clase;
+	char* pref_simbolo;
 	clase = get_class(t, id_clase);	
 	if(!t || !clase) return ERROR;
 	
@@ -256,7 +289,60 @@ int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char
 	posicion_acumulada_atributos_instancia,
 	posicion_acumulada_metodos_sobreescritura,
 	tipo_args, TRUE);
-	if(!met_put(clase, simbolo, elem)) return ERROR;
+
+	pref_simbolo = _concat_prefix(id_ambito, simbolo);
+
+	if(!met_put(clase, pref_simbolo, elem)) return ERROR;
+	free(pref_simbolo);
 	return OK;
+
+}
+
+/****FUNCIONES DE BUSQUEDA***********/
+/*Encuentra la tsa de la clase en funcion de un ambito, ya sea el de la clase o el de una funcion de la clase*/
+tsa* _get_tsa_from_scope(tsc* t, char* scope){
+	tsa* table;
+	tsa_elem* elem;
+	int i;
+	char* function;
+	if(!t || !scope) return NULL;
+	table = get_node_tsa(t->grafo, scope);
+	if(!table){/*Caso de estar en el ambito de una funcion o error, vemos todos los ambitos*/
+		for(i=0; i<t->grafo->vertex_count || !elem; i++){
+			function = _concat_prefix(t->grafo->nodes[i]->name, scope);
+			table = t->grafo->nodes[i]->tsa;
+			elem = ppal_get(table, function); 
+			free(function);
+		}
+		if(!elem){/*Puede estar en el main*/
+			table = t->main;
+			elem = ppal_get(t->main, function);
+		}
+		if(!elem){/*error*/
+			table = NULL;
+		}
+	}
+	return table;
+}
+
+int buscarTablaSimbolosAmbitosConPrefijos(tsc* t, char* id, char* id_ambito){
+	tsa* table;
+	tsa_elem* elem = NULL;
+	if(!t || !id || !id_ambito) return ERROR;
+	/*En el caso de que estemos dentro del ambito de una funcion buscamos en el
+		(en realidad por comodidad no miramos si estamos en una funcion, si no estamos la tabla hash auxiliar estara
+		vacia y no hay posibilidad de encontrar nada)*/
+
+	table = _get_tsa_from_scope(t, id_ambito);
+	if(!table) return ERROR;
+
+	/*Miro si esta en el ambito de la posible funcion o de la clase*/
+	elem = met_get(table, id);
+	if(elem) return OK;
+	elem = ppal_get(table, id);
+	if(elem) return OK;
+
+	/*Nos queda mirar en la jerarquia*/
+
 
 }

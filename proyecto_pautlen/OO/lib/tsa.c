@@ -81,6 +81,8 @@ int open_scope_met(tsa* t, char* id_ambito, int categoria, int tipo_acceso, int 
 
 	if(!ppal_put(t, id_ambito, elem)) return ERROR;
 
+	if(!met_put(t, id_ambito, elem)) return ERROR;
+
 	return OK;
 
 
@@ -89,6 +91,8 @@ int open_scope_met(tsa* t, char* id_ambito, int categoria, int tipo_acceso, int 
 /*Se realizan los cambios necesarios para actualizar el ambito y se limpia la tabla hash auxiliar*/
 int close_scope_met(tsa* t, char*id_ambito){
 	if(!t || !id_ambito) return ERROR;
+
+	met_remove(t, id_ambito);
 
 	tsa_elem* elem;
 	elem = ppal_get(t, id_ambito);

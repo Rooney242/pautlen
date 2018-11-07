@@ -48,6 +48,8 @@ int main(int argc, char* argv[])
 
     error+=cerrarClase(p_omicron, "AA", 3, 0, 1, 0);
 
+    printf("%d\n", buscarTablaSimbolosAmbitosConPrefijos(p_omicron, "a1", "AA"));
+
 
     error+=close_tsc(p_omicron);
     error+=free_tsc(p_omicron);
