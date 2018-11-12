@@ -8,59 +8,113 @@
 /*******************************************************************************************/
 int main(int argc, char* argv[])
 {
-    int error = 0;
+    int error = 1;
     int num_funciones = 11;
     tsc* p_omicron;
+    tsa* tsa_aux;
 
     /* Inicializar la tabla de las clases */
     p_omicron = init_tsc("ejemplo_omicron");
 
-    //int v1;
-    error+=insertarSimboloEnMain(p_omicron, "v1", VARIABLE, INT, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NINGUNO, 0, 0, 0, 0, 0, 0, 0, NULL);
+    if(!insertarSimboloEnMain(p_omicron, "v1", VARIABLE, INT, 0, 
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NINGUNO, 0, 0, 0, 0, 0, 0, 0, NULL)){
+        printf("Error: %d\n", error);
+        return 0;
+    }
+    error++;
 
     //class AA{
-    error+=abrirClase(p_omicron, "AA");
-    error+=abrirAmbitoClase(p_omicron, "AA", 0);
+    if(!abrirClase(p_omicron, "AA")){
+        printf("Error: %d\n", error);
+        return 0;
+    }
+    error++;
+    if(!abrirAmbitoClase(p_omicron, "AA", 0)){
+        printf("Error: %d\n", error);
+        return 0;
+    }
+    error++;
 
     // exposed unique int a1;
-    error+=insertarSimboloEnClase(p_omicron, "AA", "a1", VARIABLE, INT, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    if(!insertarSimboloEnClase(p_omicron, "AA", "a1", VARIABLE, INT, 0, 
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL)){
+        printf("Error: %d\n", error);
+        return 0;
+    }
+    error++;
 
     //hidden int sa1;
-    error+=insertarSimboloEnClase(p_omicron, "AA", "sa1", VARIABLE, INT, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    if(!insertarSimboloEnClase(p_omicron, "AA", "sa1", VARIABLE, INT, 0, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, HIDDEN, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL)){
+        printf("Error: %d\n", error);
+        return 0;
+    }
+    error++;
 
     //function exposed int mA1(int pmA1) {
-    error+=abrirAmbitoEnClase(p_omicron, "AA", "mA1@1", METODO_SOBREESCRIBIBLE, ACCESO_TODOS, INT, 0, 0);
+    if(!abrirAmbitoEnClase(p_omicron, "AA", "mA1@1", METODO_SOBREESCRIBIBLE, EXPOSED, INT, 0, 0)){
+        printf("Error: %d\n", error);
+        return 0;
+    }
+    error++;
 
     //int vlmA1;
-    error+=insertarSimboloEnAmbitoEnClase(p_omicron, "AA", "mA1@1", "vlmA1", VARIABLE, INT, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NINGUNO, 0, 0, 0, 0, 0, 0, 0, NULL);
+    if(!insertarSimboloEnAmbitoEnClase(p_omicron, "AA", "mA1@1", "vlmA1", VARIABLE, INT, 0, 
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NINGUNO, 0, 0, 0, 0, 0, 0, 0, NULL)){
+        printf("Error: %d\n", error);
+        return 0;
+    }
+    error++;
     //printf v1;       //CASO 20: SE BUSCA UN ID NO CUALIFICADO v1 QUE NO ESTÁ EN LA JERARQUÍA.. ESTÁ EN MAIN ==> OK
+     if(buscarIdNoCualificado(p_omicron, "v1", "mA1@1", &tsa_aux)){
+        printf("simbolo encontrado en %s\n", tsa_aux->ambito);
+    }else{
+        printf("simbolo NO encontrado\n");
+    }
+
     //return x;        //CASO 21: SE BUSCA UN ID NO CUALIFICADO x QUE NO ESTÁ EN NINGÚN LADO ==> ERR
+    if(buscarIdNoCualificado(p_omicron, "x", "mA1@1", &tsa_aux)){
+        printf("simbolo encontrado en %s\n", tsa_aux->ambito);
+    }else{
+        printf("simbolo NO encontrado\n");
+    }
 
 
     //}
-    error+=cerrarAmbitoEnClase(p_omicron, "AA", "mA1@1");
+    if(!cerrarAmbitoEnClase(p_omicron, "AA", "mA1@1")){
+        printf("Error: %d\n", error);
+        return 0;
+    }
+    error++;
 
     //};
 
-    error+=cerrarClase(p_omicron, "AA", 3, 0, 1, 0);
-
-    printf("%d\n", buscarTablaSimbolosAmbitosConPrefijos(p_omicron, "a1", "AA"));
-
-
-    error+=close_tsc(p_omicron);
-    error+=free_tsc(p_omicron);
-    //fclose(fsalida);
-    if(error == num_funciones){
-        printf("No ha habido ningun error\n");
-    }else{
-        printf("Ha habido ERRORES\n");
+    if(!cerrarClase(p_omicron, "AA", 3, 0, 1, 0)){
+        printf("Error: %d\n", error);
+        return 0;
     }
+    error++;
+
+
+    if(!close_tsc(p_omicron)){
+        printf("Error: %d\n", error);
+        return 0;
+    }
+    error++;
+    if(!free_tsc(p_omicron)){
+        printf("Error: %d\n", error);
+        return 0;
+    }
+    error++;
+    //fclose(fsalida);
+
+    printf("El programa ha terminado perfectamente y sin errores\n");
 	return 0;
 }
+
+
+
+
 /*
 main
 {

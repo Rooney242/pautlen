@@ -29,9 +29,9 @@
 
 /*Tipo acceso*/
 #define NINGUNO 40 //(exposed)
-#define ACCESO_CLASE 41 //(hidden) 
-#define ACCESO_HERENCIA 42 //(secret)
-#define ACCESO_TODOS 43 //(exposed)
+#define HIDDEN 41 //(hidden) 
+#define SECRET 42 //(secret)
+#define EXPOSED 43 //(exposed)
 
 /*Tipo miembro*/
 #define MIEMBRO_UNICO 50

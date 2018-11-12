@@ -270,9 +270,8 @@ int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char
 	clase = get_class(t, id_clase);	
 	if(!t || !clase) return ERROR;
 	
-	elem = ppal_get(clase, id_ambito);
+	elem = init_tsa_elem();
 	if(!elem) return ERROR;
-	if(elem->simbolo_cerrado == TRUE) return ERROR;
 
 	elem = init_tsa_elem();
 	set_tsa_elem(elem, categoria, tipo,	estructura,
@@ -306,6 +305,7 @@ tsa* _get_tsa_from_scope(tsc* t, char* scope){
 	int i;
 	char* function;
 	if(!t || !scope) return NULL;
+	if(!strcmp(scope, TSA_MAIN)) return t->main;
 	table = get_node_tsa(t->grafo, scope);
 	if(!table){/*Caso de estar en el ambito de una funcion o error, vemos todos los ambitos*/
 		for(i=0; i<t->grafo->vertex_count || !elem; i++){
@@ -325,24 +325,140 @@ tsa* _get_tsa_from_scope(tsc* t, char* scope){
 	return table;
 }
 
-int buscarTablaSimbolosAmbitosConPrefijos(tsc* t, char* id, char* id_ambito){
+/*Dado un id y el ambito desde el que se quiere acceder a el se aplica si se tiene acceso a dicho elemento*/
+int aplicarAccesos(tsc* t, char* id, char* ambito_id, char* ambito_actual){
 	tsa* table;
+	char* real_id;
 	tsa_elem* elem = NULL;
+	char** parents_names;
+	int acceso, num_parents, i;
+
+	if(!t || !id ||!ambito_id || !ambito_actual) return ERROR;
+	table = _get_tsa_from_scope(t, ambito_id);
+	if(!table) return ERROR;
+
+	
+	/*Primero sacamos los permisos del simbolo antes de ver en que caso nos encontramos*/
+	real_id = _concat_prefix(table->ambito, id);
+	elem = ppal_get(table, real_id);
+	if(!elem) return ERROR;
+	acceso = elem->tipo_acceso;
+
+	/*Caso en el que estemos buscando desde el main, solo no se puede si es hidden*/
+	if(!strcmp(ambito_actual, TSA_MAIN)){
+		if(acceso == HIDDEN) return FALSE;
+		return TRUE;
+	}else{/*Caso de no estar en el main*/
+		/*Si estoy en la misma clase donde se declaro puedo acceder seguro*/
+		if(!strcmp(ambito_actual, ambito_id)) return TRUE;
+		if(acceso == HIDDEN){/*Si es hidden solo se puede acceder desde la clase que se declaro*/
+			return FALSE;
+		}else if(acceso == SECRET){/*Si es secreto se puede si soy hijo de esa clase*/
+			num_parents = get_parents_names(t->grafo, parents_names, ambito_actual);
+			for (i=0; i<num_parents; i++){
+				if(!strcmp(parents_names[i], ambito_actual)) return TRUE;
+			}
+			return FALSE;
+		}
+		/*Si es exposed o ninguno se puede acceder siempre*/
+		return TRUE;
+	}
+
+}
+
+/*Dado un id y un ambito devuelve si se puede llegar a conocer la identidad de ese id desde el ambito pasado.
+	Devuelve el ambito donde se ha encontrado dicho simbolo o NULL en caso de que no se halla encontrado*/
+int buscarIdEnJerarquiaDesdeAmbito(tsc* t, char* id, char* id_ambito, tsa** table){
+	int num_parents, i;
+	Node ** parents = NULL;
+	tsa_elem* elem = NULL;
+	char* real_id;
 	if(!t || !id || !id_ambito) return ERROR;
 	/*En el caso de que estemos dentro del ambito de una funcion buscamos en el
 		(en realidad por comodidad no miramos si estamos en una funcion, si no estamos la tabla hash auxiliar estara
 		vacia y no hay posibilidad de encontrar nada)*/
 
-	table = _get_tsa_from_scope(t, id_ambito);
+	*table = _get_tsa_from_scope(t, id_ambito);
 	if(!table) return ERROR;
 
 	/*Miro si esta en el ambito de la posible funcion o de la clase*/
-	elem = met_get(table, id);
-	if(elem) return OK;
-	elem = ppal_get(table, id);
-	if(elem) return OK;
+	real_id = _concat_prefix(id_ambito, id);	
+	elem = met_get(*table, real_id);
+	free(real_id);
+	if(elem) return TRUE;
 
-	/*Nos queda mirar en la jerarquia*/
+	real_id = _concat_prefix((*table)->ambito, id);	
+	elem = ppal_get(*table, real_id);
+	free(real_id);
+	if(elem) return TRUE;
 
+	/*Llegados aqui el simbolo no esta en el ambito en el que esta siendo llamado, nos queda mirar en la jerarquia*/
+	num_parents = get_parents(t->grafo, parents, (*table)->ambito);
+	/*Buscamos en todos sus padres en orden inverso para asi llegar antes a los padres mas directos*/
+	for (i=num_parents-1; i>=0; i--){
+		real_id = _concat_prefix(parents[i]->tsa->ambito, id);
+		elem = ppal_get(parents[i]->tsa, real_id);
+		free(real_id);
+		if(elem){
+			*table = parents[i]->tsa;
+			return TRUE;
+		}
+	}
+
+	/*Si no esta en su ambito o en la jerarquia de herencia de ese ambito solo puede estar en el main*/
+	real_id = _concat_prefix(t->main->ambito, id);
+	elem = ppal_get(t->main, real_id);
+	free(real_id);
+	if(elem){
+		*table = t->main;
+		return TRUE;
+	}
+
+
+	/*Llegados a este punto hemos mirado en todos los posibles sitios donde podria estar el id y no esta, no se puede llegar*/
+	if(parents) free(parents);
+	*table = NULL;
+	return FALSE;
 
 }
+
+/*Dado un id sin cualificar y el ambito desde el que se quiere acceder devuelve true si se puede llegar a ese id
+	y se tiene permiso para ello*/
+int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, tsa** tsa_encontrada){
+	int ret, i;
+	char * real_id;
+	tsa_elem* elem=NULL;
+	if(!t || !nombre_id || !nombre_ambito_desde) return ERROR;
+
+	/*Miramos si podemos llegar a la clase del simbolo desde donde estamos*/
+	if(strcmp(nombre_ambito_desde, TSA_MAIN)){
+		ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_ambito_desde, tsa_encontrada);
+		if(ret == TRUE){/*Si se puede llegar miramos los accesos*/
+			return aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde);
+		}else{
+			return ret;
+		}
+	}else{/*Si estamos en el main buscamos en todas las tsa*/
+		/*Buscamos en el main*/
+		real_id = _concat_prefix(t->main->ambito, nombre_id);
+		elem = ppal_get(t->main, real_id);
+		free(real_id);
+		if(elem){
+			*tsa_encontrada = t->main;
+			return aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde);
+		}
+		/*Si no esta buscamos en el resto de tsa*/
+		for(i=0; i<t->grafo->vertex_count; i++){
+			real_id = _concat_prefix(t->grafo->nodes[i]->tsa->ambito, nombre_id);
+			elem = ppal_get(t->grafo->nodes[i]->tsa, real_id);
+			free(real_id);
+			if(elem){
+				*tsa_encontrada = t->grafo->nodes[i]->tsa;
+				return aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde);
+			}
+		}
+		return FALSE;
+	}
+}
+
+

@@ -238,8 +238,9 @@ int get_parents(Adjacency_Matrix* g, Node** parents, char* name){
   return pind;
 } 
 
+//Hay que liberar parents_names
 int get_parents_names(Adjacency_Matrix* g, char** parents_names, char* name){
-  Node ** parents;
+  Node ** parents = NULL;
   int i, num_parents;
   num_parents = get_parents(g, parents, name);
   parents_names = (char**) malloc(num_parents*sizeof(char*));
@@ -247,7 +248,7 @@ int get_parents_names(Adjacency_Matrix* g, char** parents_names, char* name){
     parents_names[i] = (char*) malloc(sizeof(char)+(strlen(parents[i]->name)+1));
     strcpy(parents_names[i], parents[i]->name);
   }
-  free(parents);
+  if(parents) free(parents);
   return num_parents;
 }
 

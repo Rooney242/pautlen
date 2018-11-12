@@ -93,8 +93,13 @@ int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char
 	int posicion_acumulada_metodos_sobreescritura,
 	int * tipo_args);
 
+/***************FUNCIONES DE BUSQUEDA*******************/
 
-int buscarTablaSimbolosAmbitosConPrefijos(tsc* t, char* id, char* id_ambito);
+int aplicarAccesos(tsc* t, char* id, char* ambito_id, char* ambito_actual);
+
+int buscarIdEnJerarquiaDesdeAmbito (tsc* t, char* id, char* id_ambito, tsa** table);
+
+int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_clase_desde, tsa** tsa_encontrada);
 
 
 
