@@ -90,7 +90,7 @@ tsa_elem* ht_get(hashtable_t* hasht, char* key)
 
 /* 	Remove data from the hashtable. Return the data removed from the table
 	so that we can free memory if needed */
-void* ht_remove(hashtable_t* hasht, char* key)
+tsa_elem* ht_remove(hashtable_t* hasht, char* key)
 {
 	unsigned int h = ht_calc_hash(key) % hasht->capacity;
 	hash_elem_t* e = hasht->table[h];
@@ -193,7 +193,13 @@ void ht_clear(hashtable_t* hasht, int free_data)
 	char* k = ht_iterate_keys(&it);
 	while(k != NULL)
 	{
-		free_data ? free(ht_remove(hasht, k)) : ht_remove(hasht, k);
+		if(free_data){
+			printf("libero\n");
+			free_tsa_elem(ht_remove(hasht, k));
+		}else{
+			ht_remove(hasht, k);
+		}
+		//free_data ? free_tsa_elem(ht_remove(hasht, k)) : ht_remove(hasht, k);
 		k = ht_iterate_keys(&it);
 	}
 }
@@ -242,6 +248,10 @@ tsa_elem* init_tsa_elem(){
 	elem->simbolo_cerrado = FALSE;
 
 	return elem;
+}
+
+void free_tsa_elem(tsa_elem* elem){
+	if(elem) free(elem);
 }
 
 

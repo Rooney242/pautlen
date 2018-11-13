@@ -95,11 +95,25 @@ int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char
 
 /***************FUNCIONES DE BUSQUEDA*******************/
 
-int aplicarAccesos(tsc* t, char* id, char* ambito_id, char* ambito_actual);
+int aplicarAccesos(tsc* t, char* id, char* ambito_id, char* ambito_actual, tsa_elem** elem);
 
-int buscarIdEnJerarquiaDesdeAmbito (tsc* t, char* id, char* id_ambito, tsa** table);
+int buscarIdEnJerarquiaDesdeAmbito (tsc* t, char* id, char* id_ambito, tsa** table, tsa_elem** elem);
 
-int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_clase_desde, tsa** tsa_encontrada);
+int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_clase_desde, tsa** tsa_encontrada, tsa_elem** elem);
+
+int buscarIdCualificadoClase(	tsc *t, char * nombre_clase_cualifica,
+						char * nombre_id, char * nombre_ambito_desde,
+						tsa ** ambito_encontrado,
+						tsa_elem ** elem);
+
+int buscarIdCualificadoInstancia(tsc *t, char * nombre_instancia_cualifica,
+						char * nombre_id, char * nombre_clase_desde,
+						tsa ** ambito_encontrado, tsa_elem ** elem);
+
+int buscarParaDeclararMiembroClase(	tsc *t, char * nombre_ambito_desde, char * nombre_miembro,
+							tsa * ambito_encontrado, tsa_elem ** e);
+
+
 
 
 

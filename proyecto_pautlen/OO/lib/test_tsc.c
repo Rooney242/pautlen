@@ -12,6 +12,7 @@ int main(int argc, char* argv[])
     int num_funciones = 11;
     tsc* p_omicron;
     tsa* tsa_aux;
+    tsa_elem * elem_aux;
 
     /* Inicializar la tabla de las clases */
     p_omicron = init_tsc("ejemplo_omicron");
@@ -66,26 +67,28 @@ int main(int argc, char* argv[])
     }
     error++;
     //printf v1;       //CASO 20: SE BUSCA UN ID NO CUALIFICADO v1 QUE NO ESTÁ EN LA JERARQUÍA.. ESTÁ EN MAIN ==> OK
-     if(buscarIdNoCualificado(p_omicron, "v1", "mA1@1", &tsa_aux)){
+    /*if(buscarIdNoCualificado(p_omicron, "v1", "mA1@1", &tsa_aux, &elem_aux)){
         printf("simbolo encontrado en %s\n", tsa_aux->ambito);
     }else{
         printf("simbolo NO encontrado\n");
     }
 
     //return x;        //CASO 21: SE BUSCA UN ID NO CUALIFICADO x QUE NO ESTÁ EN NINGÚN LADO ==> ERR
-    if(buscarIdNoCualificado(p_omicron, "x", "mA1@1", &tsa_aux)){
+    if(buscarIdNoCualificado(p_omicron, "x", "mA1@1", &tsa_aux, &elem_aux)){
         printf("simbolo encontrado en %s\n", tsa_aux->ambito);
     }else{
         printf("simbolo NO encontrado\n");
-    }
+    }*/
 
 
     //}
+    printf("pre\n");
     if(!cerrarAmbitoEnClase(p_omicron, "AA", "mA1@1")){
         printf("Error: %d\n", error);
         return 0;
     }
     error++;
+    printf("post\n");
 
     //};
 

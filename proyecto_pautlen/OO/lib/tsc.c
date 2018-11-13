@@ -103,9 +103,11 @@ int abrirClaseHereda(tsc* t, char* id_clase, ...){
 	return ret;
 }
 
-/*Realiza las tareas de meter en la tabla hash del main los datos de la clase*/
+/*Realiza las tareas de meter en la tabla hash del main los datos de la clase. Importante primero abrir la clase*/
 int abrirAmbitoClase(tsc* t, char* id_clase, int tamanio){
-	return open_scope_class(t->main, id_clase, tamanio);
+	int tipo;
+	tipo = -get_node_index(t->grafo, id_clase);
+	return open_scope_class(t->main, id_clase, tamanio, tipo);
 }
 
 /*Cierra una lase actualizando sus datos*/
@@ -325,13 +327,14 @@ tsa* _get_tsa_from_scope(tsc* t, char* scope){
 	return table;
 }
 
-/*Dado un id y el ambito desde el que se quiere acceder a el se aplica si se tiene acceso a dicho elemento*/
-int aplicarAccesos(tsc* t, char* id, char* ambito_id, char* ambito_actual){
+/*Dado un id y el ambito desde el que se quiere acceder a el se aplica si se tiene acceso a dicho elemento.
+	El elemento encontrado se devuelve en elem*/
+int aplicarAccesos(tsc* t, char* id, char* ambito_id, char* ambito_actual, tsa_elem** elem){
 	tsa* table;
 	char* real_id;
-	tsa_elem* elem = NULL;
 	char** parents_names;
 	int acceso, num_parents, i;
+	*elem = NULL;
 
 	if(!t || !id ||!ambito_id || !ambito_actual) return ERROR;
 	table = _get_tsa_from_scope(t, ambito_id);
@@ -339,10 +342,21 @@ int aplicarAccesos(tsc* t, char* id, char* ambito_id, char* ambito_actual){
 
 	
 	/*Primero sacamos los permisos del simbolo antes de ver en que caso nos encontramos*/
-	real_id = _concat_prefix(table->ambito, id);
-	elem = ppal_get(table, real_id);
-	if(!elem) return ERROR;
-	acceso = elem->tipo_acceso;
+	/*Hay que distinguir del caso de estar buscando una clase en el main, ya que estas NO llevan prefijo*/
+	if(!strcmp(table->ambito, TSA_MAIN)){/*Primero buscamos sin prefijo por si es una clase*/
+		*elem = ppal_get(table, id);
+		if(!(*elem)){/*Si no pues buscamos a ver si no es una clase*/
+			real_id = _concat_prefix(table->ambito, id);
+			*elem = ppal_get(table, real_id);
+			if(!(*elem)) return ERROR;
+			acceso = (*elem)->tipo_acceso;
+		}
+	}else{
+		real_id = _concat_prefix(table->ambito, id);
+		*elem = ppal_get(table, real_id);
+		if(!(*elem)) return ERROR;
+		acceso = (*elem)->tipo_acceso;
+	}
 
 	/*Caso en el que estemos buscando desde el main, solo no se puede si es hidden*/
 	if(!strcmp(ambito_actual, TSA_MAIN)){
@@ -367,12 +381,14 @@ int aplicarAccesos(tsc* t, char* id, char* ambito_id, char* ambito_actual){
 }
 
 /*Dado un id y un ambito devuelve si se puede llegar a conocer la identidad de ese id desde el ambito pasado.
-	Devuelve el ambito donde se ha encontrado dicho simbolo o NULL en caso de que no se halla encontrado*/
-int buscarIdEnJerarquiaDesdeAmbito(tsc* t, char* id, char* id_ambito, tsa** table){
+	Devuelve el ambito donde se ha encontrado dicho simbolo o NULL en caso de que no se halla encontrado.
+	La tsa donde se encuentra el simbolo se devuelve en table y el elemento de la tsa en elem.*/
+int buscarIdEnJerarquiaDesdeAmbito(tsc* t, char* id, char* id_ambito, tsa** table, tsa_elem** elem){
 	int num_parents, i;
 	Node ** parents = NULL;
-	tsa_elem* elem = NULL;
 	char* real_id;
+	*table = NULL;
+	*elem = NULL;
 	if(!t || !id || !id_ambito) return ERROR;
 	/*En el caso de que estemos dentro del ambito de una funcion buscamos en el
 		(en realidad por comodidad no miramos si estamos en una funcion, si no estamos la tabla hash auxiliar estara
@@ -383,23 +399,23 @@ int buscarIdEnJerarquiaDesdeAmbito(tsc* t, char* id, char* id_ambito, tsa** tabl
 
 	/*Miro si esta en el ambito de la posible funcion o de la clase*/
 	real_id = _concat_prefix(id_ambito, id);	
-	elem = met_get(*table, real_id);
+	*elem = met_get(*table, real_id);
 	free(real_id);
-	if(elem) return TRUE;
+	if(*elem) return TRUE;
 
 	real_id = _concat_prefix((*table)->ambito, id);	
-	elem = ppal_get(*table, real_id);
+	*elem = ppal_get(*table, real_id);
 	free(real_id);
-	if(elem) return TRUE;
+	if(*elem) return TRUE;
 
 	/*Llegados aqui el simbolo no esta en el ambito en el que esta siendo llamado, nos queda mirar en la jerarquia*/
 	num_parents = get_parents(t->grafo, parents, (*table)->ambito);
 	/*Buscamos en todos sus padres en orden inverso para asi llegar antes a los padres mas directos*/
 	for (i=num_parents-1; i>=0; i--){
 		real_id = _concat_prefix(parents[i]->tsa->ambito, id);
-		elem = ppal_get(parents[i]->tsa, real_id);
+		*elem = ppal_get(parents[i]->tsa, real_id);
 		free(real_id);
-		if(elem){
+		if(*elem){
 			*table = parents[i]->tsa;
 			return TRUE;
 		}
@@ -407,9 +423,9 @@ int buscarIdEnJerarquiaDesdeAmbito(tsc* t, char* id, char* id_ambito, tsa** tabl
 
 	/*Si no esta en su ambito o en la jerarquia de herencia de ese ambito solo puede estar en el main*/
 	real_id = _concat_prefix(t->main->ambito, id);
-	elem = ppal_get(t->main, real_id);
+	*elem = ppal_get(t->main, real_id);
 	free(real_id);
-	if(elem){
+	if(*elem){
 		*table = t->main;
 		return TRUE;
 	}
@@ -423,42 +439,98 @@ int buscarIdEnJerarquiaDesdeAmbito(tsc* t, char* id, char* id_ambito, tsa** tabl
 }
 
 /*Dado un id sin cualificar y el ambito desde el que se quiere acceder devuelve true si se puede llegar a ese id
-	y se tiene permiso para ello*/
-int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, tsa** tsa_encontrada){
+	y se tiene permiso para ello. Se devuelve la tsa encontreda y el elemento encontrado*/
+int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, tsa** tsa_encontrada, tsa_elem** elem){
 	int ret, i;
 	char * real_id;
-	tsa_elem* elem=NULL;
+	*tsa_encontrada = NULL;
+	*elem = NULL;
 	if(!t || !nombre_id || !nombre_ambito_desde) return ERROR;
 
 	/*Miramos si podemos llegar a la clase del simbolo desde donde estamos*/
 	if(strcmp(nombre_ambito_desde, TSA_MAIN)){
-		ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_ambito_desde, tsa_encontrada);
+		ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_ambito_desde, tsa_encontrada, elem);
 		if(ret == TRUE){/*Si se puede llegar miramos los accesos*/
-			return aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde);
+			return aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
 		}else{
 			return ret;
 		}
 	}else{/*Si estamos en el main buscamos en todas las tsa*/
 		/*Buscamos en el main*/
 		real_id = _concat_prefix(t->main->ambito, nombre_id);
-		elem = ppal_get(t->main, real_id);
+		*elem = ppal_get(t->main, real_id);
 		free(real_id);
-		if(elem){
+		if(*elem){
 			*tsa_encontrada = t->main;
-			return aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde);
+			return aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
 		}
 		/*Si no esta buscamos en el resto de tsa*/
 		for(i=0; i<t->grafo->vertex_count; i++){
 			real_id = _concat_prefix(t->grafo->nodes[i]->tsa->ambito, nombre_id);
-			elem = ppal_get(t->grafo->nodes[i]->tsa, real_id);
+			*elem = ppal_get(t->grafo->nodes[i]->tsa, real_id);
 			free(real_id);
-			if(elem){
+			if(*elem){
 				*tsa_encontrada = t->grafo->nodes[i]->tsa;
-				return aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde);
+				return aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
 			}
 		}
 		return FALSE;
 	}
 }
+
+/*Esta funcion busca si el id cualificado por una clase es accesible desde dicha clase y se tiene permiso*/
+int buscarIdCualificadoClase(	tsc *t, char * nombre_clase_cualifica,
+						char * nombre_id, char * nombre_ambito_desde,
+						tsa ** ambito_encontrado,
+						tsa_elem ** elem){
+	int i, ret;
+	*ambito_encontrado = NULL;
+	*elem = NULL;
+	if(!t || !nombre_clase_cualifica || !nombre_id || !nombre_ambito_desde) return ERROR;
+
+	/*Primero buscamos si la clase que cualifica existe*/
+	*ambito_encontrado = _get_tsa_from_scope(t, nombre_clase_cualifica);
+	if(!(*ambito_encontrado)) return ERROR;/*La clase que cualifica no existe*/
+
+	/*Si existe la clase que cualifica miramos si se puede llegar a ese simbolo desde ella en su jerarquia*/
+	ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_clase_cualifica, ambito_encontrado, elem);
+	if(ret == TRUE){/*Aplicamos accesos desde la clase en la que nos encontramos*/
+		return aplicarAccesos(t, nombre_id, (*ambito_encontrado)->ambito, nombre_ambito_desde, elem);
+	}else{
+		return ret;
+	}
+
+}
+
+/*Esta funcion busca si la instancia de la clase que cualifica el simbolo es accesible y se tienen permisos*/
+int buscarIdCualificadoInstancia(tsc *t, char * nombre_instancia_cualifica,
+						char * nombre_id, char * nombre_ambito_desde,
+						tsa ** ambito_encontrado, tsa_elem ** elem){
+	int ret;
+	*ambito_encontrado = NULL;
+	*elem = NULL;
+	if(!t || !nombre_instancia_cualifica || !nombre_id || !nombre_ambito_desde) return ERROR;
+
+	/*Buscamos la instancia como un id no cualificado desde el ambito en el que estamos*/
+	ret = buscarIdNoCualificado(t, nombre_instancia_cualifica, nombre_ambito_desde, ambito_encontrado, elem);
+	if(ret == TRUE){
+		if((*elem)->categoria != CLASE) return FALSE;/*Comprobamos que se declaro como clase*/
+		/*Miramos si esa instancia tiene acceso al simbolo que queremos cualificar. 
+			Para hallar el nombre de la clase de la instancia buscamos en los nodos del grafo*/
+		printf("%d\n", -(*elem)->tipo);
+		ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, t->grafo->nodes[-(*elem)->tipo]->tsa->ambito, ambito_encontrado, elem);
+		if (ret == TRUE){
+			return  aplicarAccesos(t, nombre_id, (*ambito_encontrado)->ambito, t->grafo->nodes[-(*elem)->tipo]->tsa->ambito, elem);
+		}
+	}
+	return ret;
+}
+
+int buscarParaDeclararMiembroClase(	tsc *t, char * nombre_ambito_desde, char * nombre_miembro,
+							tsa * ambito_encontrado, tsa_elem ** e){
+	return ERROR;
+}
+
+
 
 

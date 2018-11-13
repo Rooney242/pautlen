@@ -31,7 +31,7 @@ int open_scope_met(tsa* t, char* id_ambito, int categoria, int tipo_acceso, int 
 
 int close_scope_met(tsa* t, char* id_ambito);
 
-int open_scope_class(tsa* t, char* id_clase, int tamanio);
+int open_scope_class(tsa* t, char* id_clase, int tamanio, int tipo);
 
 int close_scope_class(tsa* t, char*id_clase);
 

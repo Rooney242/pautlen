@@ -93,6 +93,8 @@ int close_scope_met(tsa* t, char*id_ambito){
 	if(!t || !id_ambito) return ERROR;
 
 	met_remove(t, id_ambito);
+	printf("%d\n", t->met->e_num);
+	met_restore(t);
 
 	tsa_elem* elem;
 	elem = ppal_get(t, id_ambito);
@@ -105,13 +107,15 @@ int close_scope_met(tsa* t, char*id_ambito){
 }
 
 /*Abre el ambito de una clase. En principio solo se usa en el main*/
-int open_scope_class(tsa* t, char* id_clase, int tamanio){
+int open_scope_class(tsa* t, char* id_clase, int tamanio, int tipo){
 	if(!t || !id_clase) return ERROR;
 	tsa_elem* elem;
+
 	elem = init_tsa_elem();
 	if(!elem) return ERROR;
 
 	elem->tamanio = tamanio;
+	elem->tipo = tipo;
 
 	if(!ppal_put(t, id_clase, elem)) return ERROR;
 

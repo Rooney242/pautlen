@@ -89,7 +89,7 @@ tsa_elem* ht_get(hashtable_t* hasht, char* key);
 
 /* 	Remove data from the hashtable. Return the data removed from the table
 	so that we can free memory if needed */
-void* ht_remove(hashtable_t* hasht, char* key);
+tsa_elem* ht_remove(hashtable_t* hasht, char* key);
 
 /* List keys. k should have length equals or greater than the number of keys */
 void ht_list_keys(hashtable_t* hasht, char** k, size_t len);
@@ -119,6 +119,7 @@ void ht_destroy(hashtable_t* hasht);
 
 /*Funciones de los elementos de la TSA. De momento sin control de errorres*/
 tsa_elem* init_tsa_elem();
+void free_tsa_elem(tsa_elem* elem);
 tsa_elem* set_tsa_elem(tsa_elem* elem, int categoria, int tipo,						int estructura,
 	int direcciones,					int numero_parametros,
 	int numero_variables_locales,		int posicion_variable_local,
