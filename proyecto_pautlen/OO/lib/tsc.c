@@ -275,7 +275,7 @@ int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char
 	elem = init_tsa_elem();
 	if(!elem) return ERROR;
 
-	elem = init_tsa_elem();
+	//elem = init_tsa_elem();
 	set_tsa_elem(elem, categoria, tipo,	estructura,
 	direcciones,					 numero_parametros,
 	numero_variables_locales,		posicion_variable_local,
@@ -348,12 +348,14 @@ int aplicarAccesos(tsc* t, char* id, char* ambito_id, char* ambito_actual, tsa_e
 		if(!(*elem)){/*Si no pues buscamos a ver si no es una clase*/
 			real_id = _concat_prefix(table->ambito, id);
 			*elem = ppal_get(table, real_id);
+			free(real_id);
 			if(!(*elem)) return ERROR;
 			acceso = (*elem)->tipo_acceso;
 		}
 	}else{
 		real_id = _concat_prefix(table->ambito, id);
 		*elem = ppal_get(table, real_id);
+		free(real_id);
 		if(!(*elem)) return ERROR;
 		acceso = (*elem)->tipo_acceso;
 	}

@@ -110,7 +110,7 @@ int buscarIdCualificadoInstancia(tsc *t, char * nombre_instancia_cualifica,
 						char * nombre_id, char * nombre_clase_desde,
 						tsa ** ambito_encontrado, tsa_elem ** elem);
 
-int buscarParaDeclararMiembroClase(	tsc *t, char * nombre_ambito_desde, char * nombre_miembro,
+int buscarParaDeclararMiembroClase(tsc *t, char * nombre_ambito_desde, char * nombre_miembro,
 							tsa * ambito_encontrado, tsa_elem ** e);
 
 

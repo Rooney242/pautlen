@@ -194,7 +194,6 @@ void ht_clear(hashtable_t* hasht, int free_data)
 	while(k != NULL)
 	{
 		if(free_data){
-			printf("libero\n");
 			free_tsa_elem(ht_remove(hasht, k));
 		}else{
 			ht_remove(hasht, k);

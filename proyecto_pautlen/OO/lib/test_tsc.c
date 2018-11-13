@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
     }
     error++;
     //printf v1;       //CASO 20: SE BUSCA UN ID NO CUALIFICADO v1 QUE NO ESTÁ EN LA JERARQUÍA.. ESTÁ EN MAIN ==> OK
-    /*if(buscarIdNoCualificado(p_omicron, "v1", "mA1@1", &tsa_aux, &elem_aux)){
+    if(buscarIdNoCualificado(p_omicron, "v1", "mA1@1", &tsa_aux, &elem_aux)){
         printf("simbolo encontrado en %s\n", tsa_aux->ambito);
     }else{
         printf("simbolo NO encontrado\n");
@@ -78,17 +78,22 @@ int main(int argc, char* argv[])
         printf("simbolo encontrado en %s\n", tsa_aux->ambito);
     }else{
         printf("simbolo NO encontrado\n");
-    }*/
+    }
 
 
     //}
-    printf("pre\n");
     if(!cerrarAmbitoEnClase(p_omicron, "AA", "mA1@1")){
         printf("Error: %d\n", error);
         return 0;
     }
     error++;
-    printf("post\n");
+
+    //printf AA.sa1;
+    if(buscarIdCualificadoClase(p_omicron, "AA", "sa1", "AA", &tsa_aux, &elem_aux)){
+        printf("simbolo encontrado en %s\n", tsa_aux->ambito);
+    }else{
+        printf("simbolo NO encontrado\n");
+    }
 
     //};
 
@@ -97,6 +102,14 @@ int main(int argc, char* argv[])
         return 0;
     }
     error++;
+
+
+    //printf AA.sa1;
+    if(buscarIdCualificadoClase(p_omicron, "AA", "sa1", "AA", &tsa_aux, &elem_aux)){
+        printf("simbolo encontrado en %s\n", tsa_aux->ambito);
+    }else{
+        printf("simbolo NO encontrado\n");
+    }
 
 
     if(!close_tsc(p_omicron)){
@@ -134,7 +147,11 @@ main
             return x;        //CASO 21: SE BUSCA UN ID NO CUALIFICADO x QUE NO ESTÁ EN NINGÚN LADO ==> ERR
 
         }
+
+        printf AA.sa1;
     };
+
+    printf AA.sa1;
 
     function int f1 (boolean pf1)
     {

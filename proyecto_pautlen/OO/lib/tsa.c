@@ -93,7 +93,6 @@ int close_scope_met(tsa* t, char*id_ambito){
 	if(!t || !id_ambito) return ERROR;
 
 	met_remove(t, id_ambito);
-	printf("%d\n", t->met->e_num);
 	met_restore(t);
 
 	tsa_elem* elem;
