@@ -7,6 +7,7 @@
 #include "tsa.h"
 #include "tsc.h"
 #include "hash_table.h"
+#include "casos.h"
 
 char* _concat_prefix(char* prefix, char* symbol){
 	char*  full_symbol;
@@ -453,7 +454,11 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 	if(strcmp(nombre_ambito_desde, TSA_MAIN)){
 		ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_ambito_desde, tsa_encontrada, elem);
 		if(ret == TRUE){/*Si se puede llegar miramos los accesos*/
-			return aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
+			ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
+			if(ret == TRUE){
+				if(!strcmp(TSA_MAIN, (*tsa_encontrada)->ambito)) return ERROR_20;
+				return TRUE;
+			}
 		}else{
 			return ret;
 		}
@@ -528,9 +533,92 @@ int buscarIdCualificadoInstancia(tsc *t, char * nombre_instancia_cualifica,
 	return ret;
 }
 
+/*Esta funcion busca si hay un atributo unico en la jerarquia de la clase donde lo intentamos declarar.*/
 int buscarParaDeclararMiembroClase(	tsc *t, char * nombre_ambito_desde, char * nombre_miembro,
-							tsa * ambito_encontrado, tsa_elem ** e){
-	return ERROR;
+							tsa ** ambito_encontrado, tsa_elem ** elem){
+	int ret;
+	if(!t || !nombre_ambito_desde || !nombre_miembro) return ERROR;
+	*ambito_encontrado = NULL;
+	*elem = NULL;
+
+
+	*ambito_encontrado = _get_tsa_from_scope(t, nombre_ambito_desde);
+
+	/*Buscamos el id en la clase y su jerarquia*/
+	ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_miembro, nombre_ambito_desde, ambito_encontrado, elem);
+	if(ret == TRUE){
+		/*Comprobamos si es accesible desde esta clase*/
+		ret = aplicarAccesos(t, nombre_miembro, nombre_ambito_desde, (*ambito_encontrado)->ambito, elem);
+		if(ret == TRUE) return TRUE;
+	}
+	*ambito_encontrado = NULL;
+	*elem = NULL;
+	return ret;
+}
+
+/*Esta funcion busca si hay un atributo en la jerarquia de la clase donde lo intentamos declarar.*/
+int buscarParaDeclararMiembroInstancia(tsc *t, char * nombre_ambito_desde,
+						char * nombre_miembro, tsa ** ambito_encontrado,
+						tsa_elem ** elem){
+	int ret;
+	if(!t || !nombre_ambito_desde || !nombre_miembro) return ERROR;
+	*ambito_encontrado = NULL;
+	*elem = NULL;
+
+	*ambito_encontrado = _get_tsa_from_scope(t, nombre_ambito_desde);
+
+	/*Buscamos el id en la clase y su jerarquia*/
+	ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_miembro, nombre_ambito_desde, ambito_encontrado, elem);
+	if(ret == TRUE){
+		/*Comprobamos si es accesible desde esta clase*/
+		ret = aplicarAccesos(t, nombre_miembro, nombre_ambito_desde, (*ambito_encontrado)->ambito, elem);
+		if(ret == TRUE) return TRUE;
+	}
+	*ambito_encontrado = NULL;
+	*elem = NULL;
+	return ret;
+}
+
+/*Esta funcion busca si ya existe una variable con ese nombre en el main*/
+int buscarParaDeclararIdMain(tsc *t, char* id, tsa** ambito_encontrado, tsa_elem** elem){
+	int ret;
+	if(!t || !id) return ERROR;
+
+	*ambito_encontrado = NULL;
+	*elem = NULL;
+
+	/*Buscamos el id en la clase y su jerarquia*/
+	ret = buscarIdEnJerarquiaDesdeAmbito(t, id, TSA_MAIN, ambito_encontrado, elem);
+	if(ret == TRUE){
+		/*Comprobamos si es accesible desde esta clase*/
+		ret = aplicarAccesos(t, id, TSA_MAIN, (*ambito_encontrado)->ambito, elem);
+		if(ret == TRUE) return TRUE;
+	}
+	*ambito_encontrado = NULL;
+	*elem = NULL;
+	return ret;
+}
+
+int buscarParaDeclararIdLocalEnMetodo(tsc *t, char * nombre_clase, char * id,
+							tsa** ambito_encontrado, tsa_elem** elem){
+	int ret;
+	if(!t || !id) return ERROR;
+
+	*ambito_encontrado = NULL;
+	*elem = NULL;
+
+	*ambito_encontrado = _get_tsa_from_scope(t, nombre_clase);
+
+	/*Buscamos el id en la clase y su jerarquia*/
+	ret = buscarIdEnJerarquiaDesdeAmbito(t, id, (*ambito_encontrado)->ambito, ambito_encontrado, elem);
+	if(ret == TRUE){
+		/*Comprobamos si es accesible desde esta clase*/
+		ret = aplicarAccesos(t, id, TSA_MAIN, (*ambito_encontrado)->ambito, elem);
+		if(ret == TRUE) return TRUE;
+	}
+	*ambito_encontrado = NULL;
+	*elem = NULL;
+	return ret;
 }
 
 

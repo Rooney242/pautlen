@@ -111,7 +111,17 @@ int buscarIdCualificadoInstancia(tsc *t, char * nombre_instancia_cualifica,
 						tsa ** ambito_encontrado, tsa_elem ** elem);
 
 int buscarParaDeclararMiembroClase(tsc *t, char * nombre_ambito_desde, char * nombre_miembro,
-							tsa * ambito_encontrado, tsa_elem ** e);
+							tsa ** ambito_encontrado, tsa_elem ** elem);
+
+int buscarParaDeclararMiembroInstancia(tsc *t, char * nombre_ambito_desde,
+						char * nombre_miembro, tsa ** ambito_encontrado,
+						tsa_elem ** elem);
+
+int buscarParaDeclararIdMain(tsc *t, char* id, tsa** ambito_encontrado, tsa_elem** elem);
+
+int buscarParaDeclararIdLocalEnMetodo(tsc *t, char * nombre_clase, char * id,
+							tsa** ambito_encontrado, tsa_elem** elem);
+
 
 
 

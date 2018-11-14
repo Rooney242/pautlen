@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "macros.h"
+#include "casos.h"
 #include "tsc.h"
 
 
@@ -9,6 +10,7 @@
 int main(int argc, char* argv[])
 {
     int error = 1;
+    int ret;
     int num_funciones = 11;
     tsc* p_omicron;
     tsa* tsa_aux;
@@ -67,18 +69,15 @@ int main(int argc, char* argv[])
     }
     error++;
     //printf v1;       //CASO 20: SE BUSCA UN ID NO CUALIFICADO v1 QUE NO ESTÁ EN LA JERARQUÍA.. ESTÁ EN MAIN ==> OK
-    if(buscarIdNoCualificado(p_omicron, "v1", "mA1@1", &tsa_aux, &elem_aux)){
-        printf("simbolo encontrado en %s\n", tsa_aux->ambito);
-    }else{
-        printf("simbolo NO encontrado\n");
-    }
+    ret = buscarIdNoCualificado(p_omicron, "v1", "mA1@1", &tsa_aux, &elem_aux);
+    print_error(stdout, ret, "v1", "mA1@1", tsa_aux, elem_aux);
 
     //return x;        //CASO 21: SE BUSCA UN ID NO CUALIFICADO x QUE NO ESTÁ EN NINGÚN LADO ==> ERR
-    if(buscarIdNoCualificado(p_omicron, "x", "mA1@1", &tsa_aux, &elem_aux)){
+    /*if(buscarIdNoCualificado(p_omicron, "x", "mA1@1", &tsa_aux, &elem_aux)){
         printf("simbolo encontrado en %s\n", tsa_aux->ambito);
     }else{
         printf("simbolo NO encontrado\n");
-    }
+    }*/
 
 
     //}
@@ -122,7 +121,6 @@ int main(int argc, char* argv[])
         return 0;
     }
     error++;
-    //fclose(fsalida);
 
     printf("El programa ha terminado perfectamente y sin errores\n");
 	return 0;

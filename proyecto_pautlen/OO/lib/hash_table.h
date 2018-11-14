@@ -115,6 +115,8 @@ void ht_clear(hashtable_t* hasht, int free_data);
 	Data still stored are freed*/
 void ht_destroy(hashtable_t* hasht);
 
+char* get_key_from_elem(hashtable_t* hasht, tsa_elem* elem);
+
 /************************************************************************************************************/
 
 /*Funciones de los elementos de la TSA. De momento sin control de errorres*/

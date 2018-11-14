@@ -212,6 +212,7 @@ void ht_destroy(hashtable_t* hasht)
 	free(hasht);
 }
 
+
 /*Funciones de los elementos de la TSA. De momento sin control de errorres*/
 
 tsa_elem* init_tsa_elem(){

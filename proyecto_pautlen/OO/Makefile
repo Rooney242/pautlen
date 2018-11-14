@@ -13,8 +13,12 @@ GRAPH_DEPS = $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)tsa.o $(MACROS)
 TSA = tsa
 TSA_DEPS = $(OBJ_FOLDER)hash_table.o $(MACROS)
 
+CASOS = casos
+CASOS_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(MACROS)
+
 TSC = tsc
-TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(MACROS)
+TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(OBJ_FOLDER)casos.o $(MACROS)
+
 
 DOT_GENERATOR = dot_generator
 DOT_GENERATOR_DEPS = $(OBJ_FOLDER)tsc.o $(OBJ_FOLDER)graph.o $(MACROS)
@@ -42,11 +46,15 @@ graph-test: graph
 	@echo Compilando tester del modulo de grafos...
 	@$(CC) -o $(LIBRARIES)test_$(GRAPH) $(OBJ_FOLDER)$(GRAPH).o $(LIBRARIES)test_$(GRAPH).c $(GRAPH_DEPS)
 
+casos: tsa hash
+	@echo Compilando modulo de casos...
+	@$(CC) -c $(LIBRARIES)$(CASOS).c -o $(OBJ_FOLDER)$(CASOS).o 
+
 tsa: hash
 	@echo Compilando modulo de tsa...
 	@$(CC) -c $(LIBRARIES)$(TSA).c -o $(OBJ_FOLDER)$(TSA).o
 	
-tsc: tsa graph 
+tsc: tsa graph casos
 	@echo Compilando modulo de tsc...
 	@$(CC) -c $(LIBRARIES)$(TSC).c -o $(OBJ_FOLDER)$(TSC).o
 
