@@ -456,11 +456,12 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 		if(ret == TRUE){/*Si se puede llegar miramos los accesos*/
 			ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
 			if(ret == TRUE){
-				if(!strcmp(TSA_MAIN, (*tsa_encontrada)->ambito)) return ERROR_20;
-				return TRUE;
+				if(!strcmp(TSA_MAIN, (*tsa_encontrada)->ambito)) 
+					return ERROR_20;/*Buscamos desde una funcion un id que no esta en la jerarquia y si en el main*/
+				return TRUE;/*Buscamos id desde una funcion y esta en su jerarquia*/
 			}
 		}else{
-			return ret;
+			return ERROR_21;/*Se busca id desde funcion que no esta en jerarquia ni en main*/
 		}
 	}else{/*Si estamos en el main buscamos en todas las tsa*/
 		/*Buscamos en el main*/
@@ -469,7 +470,14 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 		free(real_id);
 		if(*elem){
 			*tsa_encontrada = t->main;
-			return aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
+			ret= aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
+			if (ret==TRUE){
+				if(!strcmp(TSA_MAIN, (*tsa_encontrada)->ambito))
+					return ERROR_22;/*Buscamos desde main un id que esta en el main*/
+				return ERROR_24;/*Si desde una funcion global buscamos id y esta en esa misma funcion*/
+			}else{
+				return ERROR_23;/*Se busca id desde funcion global/DIDI CREE QUE ES DESDE EL MAIN/ y no esta ni en la jerarquia ni en el main*/
+			}
 		}
 		/*Si no esta buscamos en el resto de tsa*/
 		for(i=0; i<t->grafo->vertex_count; i++){
@@ -478,33 +486,17 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 			free(real_id);
 			if(*elem){
 				*tsa_encontrada = t->grafo->nodes[i]->tsa;
-				return aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
-			}
+				ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
+				if(ret == TRUE){
+					if(!strcmp(nombre_ambito_desde, (*tsa_encontrada)->ambito))
+						return ERROR_24;/*Desde funcion global buscamos id definido en la misma funcion */
+					return ERROR_25;/*Desde funcion global buscamos id definido en el main*/
+				}
+			}else
+			return ERROR_26;/*Desde funcion global se busca id que no esta en main ni en ambito*/
 		}
-		return FALSE;
-	}
-}
-
-/*Esta funcion busca si el id cualificado por una clase es accesible desde dicha clase y se tiene permiso*/
-int buscarIdCualificadoClase(	tsc *t, char * nombre_clase_cualifica,
-						char * nombre_id, char * nombre_ambito_desde,
-						tsa ** ambito_encontrado,
-						tsa_elem ** elem){
-	int i, ret;
-	*ambito_encontrado = NULL;
-	*elem = NULL;
-	if(!t || !nombre_clase_cualifica || !nombre_id || !nombre_ambito_desde) return ERROR;
-
-	/*Primero buscamos si la clase que cualifica existe*/
-	*ambito_encontrado = _get_tsa_from_scope(t, nombre_clase_cualifica);
-	if(!(*ambito_encontrado)) return ERROR;/*La clase que cualifica no existe*/
-
-	/*Si existe la clase que cualifica miramos si se puede llegar a ese simbolo desde ella en su jerarquia*/
-	ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_clase_cualifica, ambito_encontrado, elem);
-	if(ret == TRUE){/*Aplicamos accesos desde la clase en la que nos encontramos*/
-		return aplicarAccesos(t, nombre_id, (*ambito_encontrado)->ambito, nombre_ambito_desde, elem);
-	}else{
-		return ret;
+		return FALSE; 
+	
 	}
 
 }

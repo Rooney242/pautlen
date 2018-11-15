@@ -23,7 +23,7 @@ TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(O
 DOT_GENERATOR = dot_generator
 DOT_GENERATOR_DEPS = $(OBJ_FOLDER)tsc.o $(OBJ_FOLDER)graph.o $(MACROS)
 
-all: hash graph tsa tsc dot
+all: hash graph tsa tsc dot casos
 
 all-test: hash-test graph-test
 
