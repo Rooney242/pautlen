@@ -5,6 +5,7 @@
 #include "graph.h"
 
 #define TSA_MAIN "main"
+#define OUTPUT_FILE "grafo.dot"
 
 typedef struct {
 	char* nombre;
@@ -121,6 +122,10 @@ int buscarParaDeclararIdMain(tsc *t, char* id, tsa** ambito_encontrado, tsa_elem
 
 int buscarParaDeclararIdLocalEnMetodo(tsc *t, char * nombre_clase, char * id,
 							tsa** ambito_encontrado, tsa_elem** elem);
+
+
+/********Generacion del dot******************/
+int generar_dot(tsc* tabla, char* file_name);
 
 
 

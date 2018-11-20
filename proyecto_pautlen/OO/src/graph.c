@@ -226,6 +226,7 @@ int get_parents(Adjacency_Matrix* g, Node** parents, char* name){
       //Es padre siempre que en la matriz aparezca un numero mayor que 0
       if (g->arcs[index][i] > 0){
           if (pind == 0){
+            pind++;
             parents = (Node **) malloc(sizeof(Node*));
           }else{
             pind++;
@@ -244,10 +245,14 @@ int get_parents_names(Adjacency_Matrix* g, char** parents_names, char* name){
   int i, num_parents;
   num_parents = get_parents(g, parents, name);
   parents_names = (char**) malloc(num_parents*sizeof(char*));
+  if(num_parents) printf("%s\n", parents[0]->tsa->ambito);
+  printf("llego %d\n", num_parents);
   for(i=0; i<num_parents; i++){
     parents_names[i] = (char*) malloc(sizeof(char)+(strlen(parents[i]->name)+1));
+    printf("llego\n");
     strcpy(parents_names[i], parents[i]->name);
   }
+  printf("llego\n");
   if(parents) free(parents);
   return num_parents;
 }

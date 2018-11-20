@@ -58,6 +58,7 @@ int free_tsc(tsc* t){
 }
 
 int close_tsc(tsc* t){
+	generar_dot(t, NULL);
 	return OK;
 }	
 
@@ -613,6 +614,53 @@ int buscarParaDeclararIdLocalEnMetodo(tsc *t, char * nombre_clase, char * id,
 	return ret;
 }
 
+/***************Generacion del dot**************/
+
+int generar_dot(tsc* tabla, char* file_name){
+	if(!tabla) return ERROR;
+	FILE * pf;
+	int i, k, num_parents, num_clases;
+	char* name;
+	char ** parents_names;
+	if (file_name){
+		pf = fopen(file_name,"w");
+	}else{
+		pf = fopen(OUTPUT_FILE, "w");
+	}
+
+	fprintf(pf, "digraph grafo_clases  { rankdir=BT; edge [arrowhead = empty]\n");
+
+	num_clases = tabla->grafo->vertex_count;
+	for(i=0; i<num_clases; i++){
+		name = tabla->grafo->nodes[i]->name;
+		fprintf(pf, "\t%s [label=\"{%s|%s\\l", name, name, name);
+		for(k=0; k<1; k++){//bucle por los simbolos del ambito TODO
+			fprintf(pf, "TODO\\l");
+		}
+		fprintf(pf, "}\"][shape=record];\n");
+
+		printf("name: %s\n", name);
+		num_parents = get_parents_names(tabla->grafo, parents_names, name);
+		printf("%d\n", num_parents);
+		for(k=0; k<num_parents; k++){
+			fprintf(pf, "\t%s -> %s\n", name, parents_names[k]);
+		}
+		if(parents_names) free(parents_names);
+	}
+
+	fprintf(pf, "\tedge [arrowhead = normal]\n");
+
+	for(i=0; i<num_clases; i++){
+		name = tabla->grafo->nodes[i]->name;
+		fprintf(pf, "\t%sN%d [label=\"%s\"][shape=oval];\n", name, i, name);
+		if (i>1){
+			fprintf(pf, "\t%sN%d -> %sN%d\n", tabla->grafo->nodes[i-1]->name, i-1, name, i);
+		}
+	}
+
+	fprintf(pf, "}");
+	fclose(pf);
+}
 
 
 
