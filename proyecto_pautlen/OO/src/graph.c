@@ -212,13 +212,13 @@ int remove_vertex(Adjacency_Matrix* g, char* name) {
 }
 
 //Hay que liberar memoria para lo que se devuelve
-int get_parents(Adjacency_Matrix* g, Node** parents, char* name){
+int get_parents(Adjacency_Matrix* g, Node*** parents, char* name){
   int i, index, pind, tam;
   pind = tam = 0;
   if (name == NULL){
-    parents = (Node**) malloc(sizeof(Node*)*g->vertex_count);
+    *parents = (Node**) malloc(sizeof(Node*)*g->vertex_count);
     for (i=0; i<g->vertex_count; i++){
-      parents[i] = g->nodes[i];
+      (*parents)[i] = g->nodes[i];
     }
   }else{
     index = get_node_index(g, name);
@@ -227,12 +227,12 @@ int get_parents(Adjacency_Matrix* g, Node** parents, char* name){
       if (g->arcs[index][i] > 0){
           if (pind == 0){
             pind++;
-            parents = (Node **) malloc(sizeof(Node*));
+            *parents = (Node **) malloc(sizeof(Node*));
           }else{
             pind++;
-            parents = (Node **) realloc(parents, sizeof(Node*)*pind);
+            *parents = (Node **) realloc(*parents, sizeof(Node*)*pind);
           }
-            parents[pind-1] = g->nodes[i];
+            (*parents)[pind-1] = g->nodes[i];
       }
     }
   }
@@ -240,19 +240,15 @@ int get_parents(Adjacency_Matrix* g, Node** parents, char* name){
 } 
 
 //Hay que liberar parents_names
-int get_parents_names(Adjacency_Matrix* g, char** parents_names, char* name){
+int get_parents_names(Adjacency_Matrix* g, char*** parents_names, char* name){
   Node ** parents = NULL;
   int i, num_parents;
-  num_parents = get_parents(g, parents, name);
-  parents_names = (char**) malloc(num_parents*sizeof(char*));
-  if(num_parents) printf("%s\n", parents[0]->tsa->ambito);
-  printf("llego %d\n", num_parents);
+  num_parents = get_parents(g, &parents, name);
+  *parents_names = (char**) malloc(num_parents*sizeof(char*));
   for(i=0; i<num_parents; i++){
-    parents_names[i] = (char*) malloc(sizeof(char)+(strlen(parents[i]->name)+1));
-    printf("llego\n");
-    strcpy(parents_names[i], parents[i]->name);
+    (*parents_names)[i] = (char*) malloc(sizeof(char)+(strlen(parents[i]->name)+1));
+    strcpy((*parents_names)[i], parents[i]->name);
   }
-  printf("llego\n");
   if(parents) free(parents);
   return num_parents;
 }

@@ -75,5 +75,6 @@ clean :
 	@rm -f test_$(HASH)
 	@rm -f test_$(GRAPH)
 	@rm -f test_$(TSC)
+	@rm -f test_$(DOT_GENERATOR)
 	@rm -f grafo.dot
 	@rm -f $(OBJ_FOLDER)*.o

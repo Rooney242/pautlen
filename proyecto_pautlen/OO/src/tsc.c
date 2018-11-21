@@ -372,7 +372,7 @@ int aplicarAccesos(tsc* t, char* id, char* ambito_id, char* ambito_actual, tsa_e
 		if(acceso == HIDDEN){/*Si es hidden solo se puede acceder desde la clase que se declaro*/
 			return FALSE;
 		}else if(acceso == SECRET){/*Si es secreto se puede si soy hijo de esa clase*/
-			num_parents = get_parents_names(t->grafo, parents_names, ambito_actual);
+			num_parents = get_parents_names(t->grafo, &parents_names, ambito_actual);
 			for (i=0; i<num_parents; i++){
 				if(!strcmp(parents_names[i], ambito_actual)) return TRUE;
 			}
@@ -413,7 +413,7 @@ int buscarIdEnJerarquiaDesdeAmbito(tsc* t, char* id, char* id_ambito, tsa** tabl
 	if(*elem) return TRUE;
 
 	/*Llegados aqui el simbolo no esta en el ambito en el que esta siendo llamado, nos queda mirar en la jerarquia*/
-	num_parents = get_parents(t->grafo, parents, (*table)->ambito);
+	num_parents = get_parents(t->grafo, &parents, (*table)->ambito);
 	/*Buscamos en todos sus padres en orden inverso para asi llegar antes a los padres mas directos*/
 	for (i=num_parents-1; i>=0; i--){
 		real_id = _concat_prefix(parents[i]->tsa->ambito, id);
@@ -442,6 +442,7 @@ int buscarIdEnJerarquiaDesdeAmbito(tsc* t, char* id, char* id_ambito, tsa** tabl
 
 }
 
+/*De momento solo tenemos casos en esta funcion, el resto siguen el criterio TRUE or FALSE*/
 /*Dado un id sin cualificar y el ambito desde el que se quiere acceder devuelve true si se puede llegar a ese id
 	y se tiene permiso para ello. Se devuelve la tsa encontreda y el elemento encontrado*/
 int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, tsa** tsa_encontrada, tsa_elem** elem){
@@ -517,7 +518,6 @@ int buscarIdCualificadoInstancia(tsc *t, char * nombre_instancia_cualifica,
 		if((*elem)->categoria != CLASE) return FALSE;/*Comprobamos que se declaro como clase*/
 		/*Miramos si esa instancia tiene acceso al simbolo que queremos cualificar. 
 			Para hallar el nombre de la clase de la instancia buscamos en los nodos del grafo*/
-		printf("%d\n", -(*elem)->tipo);
 		ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, t->grafo->nodes[-(*elem)->tipo]->tsa->ambito, ambito_encontrado, elem);
 		if (ret == TRUE){
 			return  aplicarAccesos(t, nombre_id, (*ambito_encontrado)->ambito, t->grafo->nodes[-(*elem)->tipo]->tsa->ambito, elem);
@@ -639,9 +639,7 @@ int generar_dot(tsc* tabla, char* file_name){
 		}
 		fprintf(pf, "}\"][shape=record];\n");
 
-		printf("name: %s\n", name);
-		num_parents = get_parents_names(tabla->grafo, parents_names, name);
-		printf("%d\n", num_parents);
+		num_parents = get_parents_names(tabla->grafo, &parents_names, name);
 		for(k=0; k<num_parents; k++){
 			fprintf(pf, "\t%s -> %s\n", name, parents_names[k]);
 		}
@@ -653,7 +651,7 @@ int generar_dot(tsc* tabla, char* file_name){
 	for(i=0; i<num_clases; i++){
 		name = tabla->grafo->nodes[i]->name;
 		fprintf(pf, "\t%sN%d [label=\"%s\"][shape=oval];\n", name, i, name);
-		if (i>1){
+		if (i>0){
 			fprintf(pf, "\t%sN%d -> %sN%d\n", tabla->grafo->nodes[i-1]->name, i-1, name, i);
 		}
 	}
