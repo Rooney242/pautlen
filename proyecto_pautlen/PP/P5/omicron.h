@@ -3,6 +3,9 @@
 
 #define MAX_LONG_ID 50
 
+#define INT 1
+#define BOOLEAN 3
+
 typedef struct
 {
    char lexema[MAX_LONG_ID+1];

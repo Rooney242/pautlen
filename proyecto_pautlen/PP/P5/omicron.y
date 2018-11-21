@@ -47,12 +47,17 @@
 
 /* CONSTANTES */
 %token <atributos> TOK_CONSTANTE_ENTERA  
-%token <atributos> OK_FALSE     
-%token <atributos> TOK_TRUE    
+%token TOK_FALSE     
+%token TOK_TRUE    
 
 
 /* ERRORES */
 %token TOK_ERROR
+
+%type <atributos> comparacion
+%type <atributos> constante
+%type <atributos> exp
+%type <atributos> identificador_clase
 
 %start programa
 %left '+' '-' TOK_OR
@@ -225,21 +230,93 @@ retorno_funcion:	TOK_RETURN exp
 						{fprintf(fout, ";R:\tretorno_funcion:	TOK_RETURN TOK_NONE\n");}
 					;
 exp:	exp '+' exp
-			{fprintf(fout, ";R:\texp:	exp '+' exp\n");}
+			{
+				if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+					$$.atributos.tipo = 1;
+					$$.atributos.es_direccion = 0;
+				}
+				else {
+					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					return -1;
+				}
+				fprintf(fout, ";R:\texp:	exp '+' exp\n");}
 		| exp '-' exp
-			{fprintf(fout, ";R:\texp:	exp '-' exp\n");}
+			{
+				if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+					$$.atributos.tipo = 1;
+					$$.atributos.es_direccion = 0;
+				}
+				else {
+					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					return -1;
+				}
+				fprintf(fout, ";R:\texp:	exp '-' exp\n");}
 		| exp '/' exp
-			{fprintf(fout, ";R:\texp:	exp '/' exp\n");}
+			{
+				if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+					$$.atributos.tipo = 1;
+					$$.atributos.es_direccion = 0;
+				}
+				else {
+					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					return -1;
+				}
+				fprintf(fout, ";R:\texp:	exp '/' exp\n");}
 		| exp '*' exp
-			{fprintf(fout, ";R:\texp:	exp '*' exp\n");}
+			{
+				if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+					$$.atributos.tipo = 1;
+					$$.atributos.es_direccion = 0;
+				}
+				else {
+					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					return -1;
+				}
+				fprintf(fout, ";R:\texp:	exp '*' exp\n");}
 		| '-' exp %prec MENOSU
-			{fprintf(fout, ";R:\texp:	'-' exp\n");}
+			{
+				if($2.atributos.tipo == 1){
+					$$.atributos.tipo = 1;
+					$$.atributos.es_direccion = 0;
+				}
+				else {
+					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					return -1;
+				}
+				fprintf(fout, ";R:\texp:	'-' exp\n");}
 		| exp TOK_AND exp
-			{fprintf(fout, ";R:\texp:	exp TOK_AND exp\n");}
+			{
+				if($1.atributos.tipo == 3 && $3.atributos.tipo == 3){
+					$$.atributos.tipo = BOOLEAN;
+					$$.atributos.es_direccion = 0;
+				}
+				else {
+					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					return -1;
+				}
+				fprintf(fout, ";R:\texp:	exp TOK_AND exp\n");}
 		| exp TOK_OR exp
-			{fprintf(fout, ";R:\texp:	exp TOK_OR exp\n");}
+			{
+				if($1.atributos.tipo == 3 && $3.atributos.tipo == 3){
+					$$.atributos.tipo = BOOLEAN;
+					$$.atributos.es_direccion = 0;
+				}
+				else {
+					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					return -1;
+				}
+				fprintf(fout, ";R:\texp:	exp TOK_OR exp\n");}
 		| '!' exp
-			{fprintf(fout, ";R:\texp:	'!' exp\n");}
+			{
+				if($2.atributos.tipo == 3){
+					$$.atributos.tipo = BOOLEAN;
+					$$.atributos.es_direccion = 0;
+				}
+				else {
+					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					return -1;
+				}
+				fprintf(fout, ";R:\texp:	'!' exp\n");}
 		| TOK_IDENTIFICADOR
 			{fprintf(fout, ";R:\texp:	TOK_IDENTIFICADOR\n");}
 		| constante 
@@ -259,7 +336,10 @@ exp:	exp '+' exp
 		;
 
 identificador_clase:	TOK_IDENTIFICADOR
-							{fprintf(fout, ";R:\tidentificador_clase:	TOK_IDENTIFICADOR\n");} 
+							{
+								strcpy($$.atributos.lexema,$1.atributos.lexema);
+								fprintf(fout, ";R:\tidentificador_clase:	TOK_IDENTIFICADOR\n");
+								} 
 						| TOK_ITSELF
 							{fprintf(fout, ";R:\tidentificador_clase:	TOK_ITSELF\n");}
 						;
@@ -274,27 +354,90 @@ resto_lista_expresiones:	',' exp resto_lista_expresiones
 								{fprintf(fout, ";R:\tresto_lista_expresiones:	\n");}
 							;
 comparacion:	exp TOK_IGUAL exp 
-					{fprintf(fout, ";R:\tcomparacion:	exp TOK_IGUAL exp \n");}
+					{	
+						if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+							$$.atributos.tipo = BOOLEAN;
+							$$.atributos.es_direccion = 0;
+						}
+						else {
+							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+							return -1;
+						}
+						fprintf(fout, ";R:\tcomparacion:	exp TOK_IGUAL exp \n");}
 				| exp TOK_DISTINTO exp
-					{fprintf(fout, ";R:\tcomparacion:	exp TOK_DISTINTO exp\n");}
+					{
+						if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+							$$.atributos.tipo = BOOLEAN;
+							$$.atributos.es_direccion = 0;
+						}
+						else {
+							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+							return -1;
+						}
+						fprintf(fout, ";R:\tcomparacion:	exp TOK_DISTINTO exp\n");}
 				| exp TOK_MAYORIGUAL exp
-					{fprintf(fout, ";R:\tcomparacion:	exp TOK_MAYORIGUAL exp\n");}
+					{
+						if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+							$$.atributos.tipo = BOOLEAN;
+							$$.atributos.es_direccion = 0;
+						}
+						else {
+							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+							return -1;
+						}
+						fprintf(fout, ";R:\tcomparacion:	exp TOK_MAYORIGUAL exp\n");}
 				| exp TOK_MENORIGUAL exp
-					{fprintf(fout, ";R:\tcomparacion:	exp TOK_MENORIGUAL exp\n");}
+					{
+						if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+							$$.atributos.tipo = BOOLEAN;
+							$$.atributos.es_direccion = 0;
+						}
+						else {
+							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+							return -1;
+						}
+						fprintf(fout, ";R:\tcomparacion:	exp TOK_MENORIGUAL exp\n");}
 				| exp '>' exp
-					{fprintf(fout, ";R:\tcomparacion:	exp '>' exp\n");}
+					{
+						if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+							$$.atributos.tipo = BOOLEAN;
+							$$.atributos.es_direccion = 0;
+						}
+						else {
+							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+							return -1;
+						}
+						fprintf(fout, ";R:\tcomparacion:	exp '>' exp\n");}
 				| exp '<' exp
-					{fprintf(fout, ";R:\tcomparacion:	exp '<' exp\n");}
+					{
+						if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+							$$.atributos.tipo = BOOLEAN;
+							$$.atributos.es_direccion = 0;
+						}
+						else {
+							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+							return -1;
+						}
+						fprintf(fout, ";R:\tcomparacion:	exp '<' exp\n");}
 				;
 constante:	constante_logica 
-				{fprintf(fout, ";R:\tconstante:	constante_logica \n");}
+				{
+					$$.atributos.tipo = BOOLEAN;
+					fprintf(fout, ";R:\tconstante:	constante_logica \n");}
 			| TOK_CONSTANTE_ENTERA
-				{fprintf(fout, ";R:\tconstante:	TOK_CONSTANTE_ENTERA \n");}
+				{	$$.atributos.tipo = INT;
+					fprintf(fout, ";R:\tconstante:	TOK_CONSTANTE_ENTERA \n");}
 			;
 constante_logica:	TOK_TRUE 
-						{fprintf(fout, ";R:\tconstante_logica:	TOK_TRUE \n");}
+						{
+						$$.atributos.tipo = BOOLEAN;
+						$$.atributos.es_direccion = 0;
+						fprintf(fout, ";R:\tconstante_logica:	TOK_TRUE \n");}
 					| TOK_FALSE
-						{fprintf(fout, ";R:\tconstante_logica:	TOK_FALSE \n");}
+						{
+						$$.atributos.tipo = BOOLEAN;
+						$$.atributos.es_direccion = 0;
+						fprintf(fout, ";R:\tconstante_logica:	TOK_FALSE \n");}
 					;
 
 %%
