@@ -160,7 +160,7 @@ int insert_symbol(tsa* t, char* simbolo, int categoria, int tipo,						int estru
 
 	elem = init_tsa_elem();
 	if(!elem) return ERROR;
-	set_tsa_elem(elem, categoria, tipo,	estructura,
+	set_tsa_elem(elem, simbolo, categoria, tipo,	estructura,
 	direcciones,					 numero_parametros,
 	numero_variables_locales,		posicion_variable_local,
 	posicion_parametro,			dimension,

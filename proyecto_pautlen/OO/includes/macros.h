@@ -7,6 +7,8 @@
 #define OK 1
 #define ERROR -1
 
+#define ID_MAX 64
+
 /*Categoria*/
 #define VARIABLE 10
 #define PARAMETRO 11

@@ -89,11 +89,11 @@ int main(int argc, char* argv[])
     error++;
 
     //printf AA.sa1;
-    if(buscarIdCualificadoClase(p_omicron, "AA", "sa1", "AA", &tsa_aux, &elem_aux)){
+    /*if(buscarIdCualificadoClase(p_omicron, "AA", "sa1", "AA", &tsa_aux, &elem_aux)){
         printf("simbolo encontrado en %s\n", tsa_aux->ambito);
     }else{
         printf("simbolo NO encontrado\n");
-    }
+    }*/
 
     //};
 
@@ -105,11 +105,11 @@ int main(int argc, char* argv[])
 
 
     //printf AA.sa1;
-    if(buscarIdCualificadoClase(p_omicron, "AA", "sa1", "AA", &tsa_aux, &elem_aux)){
+    /*if(buscarIdCualificadoClase(p_omicron, "AA", "sa1", "AA", &tsa_aux, &elem_aux)){
         printf("simbolo encontrado en %s\n", tsa_aux->ambito);
     }else{
         printf("simbolo NO encontrado\n");
-    }
+    }*/
 
 
     if(!close_tsc(p_omicron)){

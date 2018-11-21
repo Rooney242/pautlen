@@ -255,7 +255,7 @@ void free_tsa_elem(tsa_elem* elem){
 }
 
 
-tsa_elem* set_tsa_elem(tsa_elem* elem, int categoria, int tipo,						int estructura,
+tsa_elem* set_tsa_elem(tsa_elem* elem, char* id, int categoria, int tipo,						int estructura,
 	int direcciones,					int numero_parametros,
 	int numero_variables_locales,		int posicion_variable_local,
 	int posicion_parametro,			int dimension,
@@ -271,6 +271,7 @@ tsa_elem* set_tsa_elem(tsa_elem* elem, int categoria, int tipo,						int estruct
 	int * tipo_args, int simbolo_cerrado){
 		if(!elem) return NULL;
 
+		strcpy(elem->id, id);
 		elem->categoria = categoria;
 		elem->tipo = tipo;
 		elem->estructura = estructura;

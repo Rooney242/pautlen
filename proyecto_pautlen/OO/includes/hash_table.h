@@ -1,7 +1,7 @@
 #ifndef HASH_H
 #define HASH_H
 
-
+#include "macros.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,6 +10,7 @@
 #define HT_ITERATOR(ht) {ht, 0, ht->table[0]}
 
 typedef struct { //TODO: añadir clase
+	char id[ID_MAX];
 	int categoria; /* VARIABLE PARAMETRO FUNCION CLASE 
 	METODO_SOBREESCRIBIBLE METODO_NO_SOBREESCRIBIBLE 
 	ATRIBUTO_CLASE ATRIBUTO_INSTANCIA */
@@ -122,7 +123,7 @@ char* get_key_from_elem(hashtable_t* hasht, tsa_elem* elem);
 /*Funciones de los elementos de la TSA. De momento sin control de errorres*/
 tsa_elem* init_tsa_elem();
 void free_tsa_elem(tsa_elem* elem);
-tsa_elem* set_tsa_elem(tsa_elem* elem, int categoria, int tipo,						int estructura,
+tsa_elem* set_tsa_elem(tsa_elem* elem, char* id, int categoria, int tipo,						int estructura,
 	int direcciones,					int numero_parametros,
 	int numero_variables_locales,		int posicion_variable_local,
 	int posicion_parametro,			int dimension,

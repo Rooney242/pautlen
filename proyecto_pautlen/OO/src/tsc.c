@@ -186,7 +186,7 @@ int insertarSimboloEnClase(tsc* t, char* id_clase, char* simbolo, int categoria,
 	elem = init_tsa_elem();
 
 	if(!elem) return ERROR;
-	set_tsa_elem(elem, categoria, tipo,	estructura,
+	set_tsa_elem(elem, simbolo, categoria, tipo,	estructura,
 	direcciones,					 numero_parametros,
 	numero_variables_locales,		posicion_variable_local,
 	posicion_parametro,			dimension,
@@ -229,7 +229,7 @@ int insertarSimboloEnMain(tsc* t, char* simbolo, int categoria, int tipo,						i
 
 	elem = init_tsa_elem();
 	if(!elem) return ERROR;
-	set_tsa_elem(elem, categoria, tipo,	estructura,
+	set_tsa_elem(elem, simbolo, categoria, tipo,	estructura,
 	direcciones,					 numero_parametros,
 	numero_variables_locales,		posicion_variable_local,
 	posicion_parametro,			dimension,
@@ -278,7 +278,7 @@ int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char
 	if(!elem) return ERROR;
 
 	//elem = init_tsa_elem();
-	set_tsa_elem(elem, categoria, tipo,	estructura,
+	set_tsa_elem(elem, simbolo, categoria, tipo,	estructura,
 	direcciones,					 numero_parametros,
 	numero_variables_locales,		posicion_variable_local,
 	posicion_parametro,			dimension,
@@ -622,6 +622,7 @@ int generar_dot(tsc* tabla, char* file_name){
 	int i, k, num_parents, num_clases;
 	char* name;
 	char ** parents_names;
+	char ** simbolos;
 	if (file_name){
 		pf = fopen(file_name,"w");
 	}else{
@@ -634,8 +635,10 @@ int generar_dot(tsc* tabla, char* file_name){
 	for(i=0; i<num_clases; i++){
 		name = tabla->grafo->nodes[i]->name;
 		fprintf(pf, "\t%s [label=\"{%s|%s\\l", name, name, name);
-		for(k=0; k<1; k++){//bucle por los simbolos del ambito TODO
-			fprintf(pf, "TODO\\l");
+		simbolos = (char**) malloc(sizeof(char*)*tabla->grafo->nodes[i]->tsa->ppal->e_num);
+		ht_list_keys(tabla->grafo->nodes[i]->tsa->ppal, simbolos, tabla->grafo->nodes[i]->tsa->ppal->e_num);
+		for(k=0; k<tabla->grafo->nodes[i]->tsa->ppal->e_num; k++){
+			fprintf(pf, "%s\\l", simbolos[k]);
 		}
 		fprintf(pf, "}\"][shape=record];\n");
 
