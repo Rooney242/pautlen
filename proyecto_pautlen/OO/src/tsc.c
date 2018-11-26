@@ -459,11 +459,11 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 			ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
 			if(ret == TRUE){
 				if(!strcmp(TSA_MAIN, (*tsa_encontrada)->ambito)) 
-					return ERROR_20;/*Buscamos desde una funcion un id que no esta en la jerarquia y si en el main*/
+					return CASO_20;/*Buscamos desde una funcion un id que no esta en la jerarquia y si en el main*/
 				return TRUE;/*Buscamos id desde una funcion y esta en su jerarquia*/
 			}
 		}else{
-			return ERROR_21;/*Se busca id desde funcion que no esta en jerarquia ni en main*/
+			return CASO_21;/*Se busca id desde funcion que no esta en jerarquia ni en main*/
 		}
 	}else{/*Si estamos en el main buscamos en todas las tsa*/
 		/*Buscamos en el main*/
@@ -475,10 +475,10 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 			ret= aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
 			if (ret==TRUE){
 				if(!strcmp(TSA_MAIN, (*tsa_encontrada)->ambito))
-					return ERROR_22;/*Buscamos desde main un id que esta en el main*/
-				return ERROR_24;/*Si desde una funcion global buscamos id y esta en esa misma funcion*/
+					return CASO_22;/*Buscamos desde main un id que esta en el main*/
+				return CASO_24;/*Si desde una funcion global buscamos id y esta en esa misma funcion*/
 			}else{
-				return ERROR_23;/*Se busca id desde funcion global/DIDI CREE QUE ES DESDE EL MAIN/ y no esta ni en la jerarquia ni en el main*/
+				return CASO_23;/*Se busca id desde funcion global/DIDI CREE QUE ES DESDE EL MAIN/ y no esta ni en la jerarquia ni en el main*/
 			}
 		}
 		/*Si no esta buscamos en el resto de tsa*/
@@ -491,11 +491,11 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 				ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
 				if(ret == TRUE){
 					if(!strcmp(nombre_ambito_desde, (*tsa_encontrada)->ambito))
-						return ERROR_24;/*Desde funcion global buscamos id definido en la misma funcion */
-					return ERROR_25;/*Desde funcion global buscamos id definido en el main*/
+						return CASO_24;/*Desde funcion global buscamos id definido en la misma funcion */
+					return CASO_25;/*Desde funcion global buscamos id definido en el main*/
 				}
 			}else
-			return ERROR_26;/*Desde funcion global se busca id que no esta en main ni en ambito*/
+			return CASO_26;/*Desde funcion global se busca id que no esta en main ni en ambito*/
 		}
 		return FALSE; 
 	

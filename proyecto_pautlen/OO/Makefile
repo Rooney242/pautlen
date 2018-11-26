@@ -24,10 +24,8 @@ CASOS_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o
 TSC = tsc
 TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(OBJ_FOLDER)casos.o
 
-DOT_GENERATOR = dot_generator
-DOT_GENERATOR_DEPS = $(OBJ_FOLDER)tsc.o $(OBJ_FOLDER)graph.o $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)tsc.o
 
-all: hash graph tsa tsc dot casos
+all: hash graph tsa tsc casos
 
 all-test: graph-test tsc-test
 
@@ -61,10 +59,6 @@ tsc: tsa graph casos
 tsc-test: tsc
 	@echo Compilando tester del modulo de tsc...
 	@$(CC) $(LIB) -o test_$(TSC) $(OBJ_FOLDER)$(TSC).o $(TESTS)test_$(TSC).c $(TSC_DEPS)
-
-dot: tsc
-	@echo Compilando modulo de generador de ficheros .dot...
-	@$(CC) $(LIB) -c $(SOURCES)$(DOT_GENERATOR).c -o $(OBJ_FOLDER)$(DOT_GENERATOR).o 
 
 dot-test: tsc
 	@echo Compilando tester de la generacion de dot...

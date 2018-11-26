@@ -9,7 +9,7 @@
 
 
 int	print_caso(FILE* pf, int caso, char* id, char* ambito_desde, tsa* ambito_encontrado, tsa_elem* elem){
-	if(!pf) return CASO;
+	if(!pf) return ERROR;
 
 	switch(caso){
 		case ERROR:
