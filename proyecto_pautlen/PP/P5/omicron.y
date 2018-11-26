@@ -66,172 +66,365 @@
 %%
 
 programa: 	TOK_MAIN '{' declaraciones funciones sentencias '}' 
-				{fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' declaraciones funciones sentencias '}'\n");}	
+				{
+					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' declaraciones funciones sentencias '}'\n");
+				}	
 			| TOK_MAIN '{' funciones sentencias '}'
-				{fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' funciones sentencias '}'\n");}	
+				{
+					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' funciones sentencias '}'\n");
+				}	
 			;
+
 declaraciones:	declaracion
-					{fprintf(fout, ";R:\tdeclaraciones:	declaracion\n");}	
+					{
+						fprintf(fout, ";R:\tdeclaraciones:	declaracion\n");
+					}	
 				| declaracion declaraciones
-					{fprintf(fout, ";R:\tdeclaraciones:	declaracion declaraciones\n");}
+					{
+						fprintf(fout, ";R:\tdeclaraciones:	declaracion declaraciones\n");
+					}
 				;
+
 declaracion:	modificadores_acceso clase identificadores ';'
-					{fprintf(fout, ";R:\tdeclaracion:	modificadores_acceso clase identificadores ';'\n");}
+					{
+						fprintf(fout, ";R:\tdeclaracion:	modificadores_acceso clase identificadores ';'\n");
+					}
 				| modificadores_acceso declaracion_clase ';'
-					{fprintf(fout, ";R:\tdeclaracion:	modificadores_acceso declaracion_clase ';'\n");}
+					{
+						fprintf(fout, ";R:\tdeclaracion:	modificadores_acceso declaracion_clase ';'\n");
+					}
 				;
+
 modificadores_acceso: /*vacio*/
-						{fprintf(fout, ";R:\tmodificadores_acceso: \n");}
+						{
+							fprintf(fout, ";R:\tmodificadores_acceso: \n");
+						}
 					| TOK_HIDDEN TOK_UNIQUE
-						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_HIDDEN TOK_UNIQUE\n");}
+						{
+							fprintf(fout, ";R:\tmodificadores_acceso: TOK_HIDDEN TOK_UNIQUE\n");
+						}
 					| TOK_SECRET TOK_UNIQUE
-						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_SECRET TOK_UNIQUE\n");}
+						{
+							fprintf(fout, ";R:\tmodificadores_acceso: TOK_SECRET TOK_UNIQUE\n");
+						}
 					| TOK_EXPOSED TOK_UNIQUE
-						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_EXPOSED TOK_UNIQUE\n");}
+						{
+							fprintf(fout, ";R:\tmodificadores_acceso: TOK_EXPOSED TOK_UNIQUE\n");
+						}
 					| TOK_HIDDEN 
-						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_HIDDEN\n");}
+						{
+							fprintf(fout, ";R:\tmodificadores_acceso: TOK_HIDDEN\n");
+						}
 					| TOK_SECRET
-						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_SECRET\n");}
+						{
+							fprintf(fout, ";R:\tmodificadores_acceso: TOK_SECRET\n");
+						}
 					| TOK_EXPOSED
-						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_EXPOSED\n");}
+						{
+							fprintf(fout, ";R:\tmodificadores_acceso: TOK_EXPOSED\n");
+						}
 					| TOK_UNIQUE
-						{fprintf(fout, ";R:\tmodificadores_acceso: TOK_UNIQUE\n");}
+						{
+							fprintf(fout, ";R:\tmodificadores_acceso: TOK_UNIQUE\n");
+						}
 					;
+
 clase:	clase_escalar
-			{fprintf(fout, ";R:\tclase:	clase_escalar\n");}
+			{
+				fprintf(fout, ";R:\tclase:	clase_escalar\n");
+			}
 		| clase_vector
-			{fprintf(fout, ";R:\tclase:	clase_vector\n");}
+			{
+				fprintf(fout, ";R:\tclase:	clase_vector\n");
+			}
 		| clase_objeto
-			{fprintf(fout, ";R:\tclase:	clase_objeto\n");}
+			{
+				fprintf(fout, ";R:\tclase:	clase_objeto\n");
+			}
 		;
+
 declaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'
-						{fprintf(fout, ";R:\tdeclaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'\n");}
+						{
+							fprintf(fout, ";R:\tdeclaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'\n");
+						}
 					| modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones_funcion funciones '}'
-						{fprintf(fout, ";R:\tdeclaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones_funcion funciones '}'\n");}
+						{
+							fprintf(fout, ";R:\tdeclaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones_funcion funciones '}'\n");
+						}
 					;
+
 modificadores_clase: /*vacio*/
-						{fprintf(fout, ";R:\tmodificadores_clase: \n");}
+						{
+							fprintf(fout, ";R:\tmodificadores_clase: \n");
+						}
 					;
-clase_escalar: tipo {fprintf(fout, ";R:\tclase_escalar: tipo\n");};
+
+clase_escalar: 	tipo 
+					{
+						fprintf(fout, ";R:\tclase_escalar: tipo\n");
+					}
+				;
+
 tipo: 	TOK_INT 
-			{fprintf(fout, ";R:\ttipo: 	TOK_INT \n");} 
+			{
+				$$.atributos.tipo = INT;
+				fprintf(fout, ";R:\ttipo: 	TOK_INT \n");
+			} 
 		| TOK_BOOLEAN 
-			{fprintf(fout, ";R:\ttipo: 	TOK_BOOLEAN  \n");}
+			{
+				$$.atributos.tipo = BOOLEAN;
+				fprintf(fout, ";R:\ttipo: 	TOK_BOOLEAN  \n");
+			}
 		;
+
 clase_objeto: 	'{' TOK_IDENTIFICADOR '}'
-					{fprintf(fout, ";R:\tclase_objeto: 	'{' TOK_IDENTIFICADOR '}'\n");}
+					{
+						fprintf(fout, ";R:\tclase_objeto: 	'{' TOK_IDENTIFICADOR '}'\n");
+					}
 				;
+
 clase_vector: 	TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
-					{fprintf(fout, ";R:\tclase_vector: 	TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'\n");}
+					{
+						fprintf(fout, ";R:\tclase_vector: 	TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'\n");
+					}
 				;
+
 identificadores: 	TOK_IDENTIFICADOR 
-						{fprintf(fout, ";R:\tidentificadores: 	TOK_IDENTIFICADOR \n");}
+						{
+							fprintf(fout, ";R:\tidentificadores: 	TOK_IDENTIFICADOR \n");
+						}
 					| TOK_IDENTIFICADOR ',' identificadores
-						{fprintf(fout, ";R:\tidentificadores:	TOK_IDENTIFICADOR ',' identificadores\n");}
+						{
+							fprintf(fout, ";R:\tidentificadores:	TOK_IDENTIFICADOR ',' identificadores\n");
+						}
 					;
+
 funciones: 	/*vacio*/
-				{fprintf(fout, ";R:\tfunciones: \n");}
+				{
+					fprintf(fout, ";R:\tfunciones: \n");
+				}
 			| funcion funciones
-				{fprintf(fout, ";R:\tfunciones: funcion funciones\n");}
+				{
+					fprintf(fout, ";R:\tfunciones: funcion funciones\n");
+				}
 			;
+
 funcion: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR 
 			'(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
-				{fprintf(fout, ";R:\tfuncion: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");}
+				{
+					fprintf(fout, ";R:\tfuncion: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");
+				}
 			;
+
 tipo_retorno:	TOK_NONE
-					{fprintf(fout, ";R:\ttipo_retorno:	TOK_NONE\n");}
+					{
+						fprintf(fout, ";R:\ttipo_retorno:	TOK_NONE\n");
+					}
 				| tipo
-					{fprintf(fout, ";R:\ttipo_retorno:	tipo\n");}
+					{
+						fprintf(fout, ";R:\ttipo_retorno:	tipo\n");
+					}
 				;
+
 parametros_funcion:	parametro_funcion resto_parametros_funcion
-						{fprintf(fout, ";R:\tparametros_funcion:	parametro_funcion resto_parametros_funcion\n");}
+						{
+							fprintf(fout, ";R:\tparametros_funcion:	parametro_funcion resto_parametros_funcion\n");
+						}
 					| /*vacio*/
-						{fprintf(fout, ";R:\tparametros_funcion: \n");}
+						{
+							fprintf(fout, ";R:\tparametros_funcion: \n");
+						}
 					;
+
 resto_parametros_funcion:	';' parametro_funcion resto_parametros_funcion 
-								{fprintf(fout, ";R:\tresto_parametros_funcion:	';' parametro_funcion resto_parametros_funcion \n");}
+								{
+									fprintf(fout, ";R:\tresto_parametros_funcion:	';' parametro_funcion resto_parametros_funcion \n");
+								}
 							| /*vacio*/
-								{fprintf(fout, ";R:\tresto_parametros_funcion: \n");}
+								{
+									fprintf(fout, ";R:\tresto_parametros_funcion: \n");
+								}
 							;
-parametro_funcion:	tipo TOK_IDENTIFICADOR
-						{fprintf(fout, ";R:\tparametro_funcion:	tipo TOK_IDENTIFICADOR\n");}
+
+idpf:	TOK_IDENTIFICADOR
+			{
+				fprintf(fout, ";R:\tidpf: TOK_IDENTIFICADOR\n");
+			}
+
+parametro_funcion:	tipo idpf
+						{
+							fprintf(fout, ";R:\tparametro_funcion:	tipo idpf\n");
+						}
 					;
+
 declaraciones_funcion:	 declaraciones 
-							{fprintf(fout, ";R:\tdeclaraciones_funcion:	 declaraciones \n");}
+							{
+								fprintf(fout, ";R:\tdeclaraciones_funcion:	 declaraciones \n");
+							}
 						| /*vacio*/
-							{fprintf(fout, ";R:\tdeclaraciones_funcion:	 \n");}
+							{
+								fprintf(fout, ";R:\tdeclaraciones_funcion:	 \n");
+							}
 						;
+
 sentencias:	sentencia 
-				{fprintf(fout, ";R:\tsentencias:	sentencia \n");}
+				{
+					fprintf(fout, ";R:\tsentencias:	sentencia \n");
+				}
 			| sentencia sentencias
-				{fprintf(fout, ";R:\tsentencias:	sentencia sentencias \n");}
+				{
+					fprintf(fout, ";R:\tsentencias:	sentencia sentencias \n");
+				}
 			;
+
 sentencia:	sentencia_simple ';' 
-				{fprintf(fout, ";R:\tsentencia:	sentencia_simple ';' \n");}
+				{
+					fprintf(fout, ";R:\tsentencia:	sentencia_simple ';' \n");
+				}
 			| bloque
-				{fprintf(fout, ";R:\tsentencia:	bloque\n");}
+				{
+					fprintf(fout, ";R:\tsentencia:	bloque\n");
+				}
 			;
+
 sentencia_simple:	asignacion
-						{fprintf(fout, ";R:\tsentencia_simple:	asignacion\n");}
+						{
+							fprintf(fout, ";R:\tsentencia_simple:	asignacion\n");
+						}
 					| lectura 
-						{fprintf(fout, ";R:\tsentencia_simple:	lectura\n");}
+						{
+							fprintf(fout, ";R:\tsentencia_simple:	lectura\n");
+						}
 					| escritura 
-						{fprintf(fout, ";R:\tsentencia_simple:	escritura\n");}
+						{
+							fprintf(fout, ";R:\tsentencia_simple:	escritura\n");
+						}
 					| retorno_funcion 
-						{fprintf(fout, ";R:\tsentencia_simple:	retorno_funcion\n");}
+						{
+							fprintf(fout, ";R:\tsentencia_simple:	retorno_funcion\n");
+						}
 					| identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
-						{fprintf(fout, ";R:\tsentencia_simple:	identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
+						{
+							fprintf(fout, ";R:\tsentencia_simple:	identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
+						}
 					|  TOK_IDENTIFICADOR '(' lista_expresiones ')' 
-						{fprintf(fout, ";R:\tsentencia_simple:	TOK_IDENTIFICADOR '(' lista_expresiones ')' \n");}
+						{
+							fprintf(fout, ";R:\tsentencia_simple:	TOK_IDENTIFICADOR '(' lista_expresiones ')' \n");
+						}
 					| destruir_objeto
-						{fprintf(fout, ";R:\tsentencia_simple:	destruir_objeto\n");}
+						{
+							fprintf(fout, ";R:\tsentencia_simple:	destruir_objeto\n");
+						}
 					;
+
 destruir_objeto: 	TOK_DISCARD TOK_IDENTIFICADOR
-						{fprintf(fout, ";R:\tdestruir_objeto: 	TOK_DISCARD TOK_IDENTIFICADOR\n");}
+						{
+							fprintf(fout, ";R:\tdestruir_objeto: 	TOK_DISCARD TOK_IDENTIFICADOR\n");
+						}
 					;
+
 bloque:	condicional
-			{fprintf(fout, ";R:\tbloque:	condicional\n");}
+			{
+				fprintf(fout, ";R:\tbloque:	condicional\n");
+			}
 		| bucle
-			{fprintf(fout, ";R:\tbloque:	bucle\n");}
+			{
+				fprintf(fout, ";R:\tbloque:	bucle\n");
+			}
 		;
+
 asignacion:	TOK_IDENTIFICADOR '=' exp
-				{fprintf(fout, ";R:\tasignacion:	TOK_IDENTIFICADOR '=' exp\n");}
+				{
+					fprintf(fout, ";R:\tasignacion:	TOK_IDENTIFICADOR '=' exp\n");
+				}
 			| elemento_vector '=' exp
-				{fprintf(fout, ";R:\tasignacion:	elemento_vector '=' exp\n");}
+				{
+					fprintf(fout, ";R:\tasignacion:	elemento_vector '=' exp\n");
+				}
 			| elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
-				{fprintf(fout, ";R:\tasignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
+				{
+					fprintf(fout, ";R:\tasignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
+				}
 			| TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
-				{fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '='TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
+				{
+					fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '='TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
+				}
 			| identificador_clase '.' TOK_IDENTIFICADOR '=' exp
-				{fprintf(fout, ";R:\tasignacion: identificador_clase '.' TOK_IDENTIFICADOR '=' exp\n");}
+				{
+					fprintf(fout, ";R:\tasignacion: identificador_clase '.' TOK_IDENTIFICADOR '=' exp\n");
+				}
 			;
+
 elemento_vector:	TOK_IDENTIFICADOR '[' exp ']'
-						{fprintf(fout, ";R:\telemento_vector:	TOK_IDENTIFICADOR '[' exp ']'\n");}
+						{
+							fprintf(fout, ";R:\telemento_vector:	TOK_IDENTIFICADOR '[' exp ']'\n");
+						}
 					;
-condicional:	TOK_IF '(' exp ')' '{' sentencias '}' 
-					{fprintf(fout, ";R:\tcondicional:	TOK_IF '(' exp ')' '{' sentencias '}' \n");}
-				| TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'
-					{fprintf(fout, ";R:\tcondicional:	TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'\n");}
+
+condicional:	if_exp ')' '{' sentencias '}' 
+					{
+						fprintf(fout, ";R:\tcondicional:	if_exp ')' '{' sentencias '}' \n");
+					}
+				| if_exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'
+					{
+						fprintf(fout, ";R:\tcondicional:	if_exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'\n");
+					}
 				;
-bucle: 	TOK_WHILE '(' exp ')' '{' sentencias '}'
-			{fprintf(fout, ";R:\tbucle: 	TOK_WHILE '(' exp ')' '{' sentencias '}'\n");}
+
+if_exp:	TOK_IF '(' exp
+			{
+				if($3.atributos.tipo != BOOLEAN){
+					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					return -1;
+				}
+				fprintf(fout, ";R:\tif_exp:	TOK_IF '(' exp \n");
+			}
+			;
+
+bucle:	while_exp ')' '{' sentencias '}'
+			{
+				fprintf(fout, ";R:\tbucle: 	while_exp ')' '{' sentencias '}'\n");
+			}
 		;
+
+while_exp:	TOK_WHILE '(' exp
+				{
+					if($3.atributos.tipo != BOOLEAN) {
+						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+						return -1;
+					}
+					fprintf(fout, ";R:\twhile_exp:	TOK_WHILE '(' exp \n");
+				}
+				;
+
 lectura:	TOK_SCANF TOK_IDENTIFICADOR 
-				{fprintf(fout, ";R:\tlectura:	TOK_SCANF TOK_IDENTIFICADOR \n");}
+				{
+					fprintf(fout, ";R:\tlectura:	TOK_SCANF TOK_IDENTIFICADOR \n");
+				}
 			| TOK_SCANF elemento_vector
-				{fprintf(fout, ";R:\tlectura:	TOK_SCANF elemento_vector \n");}
+				{
+					fprintf(fout, ";R:\tlectura:	TOK_SCANF elemento_vector \n");
+				}
 			;
+
 escritura:	TOK_PRINTF exp
-				{fprintf(fout, ";R:\tescritura:	TOK_PRINTF exp\n");}
+				{
+					fprintf(fout, ";R:\tescritura:	TOK_PRINTF exp\n");
+				}
 			;
+
 retorno_funcion:	TOK_RETURN exp
-						{fprintf(fout, ";R:\tretorno_funcion:	TOK_RETURN exp\n");}
+						{
+							fprintf(fout, ";R:\tretorno_funcion:	TOK_RETURN exp\n");
+						}
 					| TOK_RETURN TOK_NONE
-						{fprintf(fout, ";R:\tretorno_funcion:	TOK_RETURN TOK_NONE\n");}
+						{
+							fprintf(fout, ";R:\tretorno_funcion:	TOK_RETURN TOK_NONE\n");
+						}
 					;
 exp:	exp '+' exp
 			{
-				if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+				if($1.atributos.tipo == INT && $3.atributos.tipo == INT){
 					$$.atributos.tipo = 1;
 					$$.atributos.es_direccion = 0;
 				}
@@ -239,10 +432,11 @@ exp:	exp '+' exp
 					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 					return -1;
 				}
-				fprintf(fout, ";R:\texp:	exp '+' exp\n");}
+				fprintf(fout, ";R:\texp:	exp '+' exp\n");
+			}
 		| exp '-' exp
 			{
-				if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+				if($1.atributos.tipo == INT && $3.atributos.tipo == INT){
 					$$.atributos.tipo = 1;
 					$$.atributos.es_direccion = 0;
 				}
@@ -250,10 +444,11 @@ exp:	exp '+' exp
 					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 					return -1;
 				}
-				fprintf(fout, ";R:\texp:	exp '-' exp\n");}
+				fprintf(fout, ";R:\texp:	exp '-' exp\n");
+			}
 		| exp '/' exp
 			{
-				if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+				if($1.atributos.tipo == INT && $3.atributos.tipo == INT){
 					$$.atributos.tipo = 1;
 					$$.atributos.es_direccion = 0;
 				}
@@ -261,10 +456,11 @@ exp:	exp '+' exp
 					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 					return -1;
 				}
-				fprintf(fout, ";R:\texp:	exp '/' exp\n");}
+				fprintf(fout, ";R:\texp:	exp '/' exp\n");
+			}
 		| exp '*' exp
 			{
-				if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+				if($1.atributos.tipo == INT && $3.atributos.tipo == INT){
 					$$.atributos.tipo = 1;
 					$$.atributos.es_direccion = 0;
 				}
@@ -272,10 +468,11 @@ exp:	exp '+' exp
 					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 					return -1;
 				}
-				fprintf(fout, ";R:\texp:	exp '*' exp\n");}
+				fprintf(fout, ";R:\texp:	exp '*' exp\n");
+			}
 		| '-' exp %prec MENOSU
 			{
-				if($2.atributos.tipo == 1){
+				if($2.atributos.tipo == INT){
 					$$.atributos.tipo = 1;
 					$$.atributos.es_direccion = 0;
 				}
@@ -283,10 +480,11 @@ exp:	exp '+' exp
 					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 					return -1;
 				}
-				fprintf(fout, ";R:\texp:	'-' exp\n");}
+				fprintf(fout, ";R:\texp:	'-' exp\n");
+			}
 		| exp TOK_AND exp
 			{
-				if($1.atributos.tipo == 3 && $3.atributos.tipo == 3){
+				if($1.atributos.tipo == BOOLEAN && $3.atributos.tipo == BOOLEAN){
 					$$.atributos.tipo = BOOLEAN;
 					$$.atributos.es_direccion = 0;
 				}
@@ -294,10 +492,11 @@ exp:	exp '+' exp
 					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 					return -1;
 				}
-				fprintf(fout, ";R:\texp:	exp TOK_AND exp\n");}
+				fprintf(fout, ";R:\texp:	exp TOK_AND exp\n");
+			}
 		| exp TOK_OR exp
 			{
-				if($1.atributos.tipo == 3 && $3.atributos.tipo == 3){
+				if($1.atributos.tipo == BOOLEAN && $3.atributos.tipo == BOOLEAN){
 					$$.atributos.tipo = BOOLEAN;
 					$$.atributos.es_direccion = 0;
 				}
@@ -305,10 +504,11 @@ exp:	exp '+' exp
 					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 					return -1;
 				}
-				fprintf(fout, ";R:\texp:	exp TOK_OR exp\n");}
+				fprintf(fout, ";R:\texp:	exp TOK_OR exp\n");
+			}
 		| '!' exp
 			{
-				if($2.atributos.tipo == 3){
+				if($2.atributos.tipo == BOOLEAN){
 					$$.atributos.tipo = BOOLEAN;
 					$$.atributos.es_direccion = 0;
 				}
@@ -316,46 +516,84 @@ exp:	exp '+' exp
 					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 					return -1;
 				}
-				fprintf(fout, ";R:\texp:	'!' exp\n");}
+				fprintf(fout, ";R:\texp:	'!' exp\n");
+			}
 		| TOK_IDENTIFICADOR
-			{fprintf(fout, ";R:\texp:	TOK_IDENTIFICADOR\n");}
+			{
+				fprintf(fout, ";R:\texp:	TOK_IDENTIFICADOR\n");
+			}
 		| constante 
-			{fprintf(fout, ";R:\texp:	constante \n");}
+			{
+				$$.atributos.tipo = $1.atributos.tipo;
+				$$.atributos.es_direccion = $1.atributos.es_direccion;
+				fprintf(fout, ";R:\texp:	constante \n");
+			}
 		| '(' exp ')'
-			{fprintf(fout, ";R:\texp:	'(' exp ')'\n");}
+			{
+				$$.atributos.tipo = $2.atributos.tipo;
+				$$.atributos.es_direccion = $2.atributos.es_direccion;
+				fprintf(fout, ";R:\texp:	'(' exp ')'\n");
+			}
 		| '(' comparacion ')'
-			{fprintf(fout, ";R:\texp:	'(' comparacion ')'\n");}
+			{
+				$$.atributos.tipo = $2.atributos.tipo;
+				$$.atributos.es_direccion = $2.atributos.es_direccion;
+				fprintf(fout, ";R:\texp:	'(' comparacion ')'\n");
+			}
 		| elemento_vector
-			{fprintf(fout, ";R:\texp:	elemento_vector\n");}
+			{
+				$$.atributos.tipo = $1.atributos.tipo;
+				$$.atributos.es_direccion = $1.atributos.es_direccion;
+				fprintf(fout, ";R:\texp:	elemento_vector\n");
+			}
 		| TOK_IDENTIFICADOR '(' lista_expresiones ')'
-			{fprintf(fout, ";R:\texp:	TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
+			{
+				fprintf(fout, ";R:\texp:	TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
+			}
 		| identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
-			{fprintf(fout, ";R:\texp:	identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");}
+			{
+				fprintf(fout, ";R:\texp:	identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
+			}
 		| identificador_clase '.' TOK_IDENTIFICADOR
-			{fprintf(fout, ";R:\texp:	identificador_clase '.' TOK_IDENTIFICADOR\n");}
+			{
+				fprintf(fout, ";R:\texp:	identificador_clase '.' TOK_IDENTIFICADOR\n");
+			}
 		;
 
 identificador_clase:	TOK_IDENTIFICADOR
 							{
 								strcpy($$.atributos.lexema,$1.atributos.lexema);
 								fprintf(fout, ";R:\tidentificador_clase:	TOK_IDENTIFICADOR\n");
-								} 
+							} 
 						| TOK_ITSELF
-							{fprintf(fout, ";R:\tidentificador_clase:	TOK_ITSELF\n");}
+							{
+								fprintf(fout, ";R:\tidentificador_clase:	TOK_ITSELF\n");
+							}
 						;
+
 lista_expresiones: 	exp resto_lista_expresiones 
-						{fprintf(fout, ";R:\tlista_expresiones:	exp resto_lista_expresiones \n");}
+						{
+							fprintf(fout, ";R:\tlista_expresiones:	exp resto_lista_expresiones \n");
+						}
 					| /*vacio*/
-						{fprintf(fout, ";R:\tlista_expresiones:	\n");}
+						{
+							fprintf(fout, ";R:\tlista_expresiones:	\n");
+						}
 					;
+
 resto_lista_expresiones:	',' exp resto_lista_expresiones 
-								{fprintf(fout, ";R:\tresto_lista_expresiones:	',' exp resto_lista_expresiones \n");}
+								{
+									fprintf(fout, ";R:\tresto_lista_expresiones:	',' exp resto_lista_expresiones \n");
+								}
 							| /*vacio*/
-								{fprintf(fout, ";R:\tresto_lista_expresiones:	\n");}
+								{
+									fprintf(fout, ";R:\tresto_lista_expresiones:	\n");
+								}
 							;
+
 comparacion:	exp TOK_IGUAL exp 
 					{	
-						if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+						if($1.atributos.tipo == INT && $3.atributos.tipo == INT){
 							$$.atributos.tipo = BOOLEAN;
 							$$.atributos.es_direccion = 0;
 						}
@@ -363,10 +601,11 @@ comparacion:	exp TOK_IGUAL exp
 							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 							return -1;
 						}
-						fprintf(fout, ";R:\tcomparacion:	exp TOK_IGUAL exp \n");}
+						fprintf(fout, ";R:\tcomparacion:	exp TOK_IGUAL exp \n");
+					}
 				| exp TOK_DISTINTO exp
 					{
-						if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+						if($1.atributos.tipo == INT && $3.atributos.tipo == INT){
 							$$.atributos.tipo = BOOLEAN;
 							$$.atributos.es_direccion = 0;
 						}
@@ -374,10 +613,11 @@ comparacion:	exp TOK_IGUAL exp
 							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 							return -1;
 						}
-						fprintf(fout, ";R:\tcomparacion:	exp TOK_DISTINTO exp\n");}
+						fprintf(fout, ";R:\tcomparacion:	exp TOK_DISTINTO exp\n");
+					}
 				| exp TOK_MAYORIGUAL exp
 					{
-						if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+						if($1.atributos.tipo == INT && $3.atributos.tipo == INT){
 							$$.atributos.tipo = BOOLEAN;
 							$$.atributos.es_direccion = 0;
 						}
@@ -385,10 +625,11 @@ comparacion:	exp TOK_IGUAL exp
 							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 							return -1;
 						}
-						fprintf(fout, ";R:\tcomparacion:	exp TOK_MAYORIGUAL exp\n");}
+						fprintf(fout, ";R:\tcomparacion:	exp TOK_MAYORIGUAL exp\n");
+					}
 				| exp TOK_MENORIGUAL exp
 					{
-						if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+						if($1.atributos.tipo == INT && $3.atributos.tipo == INT){
 							$$.atributos.tipo = BOOLEAN;
 							$$.atributos.es_direccion = 0;
 						}
@@ -396,10 +637,11 @@ comparacion:	exp TOK_IGUAL exp
 							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 							return -1;
 						}
-						fprintf(fout, ";R:\tcomparacion:	exp TOK_MENORIGUAL exp\n");}
+						fprintf(fout, ";R:\tcomparacion:	exp TOK_MENORIGUAL exp\n");
+					}
 				| exp '>' exp
 					{
-						if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+						if($1.atributos.tipo == INT && $3.atributos.tipo == INT){
 							$$.atributos.tipo = BOOLEAN;
 							$$.atributos.es_direccion = 0;
 						}
@@ -407,10 +649,11 @@ comparacion:	exp TOK_IGUAL exp
 							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 							return -1;
 						}
-						fprintf(fout, ";R:\tcomparacion:	exp '>' exp\n");}
+						fprintf(fout, ";R:\tcomparacion:	exp '>' exp\n");
+					}
 				| exp '<' exp
 					{
-						if($1.atributos.tipo == 1 && $3.atributos.tipo == 1){
+						if($1.atributos.tipo == INT && $3.atributos.tipo == INT){
 							$$.atributos.tipo = BOOLEAN;
 							$$.atributos.es_direccion = 0;
 						}
@@ -418,27 +661,46 @@ comparacion:	exp TOK_IGUAL exp
 							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 							return -1;
 						}
-						fprintf(fout, ";R:\tcomparacion:	exp '<' exp\n");}
+						fprintf(fout, ";R:\tcomparacion:	exp '<' exp\n");
+					}
 				;
+
 constante:	constante_logica 
 				{
-					$$.atributos.tipo = BOOLEAN;
-					fprintf(fout, ";R:\tconstante:	constante_logica \n");}
-			| TOK_CONSTANTE_ENTERA
-				{	$$.atributos.tipo = INT;
-					fprintf(fout, ";R:\tconstante:	TOK_CONSTANTE_ENTERA \n");}
+					$$.atributos.tipo = $1.atributos.tipo;
+					$$.atributos.es_direccion = $1.atributos.es_direccion;
+					fprintf(fout, ";R:\tconstante:	constante_logica \n");
+				}
+			| constante_entera
+				{	
+					$$.atributos.tipo = $1.atributos.tipo;
+					$$.atributos.es_direccion = $1.atributos.es_direccion;
+					fprintf(fout, ";R:\tconstante:	constante_entera \n");
+				}
 			;
+
 constante_logica:	TOK_TRUE 
 						{
-						$$.atributos.tipo = BOOLEAN;
-						$$.atributos.es_direccion = 0;
-						fprintf(fout, ";R:\tconstante_logica:	TOK_TRUE \n");}
+							$$.atributos.tipo = BOOLEAN;
+							$$.atributos.es_direccion = 0;
+							fprintf(fout, ";R:\tconstante_logica:	TOK_TRUE \n");
+						}
 					| TOK_FALSE
 						{
-						$$.atributos.tipo = BOOLEAN;
-						$$.atributos.es_direccion = 0;
-						fprintf(fout, ";R:\tconstante_logica:	TOK_FALSE \n");}
+							$$.atributos.tipo = BOOLEAN;
+							$$.atributos.es_direccion = 0;
+							fprintf(fout, ";R:\tconstante_logica:	TOK_FALSE \n");
+						}
 					;
+
+constante_entera: TOK_CONSTANTE_ENTERA
+				{	
+					$$.atributos.tipo = INT;
+					$$.atributos.es_direccion = 0;
+					fprintf(fout, ";R:\tconstante_entera:	TOK_CONSTANTE_ENTERA \n");
+				}
+				;
+
 
 %%
 
