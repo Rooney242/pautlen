@@ -221,6 +221,7 @@ tsa_elem* init_tsa_elem(){
 	if(!elem) return NULL;
 	elem->categoria = 0;
 	elem->tipo = 0;
+	elem->clase = 0;
 	elem->estructura = 0;
 	elem->direcciones = 0;
 	elem->numero_parametros = 0;
@@ -255,7 +256,7 @@ void free_tsa_elem(tsa_elem* elem){
 }
 
 
-tsa_elem* set_tsa_elem(tsa_elem* elem, char* id, int categoria, int tipo,						int estructura,
+tsa_elem* set_tsa_elem(tsa_elem* elem, char* id, int categoria, int tipo, int clase,		int estructura,
 	int direcciones,					int numero_parametros,
 	int numero_variables_locales,		int posicion_variable_local,
 	int posicion_parametro,			int dimension,
@@ -274,6 +275,7 @@ tsa_elem* set_tsa_elem(tsa_elem* elem, char* id, int categoria, int tipo,						i
 		strcpy(elem->id, id);
 		elem->categoria = categoria;
 		elem->tipo = tipo;
+		elem->clase = clase;
 		elem->estructura = estructura;
 		elem->direcciones = direcciones;
 		elem->numero_parametros = numero_parametros;
@@ -309,4 +311,121 @@ tsa_elem* get_tsa_elem(hashtable_t* table, char* clave){
 
 int put_tsa_elem(hashtable_t* table, char* clave, tsa_elem* elem){
 	if(!ht_put(table, clave, elem)) return ERROR;
+}
+
+char * _print_info(tsa_elem* elem){
+	char tipo[16], clase[16], acceso[16], miembro[32];
+	char *ret;
+	switch(elem->tipo){
+		case INT:
+			strcpy(tipo, "ENTERO");
+			break;
+		case FLOAT: 
+			strcpy(tipo, "FLOAT");
+			break;
+		default:
+			strcpy(tipo, "DESCONOCIDO");
+			break;
+	}
+	switch(elem->clase){
+		case ESCALAR:
+			strcpy(clase,"ESCALAR");
+			break;
+		case PUNTERO:
+			strcpy(clase,"PUNTERO");
+			break;
+		case VECTOR:
+			strcpy(clase,"VECTOR");
+			break;
+		case CONJUNTO:
+			strcpy(clase,"CONJUNTO");
+			break;
+		default:
+			strcpy(clase, "DESCONOCIDO");
+			break;
+	}
+	switch(elem->tipo_acceso){
+		case NINGUNO:
+			strcpy(acceso, "NINGUNO");
+			break;
+		case HIDDEN: 
+			strcpy(acceso, "HIDDEN");
+			break;
+		case EXPOSED: 
+			strcpy(acceso, "EXPOSED");
+			break;
+		case SECRET: 
+			strcpy(acceso, "SECRET");
+			break;
+		default:
+			strcpy(acceso, "DESCONOCIDO");
+			break;
+	}
+	switch(elem->tipo_miembro){
+		case MIEMBRO_UNICO:
+			strcpy(miembro, "MIEMBRO_UNICO");
+			break;
+		case MIEMBRO_NO_UNICO: 
+			strcpy(miembro, "MIEMBRO_NO_UNICO");
+			break;
+		default:
+			strcpy(miembro, "DESCONOCIDO");
+			break;
+	}
+	ret = (char*) malloc(sizeof(char)*(strlen(tipo)+strlen(clase)+strlen(acceso)+strlen(miembro)+41));
+
+	sprintf(ret, "CLASE: %s\tTIPO: %s\tDIR: %d\tACCESO: %s\tMIEMBRO: %s\t",
+		clase, tipo, elem->direcciones, acceso, miembro);
+	return ret;
+
+}
+
+int print_tsa_elem(hashtable_t* table, char* clave, FILE* pf){
+	tsa_elem* elem;
+	char* elem_info;
+	if(!table || !clave || !pf) return ERROR;
+	elem = get_tsa_elem(table, clave);
+	if (!elem) return ERROR;
+	fprintf(pf, "****************Posicion %u ******************\n", ht_calc_hash(clave) % table->capacity);
+	elem_info = _print_info(elem);
+	switch(elem->categoria){
+		case VARIABLE:
+			fprintf(pf,"%s\tVARIABLE\tPOS LOCAL: %d\tPOS ATR INSTANCIA %d Y ACUMULADA %d\t%s\n",
+				elem->id, elem->posicion_variable_local, elem->posicion_atributo_instancia,
+				elem->posicion_acumulada_atributos_instancia, elem_info);
+			break;
+		case PARAMETRO:
+			fprintf(pf,"%s\tPARAMETRO\tPOS PARAMETRO: %d\tPOS LOCAL %d\t%s\n",
+				elem->id, elem->posicion_parametro, elem->posicion_variable_local, elem_info);
+			break;
+		case FUNCION:
+			fprintf(pf,"%s\tFUNCION\t%s\n", elem->id, elem_info);
+			break;
+		case CLASE:
+			fprintf(pf,"%s\tCLASE\tES CLASE CON %d ATR CLASE, %d ATR INSTANCIA, %d MET. SOBR. %d MET. NO SOBR. %d ACUM ATR INS Y %d ACUM MET SOBR.\t%s\n",
+				elem->id, elem->numero_atributos_clase, elem->numero_atributos_instancia,
+				elem->numero_metodos_sobreescribibles, elem->numero_metodos_no_sobreescribibles, 
+				elem->num_acumulado_atributos_instancia , elem->num_acumulado_metodos_sobreescritura , elem_info);
+			break;
+		case METODO_SOBREESCRIBIBLE:
+			fprintf(pf,"%s\tMETODO_SOBREESCRIBIBLE\tPOS METODO: %d\tY ACUMULADA %d\t%s\n",
+				 elem->id, elem->posicion_metodo_sobreescribible, elem->posicion_acumulada_metodos_sobreescritura,
+				 elem_info);
+			break;
+		case METODO_NO_SOBREESCRIBIBLE:
+			fprintf(pf,"%s\tMETODO_SOBREESCRIBIBLE\t%s\n", elem->id, elem_info);
+			break;
+			break;
+		case ATRIBUTO_CLASE:
+			fprintf(pf,"%s\tATRIBUTO_CLASE\t%s\n", elem->id, elem_info);
+			break;
+		case ATRIBUTO_INSTANCIA:
+			fprintf(pf,"%s\tATRIBUTO_INSTANCIA\tPOS ATR INSTANCIA %d Y ACUMULADA %d\t%s\n",
+				 elem->id, elem->posicion_atributo_instancia,
+				 elem->posicion_acumulada_atributos_instancia, elem_info);
+			break;
+
+	}
+	free(elem_info);
+	return OK;
 }

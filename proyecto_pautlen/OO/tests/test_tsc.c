@@ -15,11 +15,22 @@ int main(int argc, char* argv[])
     tsc* p_omicron;
     tsa* tsa_aux;
     tsa_elem * elem_aux;
+    FILE* out;
+
+    if (argc!= 2){
+        printf("Especifica fichero de salida\n");
+        return 0;
+    }
+    
+    if (( out = fopen(argv[1],"w")) == NULL){
+        printf("Error al abrir el fichero de salida\n");
+    }
 
     /* Inicializar la tabla de las clases */
     p_omicron = init_tsc("ejemplo_omicron");
 
-    if(!insertarSimboloEnMain(p_omicron, "v1", VARIABLE, INT, 0, 
+    //int v1;
+    if(!insertarSimboloEnMain(p_omicron, "v1", VARIABLE, INT, ESCALAR, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NINGUNO, 0, 0, 0, 0, 0, 0, 0, NULL)){
         printf("Error: %d\n", error);
         return 0;
@@ -39,7 +50,7 @@ int main(int argc, char* argv[])
     error++;
 
     // exposed unique int a1;
-    if(!insertarSimboloEnClase(p_omicron, "AA", "a1", VARIABLE, INT, 0, 
+    if(!insertarSimboloEnClase(p_omicron, "AA", "a1", VARIABLE, INT, ESCALAR, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL)){
         printf("Error: %d\n", error);
         return 0;
@@ -47,7 +58,7 @@ int main(int argc, char* argv[])
     error++;
 
     //hidden int sa1;
-    if(!insertarSimboloEnClase(p_omicron, "AA", "sa1", VARIABLE, INT, 0, 
+    if(!insertarSimboloEnClase(p_omicron, "AA", "sa1", VARIABLE, INT, ESCALAR, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, HIDDEN, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL)){
         printf("Error: %d\n", error);
         return 0;
@@ -62,7 +73,7 @@ int main(int argc, char* argv[])
     error++;
 
     //int vlmA1;
-    if(!insertarSimboloEnAmbitoEnClase(p_omicron, "AA", "mA1@1", "vlmA1", VARIABLE, INT, 0, 
+    if(!insertarSimboloEnAmbitoEnClase(p_omicron, "AA", "mA1@1", "vlmA1", VARIABLE, INT, ESCALAR, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NINGUNO, 0, 0, 0, 0, 0, 0, 0, NULL)){
         printf("Error: %d\n", error);
         return 0;
@@ -71,13 +82,12 @@ int main(int argc, char* argv[])
     //printf v1;
     //CASO 20: SE BUSCA UN ID NO CUALIFICADO v1 QUE NO ESTÁ EN LA JERARQUÍA.. ESTÁ EN MAIN ==> OK
     ret = buscarIdNoCualificado(p_omicron, "v1", "mA1@1", &tsa_aux, &elem_aux);
-    print_error(stdout, ret, "v1", "mA1@1", tsa_aux, elem_aux);
+    //print_error(stdout, ret, "v1", "mA1@1", tsa_aux, elem_aux);
 
     //return x;        
     //CASO 21: SE BUSCA UN ID NO CUALIFICADO x QUE NO ESTÁ EN NINGÚN LADO ==> ERR
     ret = buscarIdNoCualificado(p_omicron, "x", "mA1@1", &tsa_aux, &elem_aux);
-    //printf("simbolo encontrado en %s\n", tsa_aux->ambito);
-    print_error(stdout, ret, "x", "mA1@1", tsa_aux, elem_aux);
+    //print_error(stdout, ret, "x", "mA1@1", tsa_aux, elem_aux);
 
 
 
@@ -89,11 +99,8 @@ int main(int argc, char* argv[])
     error++;
 
     //printf AA.sa1;
-    /*if(buscarIdCualificadoClase(p_omicron, "AA", "sa1", "AA", &tsa_aux, &elem_aux)){
-        printf("simbolo encontrado en %s\n", tsa_aux->ambito);
-    }else{
-        printf("simbolo NO encontrado\n");
-    }*/
+    ret = buscarIdCualificadoClase(p_omicron, "AA", "sa1", "AA", &tsa_aux, &elem_aux);
+        
 
     //};
 
@@ -122,6 +129,7 @@ int main(int argc, char* argv[])
         return 0;
     }
     error++;
+    fclose(out);
 
     printf("El programa ha terminado perfectamente y sin errores\n");
 	return 0;

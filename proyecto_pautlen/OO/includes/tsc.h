@@ -49,7 +49,7 @@ int abrirAmbitoEnClase(tsc * t, char * id_clase, char* id_ambito, int categoria,
 
 int cerrarAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito);
 
-int insertarSimboloEnClase(tsc* t, char* id_clase, char* simbolo, int categoria, int tipo,	int estructura,
+int insertarSimboloEnClase(tsc* t, char* id_clase, char* simbolo, int categoria, int tipo, int clase, int estructura,
 	int direcciones,					int numero_parametros,
 	int numero_variables_locales,		int posicion_variable_local,
 	int posicion_parametro,			int dimension,
@@ -64,7 +64,7 @@ int insertarSimboloEnClase(tsc* t, char* id_clase, char* simbolo, int categoria,
 	int posicion_acumulada_metodos_sobreescritura,
 	int * tipo_args);
 
-int insertarSimboloEnMain(tsc* t, char* simbolo, int categoria, int tipo,						int estructura,
+int insertarSimboloEnMain(tsc* t, char* simbolo, int categoria, int tipo, int clase, int estructura,
 	int direcciones,					int numero_parametros,
 	int numero_variables_locales,		int posicion_variable_local,
 	int posicion_parametro,			int dimension,
@@ -79,7 +79,7 @@ int insertarSimboloEnMain(tsc* t, char* simbolo, int categoria, int tipo,						i
 	int posicion_acumulada_metodos_sobreescritura,
 	int * tipo_args);
 
-int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char* simbolo, int categoria, int tipo,						int estructura,
+int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char* simbolo, int categoria, int tipo,	int clase,				int estructura,
 	int direcciones,					int numero_parametros,
 	int numero_variables_locales,		int posicion_variable_local,
 	int posicion_parametro,			int dimension,

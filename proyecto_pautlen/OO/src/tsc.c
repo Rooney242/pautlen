@@ -163,7 +163,7 @@ int cerrarAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito){
 
 }
 
-int insertarSimboloEnClase(tsc* t, char* id_clase, char* simbolo, int categoria, int tipo,						int estructura,
+int insertarSimboloEnClase(tsc* t, char* id_clase, char* simbolo, int categoria, int tipo, int clase, int estructura,
 	int direcciones,					int numero_parametros,
 	int numero_variables_locales,		int posicion_variable_local,
 	int posicion_parametro,			int dimension,
@@ -179,14 +179,17 @@ int insertarSimboloEnClase(tsc* t, char* id_clase, char* simbolo, int categoria,
 	int * tipo_args){
 
 	tsa_elem* elem;
-	tsa* clase;
+	tsa* class;
 	char* pref_simbolo;
-	clase = get_class(t, id_clase);	
-	if(!t || !clase) return ERROR;
+	class = get_class(t, id_clase);	
+	if(!t || !class) return ERROR;
 	elem = init_tsa_elem();
 
 	if(!elem) return ERROR;
-	set_tsa_elem(elem, simbolo, categoria, tipo,	estructura,
+
+	pref_simbolo = _concat_prefix(id_clase, simbolo);
+
+	set_tsa_elem(elem, pref_simbolo, categoria, tipo, clase, estructura,
 	direcciones,					 numero_parametros,
 	numero_variables_locales,		posicion_variable_local,
 	posicion_parametro,			dimension,
@@ -201,15 +204,14 @@ int insertarSimboloEnClase(tsc* t, char* id_clase, char* simbolo, int categoria,
 	posicion_acumulada_metodos_sobreescritura,
 	tipo_args, TRUE);
 
-	pref_simbolo = _concat_prefix(id_clase, simbolo);
 
-	if(!ppal_put(clase, pref_simbolo, elem)) return ERROR;
+	if(!ppal_put(class, pref_simbolo, elem)) return ERROR;
 	free(pref_simbolo);
 	return OK;
 
 }
 
-int insertarSimboloEnMain(tsc* t, char* simbolo, int categoria, int tipo,						int estructura,
+int insertarSimboloEnMain(tsc* t, char* simbolo, int categoria, int tipo, int clase, int estructura,
 	int direcciones,					int numero_parametros,
 	int numero_variables_locales,		int posicion_variable_local,
 	int posicion_parametro,			int dimension,
@@ -229,7 +231,8 @@ int insertarSimboloEnMain(tsc* t, char* simbolo, int categoria, int tipo,						i
 
 	elem = init_tsa_elem();
 	if(!elem) return ERROR;
-	set_tsa_elem(elem, simbolo, categoria, tipo,	estructura,
+	pref_simbolo = _concat_prefix(TSA_MAIN, simbolo);
+	set_tsa_elem(elem, pref_simbolo, categoria, tipo, clase,	estructura,
 	direcciones,					 numero_parametros,
 	numero_variables_locales,		posicion_variable_local,
 	posicion_parametro,			dimension,
@@ -243,8 +246,6 @@ int insertarSimboloEnMain(tsc* t, char* simbolo, int categoria, int tipo,						i
 	posicion_acumulada_atributos_instancia,
 	posicion_acumulada_metodos_sobreescritura,
 	tipo_args, TRUE);
-
-	pref_simbolo = _concat_prefix(TSA_MAIN, simbolo);
 
 	if(!ppal_put(t->main, pref_simbolo, elem)) return ERROR;
 	free(pref_simbolo);
@@ -253,7 +254,7 @@ int insertarSimboloEnMain(tsc* t, char* simbolo, int categoria, int tipo,						i
 }
 
 int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char* simbolo, int categoria,
-	int tipo,	int estructura,
+	int tipo, int clase, int estructura,
 	int direcciones,					int numero_parametros,
 	int numero_variables_locales,		int posicion_variable_local,
 	int posicion_parametro,			int dimension,
@@ -269,16 +270,17 @@ int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char
 	int * tipo_args){
 
 	tsa_elem* elem;
-	tsa* clase;
+	tsa* class;
 	char* pref_simbolo;
-	clase = get_class(t, id_clase);	
-	if(!t || !clase) return ERROR;
+	class = get_class(t, id_clase);	
+	if(!t || !class) return ERROR;
 	
 	elem = init_tsa_elem();
 	if(!elem) return ERROR;
 
-	//elem = init_tsa_elem();
-	set_tsa_elem(elem, simbolo, categoria, tipo,	estructura,
+	pref_simbolo = _concat_prefix(id_ambito, simbolo);
+
+	set_tsa_elem(elem, pref_simbolo, categoria, tipo, clase,	estructura,
 	direcciones,					 numero_parametros,
 	numero_variables_locales,		posicion_variable_local,
 	posicion_parametro,			dimension,
@@ -293,9 +295,7 @@ int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char
 	posicion_acumulada_metodos_sobreescritura,
 	tipo_args, TRUE);
 
-	pref_simbolo = _concat_prefix(id_ambito, simbolo);
-
-	if(!met_put(clase, pref_simbolo, elem)) return ERROR;
+	if(!met_put(class, pref_simbolo, elem)) return ERROR;
 	free(pref_simbolo);
 	return OK;
 
@@ -503,6 +503,27 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 
 }
 
+/*Esta funcion busca si el id cualificado por una clase es accesible desde dicha clase y se tiene permiso*/
+int buscarIdCualificadoClase(	tsc *t, char * nombre_clase_cualifica,
+						char * nombre_id, char * nombre_ambito_desde,
+						tsa ** ambito_encontrado,
+						tsa_elem ** elem){
+	int i, ret;
+	*ambito_encontrado = NULL;
+	*elem = NULL;
+	if(!t || !nombre_clase_cualifica || !nombre_id || !nombre_ambito_desde) return ERROR;
+ 	/*Primero buscamos si la clase que cualifica existe*/
+	*ambito_encontrado = _get_tsa_from_scope(t, nombre_clase_cualifica);
+	if(!(*ambito_encontrado)) return ERROR;/*La clase que cualifica no existe*/
+ 	/*Si existe la clase que cualifica miramos si se puede llegar a ese simbolo desde ella en su jerarquia*/
+	ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_clase_cualifica, ambito_encontrado, elem);
+	if(ret == TRUE){/*Aplicamos accesos desde la clase en la que nos encontramos*/
+		return aplicarAccesos(t, nombre_id, (*ambito_encontrado)->ambito, nombre_ambito_desde, elem);
+	}else{
+		return ret;
+	}
+ }
+
 /*Esta funcion busca si la instancia de la clase que cualifica el simbolo es accesible y se tienen permisos*/
 int buscarIdCualificadoInstancia(tsc *t, char * nombre_instancia_cualifica,
 						char * nombre_id, char * nombre_ambito_desde,
@@ -662,6 +683,8 @@ int generar_dot(tsc* tabla, char* file_name){
 	fprintf(pf, "}");
 	fclose(pf);
 }
+
+
 
 
 

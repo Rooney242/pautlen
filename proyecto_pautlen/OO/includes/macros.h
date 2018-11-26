@@ -10,33 +10,33 @@
 #define ID_MAX 64
 
 /*Categoria*/
-#define VARIABLE 10
-#define PARAMETRO 11
-#define FUNCION 12
-#define CLASE 13
-#define METODO_SOBREESCRIBIBLE 14
-#define METODO_NO_SOBREESCRIBIBLE 15
-#define ATRIBUTO_CLASE 16
-#define ATRIBUTO_INSTANCIA 17
+#define VARIABLE 1
+#define PARAMETRO 2
+#define FUNCION 3
+#define CLASE 4
+#define METODO_SOBREESCRIBIBLE 5
+#define METODO_NO_SOBREESCRIBIBLE 6
+#define ATRIBUTO_CLASE 7
+#define ATRIBUTO_INSTANCIA 8
 
 /*Tipo*/
-#define INT 20
-#define FLOAT 21
+#define INT 1
+#define FLOAT 2
 
 /*Clase*/
-#define ESCALAR 30
-#define PUNTERO 31
-#define VECTOR 32
-#define CONJUNTO 33
+#define ESCALAR 1
+#define PUNTERO 2
+#define VECTOR 3
+#define CONJUNTO 4
 
 /*Tipo acceso*/
-#define NINGUNO 40 //(exposed)
-#define HIDDEN 41 //(hidden) 
-#define SECRET 42 //(secret)
-#define EXPOSED 43 //(exposed)
+#define NINGUNO 1 //(exposed)
+#define HIDDEN 2 //(hidden) 
+#define SECRET 3 //(secret)
+#define EXPOSED 4 //(exposed)
 
 /*Tipo miembro*/
-#define MIEMBRO_UNICO 50
-#define MIEMBRO_NO_UNICO 51
+#define MIEMBRO_UNICO 1
+#define MIEMBRO_NO_UNICO 2
 
 #endif

@@ -35,7 +35,7 @@ int open_scope_class(tsa* t, char* id_clase, int tamanio, int tipo);
 
 int close_scope_class(tsa* t, char*id_clase);
 
-int insert_symbol(tsa* t, char* simbolo, int categoria, int tipo,						int estructura,
+int insert_symbol(tsa* t, char* simbolo, int categoria, int tipo, int clase,	int estructura,
 	int direcciones,					int numero_parametros,
 	int numero_variables_locales,		int posicion_variable_local,
 	int posicion_parametro,			int dimension,

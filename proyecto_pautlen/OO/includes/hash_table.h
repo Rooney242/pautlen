@@ -17,6 +17,8 @@ typedef struct { //TODO: añadir clase
 	int tipo;/* INT FLOAT (no este curso) BOOLEAN Y PARA LAS 
 	CLASES, ALGÚN MECANISMO (-índice en el vector del 
 	grafo??)  */	    
+	int clase;/* ESCALAR PUNTERO VECTOR CONJUNTO (no este año)
+	OBJETO */
 	int estructura; 
 	int direcciones;        /* >=1  SI ES VARIABLE 1*/
 	int numero_parametros;  /* >=0 */
@@ -123,7 +125,7 @@ char* get_key_from_elem(hashtable_t* hasht, tsa_elem* elem);
 /*Funciones de los elementos de la TSA. De momento sin control de errorres*/
 tsa_elem* init_tsa_elem();
 void free_tsa_elem(tsa_elem* elem);
-tsa_elem* set_tsa_elem(tsa_elem* elem, char* id, int categoria, int tipo,						int estructura,
+tsa_elem* set_tsa_elem(tsa_elem* elem, char* id, int categoria, int tipo, int clase,		int estructura,
 	int direcciones,					int numero_parametros,
 	int numero_variables_locales,		int posicion_variable_local,
 	int posicion_parametro,			int dimension,
@@ -139,6 +141,8 @@ tsa_elem* set_tsa_elem(tsa_elem* elem, char* id, int categoria, int tipo,						i
 	int * tipo_args, int simbolo_cerrado);
 
 tsa_elem* get_tsa_elem(hashtable_t* table, char* clave);
+
+int print_tsa_elem(hashtable_t* table, char* clave, FILE* pf);
 
 
 
