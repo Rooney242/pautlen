@@ -24,6 +24,8 @@ CASOS_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o
 TSC = tsc
 TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(OBJ_FOLDER)casos.o
 
+DOT_GENERATOR = dot_generator
+
 
 all: hash graph tsa tsc casos
 

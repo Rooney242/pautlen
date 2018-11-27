@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     }
     error++;
 
-    if(!insertarSimboloEnClase(p_omicron, "AA", "sa1", VARIABLE, INT, 0, 
+    if(!insertarSimboloEnClase(p_omicron, "AA", "sa1", VARIABLE, INT, ESCALAR, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, HIDDEN, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL)){
         printf("Error: %d\n", error);
         return 0;
@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
         return 0;
     }
     error++;
-    if(!abrirAmbitoClase(p_omicron, "AA", 0)){
+    if(!abrirAmbitoClase(p_omicron, "BB", 0)){
         printf("Error: %d\n", error);
         return 0;
     }

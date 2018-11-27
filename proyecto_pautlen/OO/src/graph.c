@@ -232,7 +232,7 @@ int get_parents(Adjacency_Matrix* g, Node*** parents, char* name){
             pind++;
             *parents = (Node **) realloc(*parents, sizeof(Node*)*pind);
           }
-            (*parents)[pind-1] = g->nodes[i];
+          (*parents)[pind-1] = g->nodes[i];
       }
     }
   }
@@ -242,7 +242,7 @@ int get_parents(Adjacency_Matrix* g, Node*** parents, char* name){
 //Hay que liberar parents_names
 int get_parents_names(Adjacency_Matrix* g, char*** parents_names, char* name){
   Node ** parents = NULL;
-  int i, num_parents;
+  int i, num_parents = 0;
   num_parents = get_parents(g, &parents, name);
   *parents_names = (char**) malloc(num_parents*sizeof(char*));
   for(i=0; i<num_parents; i++){

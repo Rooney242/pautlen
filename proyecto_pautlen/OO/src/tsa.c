@@ -178,3 +178,4 @@ int insert_symbol(tsa* t, char* simbolo, int categoria, int tipo, int clase,			i
 	return OK;
 
 }
+

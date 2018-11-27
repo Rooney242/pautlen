@@ -374,8 +374,18 @@ int aplicarAccesos(tsc* t, char* id, char* ambito_id, char* ambito_actual, tsa_e
 		}else if(acceso == SECRET){/*Si es secreto se puede si soy hijo de esa clase*/
 			num_parents = get_parents_names(t->grafo, &parents_names, ambito_actual);
 			for (i=0; i<num_parents; i++){
-				if(!strcmp(parents_names[i], ambito_actual)) return TRUE;
+				if(!strcmp(parents_names[i], ambito_actual)){
+					for (i=0; i<num_parents; i++){
+						free(parents_names[i]);
+					}
+					free(parents_names);
+				 	return TRUE;
+				}
 			}
+			for (i=0; i<num_parents; i++){
+				free(parents_names[i]);
+			}
+			free(parents_names);
 			return FALSE;
 		}
 		/*Si es exposed o ninguno se puede acceder siempre*/
@@ -459,8 +469,8 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 			ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
 			if(ret == TRUE){
 				if(!strcmp(TSA_MAIN, (*tsa_encontrada)->ambito)) 
-					return CASO_20;/*Buscamos desde una funcion un id que no esta en la jerarquia y si en el main*/
-				return TRUE;/*Buscamos id desde una funcion y esta en su jerarquia*/
+					return TRUE;/*Buscamos id desde una funcion y esta en su jerarquia*/
+				return CASO_20;/*Buscamos desde una funcion un id que no esta en la jerarquia y si en el main*/
 			}
 		}else{
 			return CASO_21;/*Se busca id desde funcion que no esta en jerarquia ni en main*/
@@ -640,7 +650,7 @@ int buscarParaDeclararIdLocalEnMetodo(tsc *t, char * nombre_clase, char * id,
 int generar_dot(tsc* tabla, char* file_name){
 	if(!tabla) return ERROR;
 	FILE * pf;
-	int i, k, num_parents, num_clases;
+	int i, k, num_parents = 0, num_clases;
 	char* name;
 	char ** parents_names;
 	char ** simbolos;
@@ -661,15 +671,20 @@ int generar_dot(tsc* tabla, char* file_name){
 		for(k=0; k<tabla->grafo->nodes[i]->tsa->ppal->e_num; k++){
 			fprintf(pf, "%s\\l", simbolos[k]);
 		}
+		if(simbolos) free(simbolos);
 		fprintf(pf, "}\"][shape=record];\n");
 
 		num_parents = get_parents_names(tabla->grafo, &parents_names, name);
 		for(k=0; k<num_parents; k++){
 			fprintf(pf, "\t%s -> %s\n", name, parents_names[k]);
 		}
-		if(parents_names) free(parents_names);
+		if(parents_names){
+			for(k=0; k<num_parents; k++){
+				free(parents_names[k]);
+			}
+			free(parents_names);
+		}
 	}
-
 	fprintf(pf, "\tedge [arrowhead = normal]\n");
 
 	for(i=0; i<num_clases; i++){
