@@ -3,16 +3,23 @@
 
 #define MAX_LONG_ID 50
 
+/*TIPOS*/
 #define INT 1
 #define BOOLEAN 3
 
-typedef struct
+/* CLASES */
+#define ESCALAR 1
+#define OBJETO 2
+#define VECTOR 3
+
+
+typedef struct tipo_atributos
 {
    char lexema[MAX_LONG_ID+1];
    int tipo;
    int valor_entero;
    int es_direccion;
    int etiqueta;
-}tipo_atributos;
+}	tipo_atributos;
 
 #endif

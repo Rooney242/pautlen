@@ -1,6 +1,7 @@
 %{ 
 #include <stdlib.h>
 #include <stdio.h>
+#include "omicron.h"
 #include "y.tab.h"
 
 int line_count = 1;

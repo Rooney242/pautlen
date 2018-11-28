@@ -1,6 +1,6 @@
 CC = gcc
 
-EJ = pruebaSintactico
+EJ = pruebaCompilador
 
 LEX = lex.yy.c
 
