@@ -253,6 +253,48 @@ int get_parents_names(Adjacency_Matrix* g, char*** parents_names, char* name){
   return num_parents;
 }
 
+//Hay que liberar memoria para lo que se devuelve
+int get_direct_parents(Adjacency_Matrix* g, Node*** parents, char* name){
+  int i, index, pind, tam;
+  pind = tam = 0;
+  if (name == NULL){
+    *parents = (Node**) malloc(sizeof(Node*)*g->vertex_count);
+    for (i=0; i<g->vertex_count; i++){
+      (*parents)[i] = g->nodes[i];
+    }
+  }else{
+    index = get_node_index(g, name);
+    for (i = 0; i<g->vertex_count; i++){
+      //Es padre siempre que en la matriz aparezca un numero mayor que 0
+      if (g->arcs[index][i] == ES_PADRE_DIRECTO){
+          if (pind == 0){
+            pind++;
+            *parents = (Node **) malloc(sizeof(Node*));
+          }else{
+            pind++;
+            *parents = (Node **) realloc(*parents, sizeof(Node*)*pind);
+          }
+          (*parents)[pind-1] = g->nodes[i];
+      }
+    }
+  }
+  return pind;
+} 
+
+//Hay que liberar parents_names
+int get_direct_parents_names(Adjacency_Matrix* g, char*** parents_names, char* name){
+  Node ** parents = NULL;
+  int i, num_parents = 0;
+  num_parents = get_direct_parents(g, &parents, name);
+  *parents_names = (char**) malloc(num_parents*sizeof(char*));
+  for(i=0; i<num_parents; i++){
+    (*parents_names)[i] = (char*) malloc(sizeof(char)+(strlen(parents[i]->name)+1));
+    strcpy((*parents_names)[i], parents[i]->name);
+  }
+  if(parents) free(parents);
+  return num_parents;
+}
+
 void print_graph(Adjacency_Matrix* g) {
   int i, j;
 

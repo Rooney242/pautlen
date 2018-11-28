@@ -1,5 +1,5 @@
-#ifndef CASOS_H
-#define CASOS_H
+#ifndef OUTPUT_H
+#define OUTPUT_H
 
 #include "tsa.h"
 #include "hash_table.h"
@@ -21,6 +21,8 @@
 
 
 
-int	print_caso(FILE* pf, int caso, char* id, char* ambito_desde, tsa* ambito_encontrado, tsa_elem* elem);
+int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, tsa_elem* elem);
+int print_hash_table_from_class(FILE* pf, tsa* t);
+int print_hash_table_from_met(FILE* pf, tsa* t, char* metodo);
 
 #endif

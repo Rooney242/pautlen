@@ -73,6 +73,7 @@ int open_scope_met(tsa* t, char* id_ambito, int categoria, int tipo_acceso, int 
 	elem = init_tsa_elem();
 	if(!elem) return ERROR;
 
+	strcpy(elem->id, id_ambito);
 	elem->categoria = categoria;
 	elem->tipo_acceso = tipo_acceso;
 	elem->tipo_miembro = tipo_miembro;
@@ -113,7 +114,9 @@ int open_scope_class(tsa* t, char* id_clase, int tamanio, int tipo){
 	elem = init_tsa_elem();
 	if(!elem) return ERROR;
 
+	strcpy(elem->id, id_clase);
 	elem->tamanio = tamanio;
+	elem->categoria = CLASE;
 	elem->tipo = tipo;
 
 	if(!ppal_put(t, id_clase, elem)) return ERROR;

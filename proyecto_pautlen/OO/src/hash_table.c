@@ -372,7 +372,7 @@ char * _print_info(tsa_elem* elem){
 			strcpy(miembro, "DESCONOCIDO");
 			break;
 	}
-	ret = (char*) malloc(sizeof(char)*(strlen(tipo)+strlen(clase)+strlen(acceso)+strlen(miembro)+41));
+	ret = (char*) malloc(sizeof(char)*(strlen(tipo)+strlen(clase)+strlen(acceso)+strlen(miembro)+100));//41
 
 	sprintf(ret, "CLASE: %s\tTIPO: %s\tDIR: %d\tACCESO: %s\tMIEMBRO: %s\t",
 		clase, tipo, elem->direcciones, acceso, miembro);

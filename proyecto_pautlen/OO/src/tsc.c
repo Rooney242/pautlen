@@ -7,7 +7,7 @@
 #include "tsa.h"
 #include "tsc.h"
 #include "hash_table.h"
-#include "casos.h"
+#include "output.h"
 
 char* _concat_prefix(char* prefix, char* symbol){
 	char*  full_symbol;
@@ -108,7 +108,23 @@ int abrirClaseHereda(tsc* t, char* id_clase, ...){
 /*Realiza las tareas de meter en la tabla hash del main los datos de la clase. Importante primero abrir la clase*/
 int abrirAmbitoClase(tsc* t, char* id_clase, int tamanio){
 	int tipo;
+	tsa_elem* elem;
+	tsa* table;
 	tipo = -get_node_index(t->grafo, id_clase);
+
+	elem = init_tsa_elem();
+	if(!elem) return ERROR;
+
+	strcpy(elem->id, id_clase);
+	elem->tamanio = tamanio;
+	elem->categoria = CLASE;
+	elem->tipo = tipo;
+
+
+	table = _get_tsa_from_scope(t, id_clase);
+
+	if(!ppal_put(table, id_clase, elem)) return ERROR;
+
 	return open_scope_class(t->main, id_clase, tamanio, tipo);
 }
 
@@ -117,8 +133,11 @@ int cerrarClase(tsc* t, char* id_clase, int num_atributos_clase, int num_atribut
 				int num_metodos_sobreescribibles, int num_metodos_no_sobreescribibles){
 	if(!t || !id_clase) return ERROR;
 
+	tsa* table;
 	tsa_elem* elem;
-	elem = ppal_get(t->main, id_clase);
+
+	table = _get_tsa_from_scope(t, id_clase);
+	elem = ppal_get(table, id_clase);
 	if(!elem) return ERROR;
 	elem->numero_atributos_clase = num_atributos_clase;
 	elem->numero_atributos_instancia = num_atributos_instancia;
@@ -126,7 +145,7 @@ int cerrarClase(tsc* t, char* id_clase, int num_atributos_clase, int num_atribut
 	elem->numero_metodos_no_sobreescribibles = num_metodos_no_sobreescribibles;
 	if(elem->simbolo_cerrado == TRUE) return ERROR;
 	elem->simbolo_cerrado = TRUE;
-	return OK;
+	return close_scope_class(t->main, id_clase);
 }
 
 void graph_enrouteParentsLastNode(tsc * g){
@@ -665,7 +684,7 @@ int generar_dot(tsc* tabla, char* file_name){
 	num_clases = tabla->grafo->vertex_count;
 	for(i=0; i<num_clases; i++){
 		name = tabla->grafo->nodes[i]->name;
-		fprintf(pf, "\t%s [label=\"{%s|%s\\l", name, name, name);
+		fprintf(pf, "\t%s [label=\"{%s|", name, name);
 		simbolos = (char**) malloc(sizeof(char*)*tabla->grafo->nodes[i]->tsa->ppal->e_num);
 		ht_list_keys(tabla->grafo->nodes[i]->tsa->ppal, simbolos, tabla->grafo->nodes[i]->tsa->ppal->e_num);
 		for(k=0; k<tabla->grafo->nodes[i]->tsa->ppal->e_num; k++){
@@ -674,7 +693,7 @@ int generar_dot(tsc* tabla, char* file_name){
 		if(simbolos) free(simbolos);
 		fprintf(pf, "}\"][shape=record];\n");
 
-		num_parents = get_parents_names(tabla->grafo, &parents_names, name);
+		num_parents = get_direct_parents_names(tabla->grafo, &parents_names, name);
 		for(k=0; k<num_parents; k++){
 			fprintf(pf, "\t%s -> %s\n", name, parents_names[k]);
 		}

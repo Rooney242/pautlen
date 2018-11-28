@@ -96,6 +96,8 @@ int insertarSimboloEnAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito, char
 
 /***************FUNCIONES DE BUSQUEDA*******************/
 
+tsa* _get_tsa_from_scope(tsc* t, char* scope);
+
 int aplicarAccesos(tsc* t, char* id, char* ambito_id, char* ambito_actual, tsa_elem** elem);
 
 int buscarIdEnJerarquiaDesdeAmbito (tsc* t, char* id, char* id_ambito, tsa** table, tsa_elem** elem);

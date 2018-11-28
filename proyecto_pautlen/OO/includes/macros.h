@@ -22,6 +22,7 @@
 /*Tipo*/
 #define INT 1
 #define FLOAT 2
+#define BOOLEAN 3
 
 /*Clase*/
 #define ESCALAR 1

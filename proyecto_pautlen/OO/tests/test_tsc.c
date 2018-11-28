@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "macros.h"
-#include "casos.h"
+#include "output.h"
 #include "tsc.h"
 
 
