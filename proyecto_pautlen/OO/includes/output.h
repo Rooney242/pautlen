@@ -24,5 +24,6 @@
 int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, tsa_elem* elem);
 int print_hash_table_from_class(FILE* pf, tsa* t);
 int print_hash_table_from_met(FILE* pf, tsa* t, char* metodo);
+int print_command(FILE* pf, char* command);
 
 #endif

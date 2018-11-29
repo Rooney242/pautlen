@@ -1,7 +1,7 @@
 #ifndef GENERADOR_TSC_H
 #define GENERADOR_TSC_H
 
-#define DELIMITADOR " "
+#define DELIMITADOR "\t"
 
 #define INICIA_TSC "inicia_tsc" //Iniciar la tabla de símbolos de clases 
 #define CERRAR_TSC "cerrar_tsc" //Dar por terminada la gestión de la tabla de clases
@@ -26,6 +26,8 @@
 #define CERRAR_CLASE "cerrar_clase" //Cerrar una clase
 #define ABRIR_AMBITO_TSC "abrir_ambito_tsc" //Abrir el ámbito de un nuevo método de una clase
 #define CERRAR_AMBITO_TSC "cerrar_ambito_tsc" //Cerrar el ámbito de un método de una clase
+
+int parse_file(FILE* in, FILE* out);
 
 
 #endif

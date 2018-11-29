@@ -24,12 +24,16 @@ OUTPUT_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o
 TSC = tsc
 TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(OBJ_FOLDER)output.o
 
-DOT_GENERATOR = dot_generator
+GENERADOR_TSC = generador_tsc
+GENERADOR_TSC_DEPS = $(OBJ_FOLDER)tsc.o $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(OBJ_FOLDER)output.o
+
+DOT = dot
 
 
-all: hash graph tsa tsc output
 
-all-test: graph-test tsc-test
+all: hash graph tsa tsc output generador_tsc
+
+all-test: graph-test tsc-test dot-test
 
 pre:
 	@mkdir $(OBJ_FOLDER)
@@ -64,7 +68,16 @@ tsc-test: tsc
 
 dot-test: tsc
 	@echo Compilando tester de la generacion de dot...
-	@$(CC) $(LIB) -o test_$(DOT_GENERATOR) $(OBJ_FOLDER)$(TSC).o $(TESTS)test_$(DOT_GENERATOR).c $(TSC_DEPS)
+	@$(CC) $(LIB) -o test_$(DOT) $(OBJ_FOLDER)$(TSC).o $(TESTS)test_$(DOT).c $(TSC_DEPS)
+
+generador_tsc: tsc
+	@echo Compilando modulo del generacion de tsc...
+	@$(CC) $(LIB) -c $(SOURCES)$(GENERADOR_TSC).c -o $(OBJ_FOLDER)$(GENERADOR_TSC).o
+
+generador_tsc-test: generador_tsc
+	@echo Compilando tester del modulo de generacion de tsc...
+	@$(CC) $(LIB) -o test_$(GENERADOR_TSC) $(OBJ_FOLDER)$(GENERADOR_TSC).o $(TESTS)test_$(GENERADOR_TSC).c $(GENERADOR_TSC_DEPS)
+
 
 .PHONY : clean all
 clean :
