@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include "macros.h"
 #include "tsa.h"
+#include "tsc.h"
 #include "hash_table.h"
 #include "output.h"
 
@@ -74,10 +75,13 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 	}
 }
 
-int print_hash_table_from_class(FILE* pf, tsa* t){
+int print_hash_table_from_class(FILE* pf, tsc* p_tsc, char* id_clase){
 	int i;
 	char ** simbolos;
-	if(!pf || !t) return ERROR;
+	tsa* t;
+	if(!pf || !id_clase) return ERROR;
+
+	t = _get_tsa_from_scope(p_tsc, id_clase);
 
 	simbolos = (char**) malloc(sizeof(char*)*t->ppal->e_num);
 	ht_list_keys(t->ppal, simbolos, t->ppal->e_num);
@@ -94,10 +98,13 @@ int print_hash_table_from_class(FILE* pf, tsa* t){
 	return OK;
 }
 
-int print_hash_table_from_met(FILE* pf, tsa* t, char* metodo){
+int print_hash_table_from_met(FILE* pf, tsc* p_tsc, char* id_clase, char* metodo){
 	int i;
 	char ** simbolos;
-	if(!pf || !t || !metodo) return ERROR;
+	tsa* t;
+	if(!pf || !id_clase || !metodo) return ERROR;
+
+	t = _get_tsa_from_scope(p_tsc, metodo);
 
 	simbolos = (char**) malloc(sizeof(char*)*t->met->e_num);
 	ht_list_keys(t->met, simbolos, t->met->e_num);
@@ -110,7 +117,7 @@ int print_hash_table_from_met(FILE* pf, tsa* t, char* metodo){
 		}
 	}
 	free(simbolos);
-	return print_hash_table_from_class(pf, t);
+	return print_hash_table_from_class(pf, p_tsc, id_clase);
 }
 
 int print_command(FILE* pf, char* command){

@@ -19,7 +19,7 @@ TSA = tsa
 TSA_DEPS = $(OBJ_FOLDER)hash_table.o 
 
 OUTPUT = output
-OUTPUT_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o
+OUTPUT_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)tsc.o
 
 TSC = tsc
 TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(OBJ_FOLDER)output.o
@@ -27,7 +27,7 @@ TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(O
 GENERADOR_TSC = generador_tsc
 GENERADOR_TSC_DEPS = $(OBJ_FOLDER)tsc.o $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(OBJ_FOLDER)output.o
 
-DOT = dot
+DOT_GENERATOR = dot_generator
 
 
 
@@ -85,5 +85,6 @@ clean :
 	@rm -f test_$(GRAPH)
 	@rm -f test_$(TSC)
 	@rm -f test_$(DOT_GENERATOR)
+	@rm -f test_$(GENERADOR_TSC)
 	@rm -f grafo.dot
 	@rm -f $(OBJ_FOLDER)*.o

@@ -38,6 +38,7 @@ tsc* init_tsc(char * nombre){
 		free_tsc(t);
 		return NULL;
 	}
+	open_scope_class(t->main, TSA_MAIN, 0, TIPO_MAIN);
 
 	t->grafo = init_graph(t->grafo);
 	if(!t->grafo){
@@ -58,9 +59,27 @@ int free_tsc(tsc* t){
 }
 
 int close_tsc(tsc* t){
+
 	generar_dot(t, NULL);
 	return OK;
 }	
+
+int cerrarMain(tsc* t, int num_atributos_clase, int num_atributos_instancia,
+				int num_metodos_sobreescribibles, int num_metodos_no_sobreescribibles){
+	if(!t) return ERROR;
+
+	tsa_elem* elem;
+
+	elem = ppal_get(t->main, TSA_MAIN);
+	if(!elem) return ERROR;
+	elem->numero_atributos_clase = num_atributos_clase;
+	elem->numero_atributos_instancia = num_atributos_instancia;
+	elem->numero_metodos_sobreescribibles = num_metodos_sobreescribibles;
+	elem->numero_metodos_no_sobreescribibles = num_metodos_no_sobreescribibles;
+	if(elem->simbolo_cerrado == TRUE) return ERROR;
+	elem->simbolo_cerrado = TRUE;
+	return close_scope_class(t->main, TSA_MAIN);
+}
 
 tsa* get_class(tsc* t, char* id_clase){
 	return get_node_tsa(t->grafo, id_clase);
@@ -74,7 +93,7 @@ int abrirClase(tsc* t, char* id_clase){
 
 /*Inserta una clase que tiene relaciones de herencia en el grafo*/
 /*Aqui viene el movidote de que decidir con las herencias, se toca en insert_class del grafo*/
-int abrirClaseHereda(tsc* t, char* id_clase, ...){
+/*int abrirClaseHereda(tsc* t, char* id_clase, ...){
 	if(!t || !id_clase) return ERROR;
 
 	va_list names;
@@ -103,7 +122,14 @@ int abrirClaseHereda(tsc* t, char* id_clase, ...){
 	ret = insert_class(t->grafo, name, parents, num);
 	if(parents) free(parents);
 	return ret;
+}*/
+
+int abrirClaseHereda(tsc* t, char* id_clase, char** id_padres, int num){
+	if(!t || !id_clase) return ERROR;
+	int ret;
+	return insert_class(t->grafo, id_clase, id_padres, num);
 }
+
 
 /*Realiza las tareas de meter en la tabla hash del main los datos de la clase. Importante primero abrir la clase*/
 int abrirAmbitoClase(tsc* t, char* id_clase, int tamanio){

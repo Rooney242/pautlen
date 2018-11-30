@@ -25,13 +25,17 @@ int free_tsc(tsc* t);
 	En nuestro caso de momento nada*/
 int close_tsc(tsc* t);
 
+/*Cierra los datos del main*/
+int cerrarMain(tsc* t, int num_atributos_clase, int num_atributos_instancia,
+				int num_metodos_sobreescribibles, int num_metodos_no_sobreescribibles);
+
 /*Realiza las tareas de añadir al grafo una nueva raíz*/
 int abrirClase(tsc* t, char* id_clase);
 
 /*Realiza las tareas de añadir al grafo un nuevo nodo que debe conectarse a 
 	los nombres identificados mediante los últimos argumentos
 	Tiene un número variable de ellos y el últim es NULL*/
-int abrirClaseHereda(tsc* t, char* id_clase, ...);
+int abrirClaseHereda(tsc* t, char* id_clase, char** id_padres, int num);
 
 /*Realiza las tareas de meter en la tabla hash del main los datos de la clase*/
 int abrirAmbitoClase(tsc* t, char* id_clase, int tamanio);

@@ -118,6 +118,7 @@ int main(int argc, char* argv[])
         printf("simbolo NO encontrado\n");
     }*/
 
+    cerrarMain(p_omicron, 0, 0, 0, 0);
 
     if(!close_tsc(p_omicron)){
         printf("Error: %d\n", error);

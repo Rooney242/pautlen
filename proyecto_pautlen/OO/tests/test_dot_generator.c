@@ -58,7 +58,8 @@ int main(int argc, char* argv[])
     cerrarClase(p_omicron, "A", 1, 1, 1, 1);
 
 /****************************/
-    abrirClaseHereda(p_omicron, "B", "A", NULL);
+    char* padresB[1] = {"A"};
+    abrirClaseHereda(p_omicron, "B", padresB, 1);
     abrirAmbitoClase(p_omicron, "B", 0);
 
     insertarSimboloEnClase(p_omicron, "B", "acb", VARIABLE, BOOLEAN, ESCALAR, 0, 
@@ -77,7 +78,8 @@ int main(int argc, char* argv[])
 
 
 /**********************/
-    abrirClaseHereda(p_omicron, "C", "B", NULL);
+    char* padresC[1] = {"B"};
+    abrirClaseHereda(p_omicron, "C", padresC, 1);
     abrirAmbitoClase(p_omicron, "C", 0);
 
     insertarSimboloEnClase(p_omicron, "C", "acc", VARIABLE, BOOLEAN, ESCALAR, 0, 
@@ -99,6 +101,7 @@ int main(int argc, char* argv[])
     cerrarClase(p_omicron, "C", 1, 1, 1, 1);
 
 
+    cerrarMain(p_omicron, 0, 0, 0, 0);
     close_tsc(p_omicron);
     free_tsc(p_omicron);
     //fclose(out);

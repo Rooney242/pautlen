@@ -20,6 +20,7 @@
 #define ATRIBUTO_INSTANCIA 8
 
 /*Tipo*/
+#define TIPO_MAIN -999
 #define INT 1
 #define FLOAT 2
 #define BOOLEAN 3
