@@ -18,6 +18,7 @@ class_info* init_class_info(){
 	p_class_info->num_atributos_instancia  = 0;
 	p_class_info->num_metodos_sobreescribibles  = 0;
 	p_class_info->num_metodos_no_sobreescribibles  = 0;
+	p_class_info->posicion_metodo_sobreescribible = 0;
 
 	return p_class_info;
 }
@@ -27,17 +28,29 @@ void free_class_info(class_info* p_class_info){
 	return;
 }
 
+/*Dado un simbolo separa su ambito del simbolo real*/
+int _parse_symbol(char* simbolo, char ** id_ambito, char** id_simbolo){
+	*id_ambito = *id_simbolo = NULL;
+	if(!simbolo) return ERROR;
+
+	*id_ambito = strtok(simbolo, SEPARA_SIMBOLO);
+	*id_simbolo = strtok(NULL, SEPARA_SIMBOLO);
+
+	return OK;
+}
+
 /**********************************************************************************/
-/*TODO: quitar los prefijos, ya nos los dan*/
+/*TODO: hacer el insertar funcion desde el main
+		mirar la tsa del main todo desconocido*/
 
 int parser_line(char* line, FILE* out, tsc** p_omicron, class_info ** p_class_info, class_info ** p_main_info){
 	int i;
 	char* token;
     tsa* tsa_aux = NULL;
     tsa_elem * elem_aux = NULL;
-    char* nombre_clase = NULL, *nombre_simbolo = NULL;
+    char* nombre_clase = NULL, *nombre_simbolo = NULL, *nombre_ambito = NULL;
     char** nombres_padres;
-    int categoria, tipo_basico, estructura, tipo_acceso, tipo_miembro;
+    int categoria = 0, tipo_basico = 0, estructura = 0, tipo_acceso = 0, tipo_miembro = 0, posicion_metodo_sobreescribible = 0;
 
 
 	token = strtok(line, DELIMITADOR);
@@ -106,6 +119,8 @@ int parser_line(char* line, FILE* out, tsc** p_omicron, class_info ** p_class_in
 			(*p_main_info)->num_metodos_no_sobreescribibles++;
 		}
 
+		_parse_symbol(nombre_simbolo, &nombre_ambito, &nombre_simbolo);
+
 		insertarSimboloEnMain(*p_omicron, nombre_simbolo, categoria, tipo_basico, estructura,
 			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, tipo_acceso, tipo_miembro, 0, 0, 0, 0, 0, 0, NULL);
 		print_hash_table_from_class(out, *p_omicron, TSA_MAIN);
@@ -118,16 +133,29 @@ int parser_line(char* line, FILE* out, tsc** p_omicron, class_info ** p_class_in
 		estructura = atoi(strtok(NULL, DELIMITADOR));
 		tipo_acceso = atoi(strtok(NULL, DELIMITADOR));
 		tipo_miembro = atoi(strtok(NULL, DELIMITADOR));
-		
-		/*Actualizamos los datos de la clase*/
-		if(categoria == ATRIBUTO_CLASE){
-			(*p_class_info)->num_atributos_clase++;
-		}else if(categoria == ATRIBUTO_INSTANCIA){
-			(*p_class_info)->num_atributos_instancia++;
-		}else if(categoria == METODO_SOBREESCRIBIBLE){
-			(*p_class_info)->num_metodos_sobreescribibles++;
-		}else if(categoria == METODO_NO_SOBREESCRIBIBLE){
-			(*p_class_info)->num_metodos_no_sobreescribibles++;
+
+		_parse_symbol(nombre_simbolo, &nombre_ambito, &nombre_simbolo);
+
+		if(!strcmp(nombre_clase, nombre_ambito)){//En este caso se esta insertando en una clase
+			/*Actualizamos los datos de la clase*/
+			if(categoria == ATRIBUTO_CLASE){
+				(*p_class_info)->num_atributos_clase++;
+			}else if(categoria == ATRIBUTO_INSTANCIA){
+				(*p_class_info)->num_atributos_instancia++;
+			}else if(categoria == METODO_SOBREESCRIBIBLE){
+				(*p_class_info)->num_metodos_sobreescribibles++;
+			}else if(categoria == METODO_NO_SOBREESCRIBIBLE){
+				(*p_class_info)->num_metodos_no_sobreescribibles++;
+			}
+
+			insertarSimboloEnClase(*p_omicron, nombre_clase, nombre_simbolo, categoria, tipo_basico, estructura,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, tipo_acceso, tipo_miembro, 0, 0, 0, 0, 0, 0, NULL);
+		print_hash_table_from_class(out, *p_omicron, nombre_clase);
+		}else{//En este caso se esta insertando en un metodo dentro de una clase
+			insertarSimboloEnAmbitoEnClase(*p_omicron, nombre_clase, nombre_ambito, nombre_simbolo, categoria, tipo_basico, estructura,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, tipo_acceso, tipo_miembro, 0, 0, 0, 0, 0, 0, NULL);
+		print_hash_table_from_met(out, *p_omicron, nombre_clase, nombre_ambito);
+
 		}
 
 	}else if(!strcmp(token, ABRIR_AMBITO_TSA_MAIN)){
@@ -170,9 +198,33 @@ int parser_line(char* line, FILE* out, tsc** p_omicron, class_info ** p_class_in
 			(*p_class_info)->num_atributos_instancia, 
 			(*p_class_info)->num_metodos_sobreescribibles, 
 			(*p_class_info)->num_metodos_no_sobreescribibles);
+
 	}else if(!strcmp(token, ABRIR_AMBITO_TSC)){
+		nombre_clase = strtok(NULL, DELIMITADOR);
+		nombre_simbolo = strtok(NULL, DELIMITADOR);
+		categoria = atoi(strtok(NULL, DELIMITADOR));
+		tipo_basico = atoi(strtok(NULL, DELIMITADOR));
+		tipo_acceso = atoi(strtok(NULL, DELIMITADOR));
+		tipo_miembro = atoi(strtok(NULL, DELIMITADOR));
+
+		_parse_symbol(nombre_simbolo, &nombre_ambito, &nombre_simbolo);
+
+		/*Miramos a ver si es un metodo sobreescribible que no sea de algun padre*/
+		if(categoria == METODO_SOBREESCRIBIBLE && buscarIdEnJerarquiaDesdeAmbito(*p_omicron, nombre_simbolo, nombre_clase, &tsa_aux, &elem_aux)<0){
+			posicion_metodo_sobreescribible = ++(*p_class_info)->posicion_metodo_sobreescribible;
+		}
+
+		abrirAmbitoEnClase(*p_omicron, nombre_clase, nombre_simbolo, categoria, tipo_acceso, tipo_miembro, posicion_metodo_sobreescribible, 0);
+
+		strcpy((*p_class_info)->nombre_metodo_temp, nombre_simbolo);
+
+		print_hash_table_from_met(out, *p_omicron, nombre_clase, nombre_simbolo);
 
 	}else if(!strcmp(token, CERRAR_AMBITO_TSC)){
+		nombre_clase = strtok(NULL, DELIMITADOR);
+		cerrarAmbitoEnClase(*p_omicron, nombre_clase, (*p_class_info)->nombre_metodo_temp);
+		(*p_class_info)->posicion_metodo_sobreescribible = (*p_class_info)->nombre_metodo_temp[0] = 0;
+
 
 	}else{
 		return ERROR;

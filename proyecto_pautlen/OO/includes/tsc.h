@@ -49,7 +49,7 @@ int cerrarClase(tsc* t, char* id_clase, int num_atributos_clase, int num_atribut
 Modifica la información de los padres para recoger que se ha añadido una nueva clase*/
 void graph_enrouteParentsLastNode(tsc * g);
 
-int abrirAmbitoEnClase(tsc * t, char * id_clase, char* id_ambito, int categoria, int acceso_metodo, int tipo_metodo, int posicion_metodo_sobreescribible, 	int tamanio);
+int abrirAmbitoEnClase(tsc * t, char * id_clase, char* id_ambito, int categoria, int acceso_metodo, int tipo_metodo, int posicion_metodo_sobreescribible, int tamanio);
 
 int cerrarAmbitoEnClase(tsc* t, char* id_clase, char* id_ambito);
 
