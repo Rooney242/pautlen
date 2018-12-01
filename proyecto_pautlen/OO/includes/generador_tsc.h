@@ -24,11 +24,8 @@
 
 #define INSERTAR_TSA_MAIN "insertar_tsa_main" //---Insertar un símbolo cuando se está en los ámbitos de main
 #define INSERTAR_TSC "insertar_tsc" //---Insertar un símbolo desde cualquier lugar de las clases del programa
-
-//TODO
-#define ABRIR_AMBITO_TSA_MAIN "abrir_ambito_tsa_main" //Apertura del ámbito asociado con una nueva función global en el ámbito principal de main
-#define CERRAR_AMBITO_TSA_MAIN "cerrar_ambito_tsa_main" //Cerrar el ámbito asociado con una función global en el ámbito principal de main
-
+#define ABRIR_AMBITO_TSA_MAIN "abrir_ambito_tsa_main" //---Apertura del ámbito asociado con una nueva función global en el ámbito principal de main
+#define CERRAR_AMBITO_TSA_MAIN "cerrar_ambito_tsa_main" //---Cerrar el ámbito asociado con una función global en el ámbito principal de main
 #define ABRIR_CLASE "abrir_clase" //---Abrir una nueva clase que no hereda de ninguna
 #define ABRIR_CLASE_HEREDA "abrir_clase_hereda" //---Abrir una nueva clase que hereda de una lista
 #define CERRAR_CLASE "cerrar_clase" //---Cerrar una clase

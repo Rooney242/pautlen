@@ -44,11 +44,11 @@ int _parse_symbol(char* simbolo, char ** id_ambito, char** id_simbolo){
 		mirar la tsa del main todo desconocido*/
 
 int parser_line(char* line, FILE* out, tsc** p_omicron, class_info ** p_class_info, class_info ** p_main_info){
-	int i;
+	int i, ret;
 	char* token;
     tsa* tsa_aux = NULL;
     tsa_elem * elem_aux = NULL;
-    char* nombre_clase = NULL, *nombre_simbolo = NULL, *nombre_ambito = NULL;
+    char* nombre_clase = NULL, *nombre_simbolo = NULL, *nombre_ambito = NULL, *nombre_ambito_desde = NULL, *nombre_clase_cualifica = NULL, *nombre_instancia_cualifica = NULL;
     char** nombres_padres;
     int categoria = 0, tipo_basico = 0, estructura = 0, tipo_acceso = 0, tipo_miembro = 0, posicion_metodo_sobreescribible = 0;
 
@@ -81,20 +81,88 @@ int parser_line(char* line, FILE* out, tsc** p_omicron, class_info ** p_class_in
 		print_command(out, token);
 
 		if(!strcmp(token, DECLARAR_MAIN)){
+			nombre_simbolo = strtok(NULL, DELIMITADOR);
+
+			_parse_symbol(nombre_simbolo, &nombre_ambito, &nombre_simbolo);
+
+			buscarParaDeclararIdMain(*p_omicron, nombre_simbolo, &tsa_aux, &elem_aux);
+
+			print_caso(out, ret, nombre_ambito_desde, tsa_aux, elem_aux);
+    		tsa_aux = NULL;
+    		elem_aux = NULL;
 
 		}else if(!strcmp(token, DECLARAR_MIEMBRO_CLASE)){
+			nombre_ambito_desde = strtok(NULL, DELIMITADOR);
+			nombre_simbolo = strtok(NULL, DELIMITADOR);
+
+			_parse_symbol(nombre_simbolo, &nombre_ambito, &nombre_simbolo);
+
+			buscarParaDeclararMiembroClase(*p_omicron, nombre_ambito_desde, nombre_simbolo, &tsa_aux, &elem_aux);
+			print_caso(out, ret, nombre_ambito_desde, tsa_aux, elem_aux);
+    		tsa_aux = NULL;
+    		elem_aux = NULL;
 
 		}else if(!strcmp(token, DECLARAR_MIEMBRO_INSTANCIA)){
+			nombre_ambito_desde = strtok(NULL, DELIMITADOR);
+			nombre_simbolo = strtok(NULL, DELIMITADOR);
+
+			_parse_symbol(nombre_simbolo, &nombre_ambito, &nombre_simbolo);
+
+			buscarParaDeclararMiembroInstancia(*p_omicron, nombre_ambito_desde, nombre_simbolo, &tsa_aux, &elem_aux);
+
+			print_caso(out, ret, nombre_ambito_desde, tsa_aux, elem_aux);
+    		tsa_aux = NULL;
+    		elem_aux = NULL;
 
 		}else if(!strcmp(token, DECLARAR_ID_LOCAL_METODO)){
+			nombre_ambito_desde = strtok(NULL, DELIMITADOR);
+			nombre_simbolo = strtok(NULL, DELIMITADOR);
+
+			_parse_symbol(nombre_simbolo, &nombre_ambito, &nombre_simbolo);
+
+			buscarParaDeclararIdLocalEnMetodo(*p_omicron, nombre_ambito_desde, nombre_simbolo, &tsa_aux, &elem_aux);
+
+			print_caso(out, ret, nombre_ambito_desde, tsa_aux, elem_aux);
+    		tsa_aux = NULL;
+    		elem_aux = NULL;
 
 		}else if(!strcmp(token, JERARQUIA)){
+			nombre_simbolo = strtok(NULL, DELIMITADOR);
+			nombre_ambito_desde = strtok(NULL, DELIMITADOR);
+
+			buscarIdEnJerarquiaDesdeAmbito (*p_omicron, nombre_simbolo, nombre_ambito_desde, &tsa_aux, &elem_aux);
+
+			print_caso(out, ret, nombre_ambito_desde, tsa_aux, elem_aux);
+    		tsa_aux = NULL;
+    		elem_aux = NULL;
 
 		}else if(!strcmp(token, ID_NO_CUALIFICADO)){
+			nombre_simbolo = strtok(NULL, DELIMITADOR);
+			nombre_ambito_desde = strtok(NULL, DELIMITADOR);
+
+			ret = buscarIdNoCualificado(*p_omicron, nombre_simbolo, nombre_ambito_desde, &tsa_aux, &elem_aux);
+    		print_caso(out, ret, nombre_ambito_desde, tsa_aux, elem_aux);
+    		tsa_aux = NULL;
+    		elem_aux = NULL;
 
 		}else if(!strcmp(token, ID_CUALIFICADO_INSTANCIA)){
+			nombre_instancia_cualifica = strtok(NULL, DELIMITADOR);
+			nombre_simbolo = strtok(NULL, DELIMITADOR);
+			nombre_ambito_desde = strtok(NULL, DELIMITADOR);
+			buscarIdCualificadoInstancia(*p_omicron, nombre_instancia_cualifica, nombre_simbolo, nombre_ambito_desde, &tsa_aux, &elem_aux);
+			print_caso(out, ret, nombre_ambito_desde, tsa_aux, elem_aux);
+    		tsa_aux = NULL;
+    		elem_aux = NULL;
 
-		}else if(!strcmp(token, ID_CUALIFICADO_CLASE)){
+		}else if(!strcmp(token, ID_CUALIFICADO_CLASE)){			
+			nombre_clase_cualifica = strtok(NULL, DELIMITADOR);
+			nombre_simbolo = strtok(NULL, DELIMITADOR);
+			nombre_ambito_desde = strtok(NULL, DELIMITADOR);
+
+			ret = buscarIdCualificadoClase(*p_omicron, nombre_clase_cualifica, nombre_simbolo, nombre_ambito_desde, &tsa_aux, &elem_aux);
+			print_caso(out, ret, nombre_ambito_desde, tsa_aux, elem_aux);
+    		tsa_aux = NULL;
+    		elem_aux = NULL;
 
 		}else{
 			return ERROR;
@@ -159,8 +227,19 @@ int parser_line(char* line, FILE* out, tsc** p_omicron, class_info ** p_class_in
 		}
 
 	}else if(!strcmp(token, ABRIR_AMBITO_TSA_MAIN)){
+		nombre_simbolo = strtok(NULL, DELIMITADOR);
+		tipo_basico = atoi(strtok(NULL, DELIMITADOR));
+
+		_parse_symbol(nombre_simbolo, &nombre_ambito, &nombre_simbolo);
+
+		abrirAmbitoEnClase(*p_omicron, nombre_ambito, nombre_simbolo, FUNCION, NINGUNO, 0, 0, 0);
+
+		strcpy((*p_main_info)->nombre_metodo_temp, nombre_simbolo);
+
+		print_hash_table_from_met(out, *p_omicron, nombre_ambito, nombre_simbolo);
 
 	}else if(!strcmp(token, CERRAR_AMBITO_TSA_MAIN)){
+		cerrarAmbitoEnClase(*p_omicron, TSA_MAIN, (*p_main_info)->nombre_metodo_temp);
 
 	}else if(!strcmp(token, ABRIR_CLASE)){
 		nombre_clase = strtok(NULL, DELIMITADOR);

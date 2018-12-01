@@ -455,7 +455,6 @@ int buscarIdEnJerarquiaDesdeAmbito(tsc* t, char* id, char* id_ambito, tsa** tabl
 
 	*table = _get_tsa_from_scope(t, id_ambito);
 	if(!table) return ERROR;
-
 	/*Miro si esta en el ambito de la posible funcion o de la clase*/
 	real_id = _concat_prefix(id_ambito, id);	
 	*elem = met_get(*table, real_id);
@@ -467,7 +466,8 @@ int buscarIdEnJerarquiaDesdeAmbito(tsc* t, char* id, char* id_ambito, tsa** tabl
 	free(real_id);
 	if(*elem) return TRUE;
 
-	/*Llegados aqui el simbolo no esta en el ambito en el que esta siendo llamado, nos queda mirar en la jerarquia*/
+	/*Llegados aqui el simbolo no esta en el ambito en el que esta siendo llamado, nos queda mirar en la jerarquia si no es el main*/
+	if(!strcmp((*table)->ambito, TSA_MAIN)) return FALSE;
 	num_parents = get_parents(t->grafo, &parents, (*table)->ambito);
 	/*Buscamos en todos sus padres en orden inverso para asi llegar antes a los padres mas directos*/
 	for (i=num_parents-1; i>=0; i--){
@@ -659,7 +659,7 @@ int buscarParaDeclararIdMain(tsc *t, char* id, tsa** ambito_encontrado, tsa_elem
 	/*Buscamos el id en la clase y su jerarquia*/
 	ret = buscarIdEnJerarquiaDesdeAmbito(t, id, TSA_MAIN, ambito_encontrado, elem);
 	if(ret == TRUE){
-		/*Comprobamos si es accesible desde esta clase*/
+		//Comprobamos si es accesible desde esta clase
 		ret = aplicarAccesos(t, id, TSA_MAIN, (*ambito_encontrado)->ambito, elem);
 		if(ret == TRUE) return TRUE;
 	}

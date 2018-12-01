@@ -19,7 +19,7 @@
 #define ATRIBUTO_CLASE 7
 #define ATRIBUTO_INSTANCIA 8
 
-/*Tipo*/
+/*Tipo (basico)*/
 #define TIPO_MAIN -999
 #define INT 1
 #define FLOAT 2
