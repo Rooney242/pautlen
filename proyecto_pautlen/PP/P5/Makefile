@@ -1,5 +1,7 @@
 CC = gcc
 
+LIB = -I ../../OO/includes/
+
 EJ = pruebaCompilador
 
 LEX = lex.yy.c
@@ -8,14 +10,15 @@ TAB = y.tab
 
 all: flex bison
 	@echo Compilado del ejercicio
-	@$(CC) -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c
+	@$(CC) $(LIB) -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c
+	@echo Make success
 
 flex:
 	@flex omicron.l
 
 bison:
-	@bison -d -y -v omicron.y
-
+	@bison -d -y -v omicron.y 
+	
 .PHONY : clean all
 clean :
 	@rm -f $(EJ)

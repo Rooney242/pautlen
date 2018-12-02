@@ -35,4 +35,8 @@ int main(int argc, char **argv){
 	fclose(yyin);
 	fclose(yyout);
 	fclose(fout);
+
+	return 1;
 }
+
+

@@ -3,12 +3,15 @@
 	#include <stdio.h>
 	#include <string.h>
 	#include "omicron.h"
+	#include "tsc.h"
 	extern int line_count;
 	extern int col_count;	
 	extern FILE* fout;
 	extern FILE* asmfile;
 	int tipo_actual;                                                                
 	int clase_actual;
+	tsc * tabla_simbolos;
+	tabla_simbolos = init_tsc("main");
 %}
 
 %union	
