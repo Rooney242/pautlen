@@ -1,16 +1,25 @@
 CC = gcc
 
-LIB = -I ../../OO/includes/
+OO_FOLDER = ../../OO/
+
+LIB = -I $(OO_FOLDER)includes/
+
+OBJ_FOLDER = $(OO_FOLDER)obj/
+
+OBJ_FOLDER_DEPS = $(OBJ_FOLDER)tsc.o $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(OBJ_FOLDER)output.o
 
 EJ = pruebaCompilador
+
+
 
 LEX = lex.yy.c
 
 TAB = y.tab
 
 all: flex bison
+	@echo Hacer make de la otra carpeta para que funcione
 	@echo Compilado del ejercicio
-	@$(CC) $(LIB) -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c
+	@$(CC) $(LIB) -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS)
 	@echo Make success
 
 flex:

@@ -11,7 +11,6 @@
 	int tipo_actual;                                                                
 	int clase_actual;
 	tsc * tabla_simbolos;
-	tabla_simbolos = init_tsc("main");
 %}
 
 %union	
@@ -84,6 +83,7 @@ programa: 	TOK_MAIN '{' declaraciones funciones sentencias '}'
 			| TOK_MAIN '{' funciones sentencias '}'
 				{
 					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' funciones sentencias '}'\n");
+					tabla_simbolos = init_tsc("main");
 				}	
 			;
 
