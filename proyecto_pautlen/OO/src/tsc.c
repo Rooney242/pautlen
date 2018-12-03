@@ -629,11 +629,11 @@ int buscarParaDeclararMiembroClase(	tsc *t, char * nombre_ambito_desde, char * n
 	if(ret == TRUE){
 		/*Comprobamos si es accesible desde esta clase*/
 		ret = aplicarAccesos(t, nombre_miembro, nombre_ambito_desde, (*ambito_encontrado)->ambito, elem);
-		if(ret == TRUE) return TRUE;
+		if(ret == TRUE) return CASO_49;
 	}
 	*ambito_encontrado = NULL;
 	*elem = NULL;
-	return ret;
+	return CASO_50;
 }
 
 /*Esta funcion busca si hay un atributo en la jerarquia de la clase donde lo intentamos declarar.*/
@@ -650,13 +650,17 @@ int buscarParaDeclararMiembroInstancia(tsc *t, char * nombre_ambito_desde,
 	/*Buscamos el id en la clase y su jerarquia*/
 	ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_miembro, nombre_ambito_desde, ambito_encontrado, elem);
 	if(ret == TRUE){
-		/*Comprobamos si es accesible desde esta clase*/
-		ret = aplicarAccesos(t, nombre_miembro, nombre_ambito_desde, (*ambito_encontrado)->ambito, elem);
-		if(ret == TRUE) return TRUE;
+		if(strcmp(ambito_encontrado->ambito, nombre_ambito_desde)==0)
+			return CASO_51;/*existe en la clase*/
+		else{
+			/*Comprobamos si es accesible desde esta clase*/
+			ret = aplicarAccesos(t, nombre_miembro, nombre_ambito_desde, (*ambito_encontrado)->ambito, elem);
+			if(ret == TRUE) return CASO_52;/*no existe en la clase pero si en la jerarquia*/
+		}
 	}
 	*ambito_encontrado = NULL;
 	*elem = NULL;
-	return ret;
+	return CASO_53;/*no existe*/
 }
 
 /*Esta funcion busca si ya existe una variable con ese nombre en el main*/
