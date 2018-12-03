@@ -3,7 +3,6 @@
 
 #define DELIMITADOR "\t"
 #define COMENTARIO '#'
-#define SEPARA_SIMBOLO "_"
 
 #define INICIA_TSC "inicia_tsc" //---Iniciar la tabla de símbolos de clases
 #define CERRAR_TSC "cerrar_tsc" //---Dar por terminada la gestión de la tabla de clases

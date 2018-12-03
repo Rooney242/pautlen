@@ -28,17 +28,6 @@ void free_class_info(class_info* p_class_info){
 	return;
 }
 
-/*Dado un simbolo separa su ambito del simbolo real*/
-int _parse_symbol(char* simbolo, char ** id_ambito, char** id_simbolo){
-	*id_ambito = *id_simbolo = NULL;
-	if(!simbolo) return ERROR;
-
-	*id_ambito = strtok(simbolo, SEPARA_SIMBOLO);
-	*id_simbolo = strtok(NULL, SEPARA_SIMBOLO);
-
-	return OK;
-}
-
 /**********************************************************************************/
 /*TODO: hacer el insertar funcion desde el main
 		mirar la tsa del main todo desconocido*/

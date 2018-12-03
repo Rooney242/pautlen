@@ -135,6 +135,11 @@ int generar_dot(tsc* tabla, char* file_name);
 
 
 
+/*************Funciones auxiliares**************/
+/*Dado un simbolo separa su ambito del simbolo real*/
+int _parse_symbol(char* simbolo, char ** id_ambito, char** id_simbolo);
+
+char* _concat_prefix(char* prefix, char* symbol);
 
 
 

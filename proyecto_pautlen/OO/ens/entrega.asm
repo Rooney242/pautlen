@@ -4,7 +4,7 @@ segment .data
 
 _offset_msA dd 0
 _offset_msB dd 4
-_offset_msB dd 8
+_offset_msC dd 8
 
 segment .bss
 ;NO sabemos que es esto

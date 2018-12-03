@@ -9,6 +9,9 @@
 
 #define ID_MAX 64
 
+
+#define SEPARA_SIMBOLO "_"
+
 /*Categoria*/
 #define VARIABLE 1
 #define PARAMETRO 2

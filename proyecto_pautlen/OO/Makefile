@@ -27,13 +27,16 @@ TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(O
 GENERADOR_TSC = generador_tsc
 GENERADOR_TSC_DEPS = $(OBJ_FOLDER)tsc.o $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(OBJ_FOLDER)output.o
 
+GENERADOR_NASM = generador_nasm
+GENERADOR_NASM_DEPS = $(OBJ_FOLDER)tsc.o $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(OBJ_FOLDER)output.o
+
 DOT_GENERATOR = dot_generator
 
 
 
-all: hash graph tsa tsc output generador_tsc
+all: hash graph tsa tsc output generador_tsc generador_nasm 
 
-all-test: graph-test tsc-test dot-test
+all-test: graph-test tsc-test dot-test generador_tsc-test generador_nasm-test
 
 pre:
 	@mkdir $(OBJ_FOLDER)
@@ -78,6 +81,14 @@ generador_tsc-test: generador_tsc
 	@echo Compilando tester del modulo de generacion de tsc...
 	@$(CC) $(LIB) -o test_$(GENERADOR_TSC) $(OBJ_FOLDER)$(GENERADOR_TSC).o $(TESTS)test_$(GENERADOR_TSC).c $(GENERADOR_TSC_DEPS)
 
+generador_nasm: tsc
+	@echo Compilando modulo del generacion de nasm...
+	@$(CC) $(LIB) -c $(SOURCES)$(GENERADOR_NASM).c -o $(OBJ_FOLDER)$(GENERADOR_NASM).o
+
+generador_nasm-test: generador_nasm
+	@echo Compilando tester del modulo de generacion de nasm...
+	@$(CC) $(LIB) -o test_$(GENERADOR_NASM) $(OBJ_FOLDER)$(GENERADOR_NASM).o $(TESTS)test_$(GENERADOR_NASM).c $(GENERADOR_NASM_DEPS)
+
 
 .PHONY : clean all
 clean :
@@ -86,5 +97,6 @@ clean :
 	@rm -f test_$(TSC)
 	@rm -f test_$(DOT_GENERATOR)
 	@rm -f test_$(GENERADOR_TSC)
+	@rm -f test_$(GENERADOR_NASM)
 	@rm -f grafo.dot
 	@rm -f $(OBJ_FOLDER)*.o
