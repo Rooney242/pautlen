@@ -76,16 +76,24 @@
 %right MENOSU '!'
 %%
 
-programa: 	TOK_MAIN '{' declaraciones funciones sentencias '}' 
-				{
+programa: 	TOK_MAIN '{' declaraciones escritura1 funciones sentencias '}' 
+				{ 
 					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' declaraciones funciones sentencias '}'\n");
 				}	
-			| TOK_MAIN '{' funciones sentencias '}'
+			| TOK_MAIN '{' funciones escritura1 sentencias '}'
 				{
 					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' funciones sentencias '}'\n");
-					tabla_simbolos = init_tsc("main");
+					escribir_fin(asmfile);
 				}	
 			;
+
+escritura1: 	{
+  					tabla_simbolos = init_tsc(TSA_MAIN);
+  					escribir_subseccion_data(asmfile);
+    				escribir_cabecera_bss(asmfile);
+    				escribir_segmento_codigo(salida);
+         	 	}
+          		;
 
 declaraciones:	declaracion
 					{
@@ -208,7 +216,19 @@ clase_vector: 	TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
 
 identificadores: 	TOK_IDENTIFICADOR 
 						{
+							tsa** ambito_encontrado;
+							tsa_elem** elem;
 							fprintf(fout, ";R:\tidentificadores: 	TOK_IDENTIFICADOR \n");
+							buscarParaDeclararIdMain(tabla_simbolos, strcat("main_", $1.lexema), ambito_encontrado, elem)
+							if (<buscarIdNoCualificado, ...> == OK)
+							    {
+							      /* TRATAR EL ERROR DE QUE YA EXISTE */
+							    }
+							    else 
+							    {
+							      <Función de inserción en la tabla del main del identificador basado en $1.lexema,..., tipo_actual, calse_actual,... >;
+
+							    }
 						}
 					| TOK_IDENTIFICADOR ',' identificadores
 						{
