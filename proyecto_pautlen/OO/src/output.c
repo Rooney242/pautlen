@@ -92,15 +92,15 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_28:
 			fprintf(pf,"CASO 28\n"
-				"Buscar id cualificado clase desde main: ERR-> %s EL ATRIBUTO EXISTE, ESTA EN LA JERARQUIA Y NO ES ACCESIBLE (HIDDEN)",elem->id);
+				"Buscar id cualificado clase desde main: ERR-> EL ATRIBUTO EXISTE, ESTA EN LA JERARQUIA Y NO ES ACCESIBLE (HIDDEN)");
 			break;
 		case CASO_29:
 			fprintf(pf,"CASO 29\n"
-				"Buscar id cualificado clase desde main: ERR-> %s EL ID BUSCADO NO EXISTE",elem->id);
+				"Buscar id cualificado clase desde main: ERR-> EL ID BUSCADO NO EXISTE");
 			break;
 		case CASO_30:
 			fprintf(pf,"CASO 30\n"
-				"Buscar id cualificado clase desde main: ERR-> %s NO EXISTE LA CLASE",ambito_desde);
+				"Buscar id cualificado clase desde main: ERR-> NO EXISTE LA CLASE");
 			break;
 		case CASO_31:
 			fprintf(pf,"CASO 31\n"
@@ -108,21 +108,21 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_32:
 			fprintf(pf,"CASO 32\n"
-				"Buscar id cualificado clase desde funcion global: ERR-> %s SE ACCEDE A ALGO CUALIFICADO POR UNA CLASE QUE EXISTE PERO NO ES ACCESIBLE",elem->id);
+				"Buscar id cualificado clase desde funcion global: ERR-> SE ACCEDE A ALGO CUALIFICADO POR UNA CLASE QUE EXISTE PERO NO ES ACCESIBLE");
 			break;
 		case CASO_33:
 			fprintf(pf,"CASO 33\n"
-				"Buscar id cualificado clase desde funcion global: ERR-> %s SE ACCEDE A ALGO CUALIFICADO POR UNA CLASE QUE EXISTE PERO NO EXISTE LO BUSCADO",elem->id);
+				"Buscar id cualificado clase desde funcion global: ERR-> SE ACCEDE A ALGO CUALIFICADO POR UNA CLASE QUE EXISTE PERO NO EXISTE LO BUSCADO");
 			break;
 		case CASO_34:
 			fprintf(pf,"CASO 34\n"
-				"Buscar id cualificado clase desde funcion global: ERR-> %s NO EXISTE LA CLASE",ambito_desde);
+				"Buscar id cualificado clase desde funcion global: ERR-> NO EXISTE LA CLASE");
 			break;
 
 		/************************BUSCAR ID CUALIFICADO INSTANCIA************************/
 		case CASO_401:
 			fprintf(pf,"CASO 40.1\n"
-				"Buscar id cualificado instancia: ERR-> %s EL ATRIBUTO NO EXISTE CUALIFICADO AUNQUE LA INSTANCIA EXISTE Y ES GLOBAL",elem->id);
+				"Buscar id cualificado instancia: ERR-> EL ATRIBUTO NO EXISTE CUALIFICADO AUNQUE LA INSTANCIA EXISTE Y ES GLOBAL");
 			break;
 		case CASO_403:
 			fprintf(pf,"CASO 40.3\n"
@@ -136,7 +136,7 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_431:
 			fprintf(pf,"CASO 43.1\n"
-				"Buscar id cualificado instancia desde funcion global: ERR-> %s  BUSCA UN ID QUE EXISTE COMO VARIABLE GLOBAL DE UNA CLASE QUE NO TIENE ESE ATRIBUTO",elem->id);
+				"Buscar id cualificado instancia desde funcion global: ERR-> BUSCA UN ID QUE EXISTE COMO VARIABLE GLOBAL DE UNA CLASE QUE NO TIENE ESE ATRIBUTO");
 			break;
 		case CASO_433:
 			fprintf(pf,"CASO 43.3\n"
@@ -155,32 +155,32 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_471:
 			fprintf(pf,"CASO 47.1\n"
-				"Buscar id cualificado instancia desde un metodo: ERR-> %s SE ACCEDE A ALGO CUALIFICADO POR UNA INSTANCIA QUE"
-				 "ES UN ATRIBUTO ACCESIBLE EN ESTE CASO DE LA MISMA CLASE PERO EL ATRIBUTO BUSCADO NO EXISTE",elem->id);
+				"Buscar id cualificado instancia desde un metodo: ERR-> SE ACCEDE A ALGO CUALIFICADO POR UNA INSTANCIA QUE"
+				 "ES UN ATRIBUTO ACCESIBLE EN ESTE CASO DE LA MISMA CLASE PERO EL ATRIBUTO BUSCADO NO EXISTE");
 			break;
 		case CASO_473:
 			fprintf(pf,"CASO 47.3\n"
-				"Buscar id cualificado instancia desde un metodo: ok-> %s SE ACCEDE A UN ATRIBUTO QUE EXISTE EN LA JERARQUÍA Y ESTA "
+				"Buscar id cualificado instancia desde un metodo: OK-> %s SE ACCEDE A UN ATRIBUTO QUE EXISTE EN LA JERARQUÍA Y ESTA "
 				"ACCESIBLE CUALIFICANDO POR UNA INSTANCIA ACCESIBLE",elem->id);
 			break;
 		case CASO_48:
 			fprintf(pf,"CASO 48\n"
-				"Buscar id cualificado instancia desde un metodo: ERR-> %s SE ACCEDE A UN ATRIBUTO QUE EXISTE EN LA JERARQUÍA Y NO "
-				"ESTA ACCESIBLE A TRAVÉS DE UNA INSTANCIA QUE SÍ ESTA ACCESIBLE",elem->id);
+				"Buscar id cualificado instancia desde un metodo: ERR-> SE ACCEDE A UN ATRIBUTO QUE EXISTE EN LA JERARQUÍA Y NO "
+				"ESTA ACCESIBLE A TRAVÉS DE UNA INSTANCIA QUE SÍ ESTA ACCESIBLE");
 			break;
 
 		/************************BUSCAR PARA DECLARAR ID TABLA SIMBOLOS AMBITO************************/
 		case CASO_54:
 			fprintf(pf,"CASO 54\n"
-				"Buscar para declarar id tabla simbolos ambito: ERR-> %s LA VARIABLE NO ESTA, SE PUEDE DECLARAR",elem->id);
+				"Buscar para declarar id tabla simbolos ambito: ERR-> LA VARIABLE NO ESTA, SE PUEDE DECLARAR");
 			break;
 		case CASO_55:
 			fprintf(pf,"CASO 55\n"
-				"Buscar para declarar id tabla simbolos ambito: ERR-> %s LA FUNCION NO ESTA, SE PUEDE DECLARAR",elem->id);
+				"Buscar para declarar id tabla simbolos ambito: ERR-> LA FUNCION NO ESTA, SE PUEDE DECLARAR");
 			break;
 		case CASO_56:
 			fprintf(pf,"CASO 56\n"
-				"Buscar para declarar id tabla simbolos ambito: ERR-> %s EL PARAMETRO NO ESTA, SE PUEDE DECLARAR",elem->id);
+				"Buscar para declarar id tabla simbolos ambito: ERR-> EL PARAMETRO NO ESTA, SE PUEDE DECLARAR");
 			break;
 		case CASO_57:
 			fprintf(pf,"CASO 57\n"
@@ -188,7 +188,7 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_58:
 			fprintf(pf,"CASO 58\n"
-				"Buscar para declarar id tabla simbolos ambito: ERR-> %s FUNCION YA DECLARADA, SE PUEDE DECLARAR",elem->id);
+				"Buscar para declarar id tabla simbolos ambito: ERR-> FUNCION YA DECLARADA, SE PUEDE DECLARAR");
 			break;
 		case CASO_59:
 			fprintf(pf,"CASO 59\n"
@@ -198,15 +198,15 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 		/************************BUSCAR PARA DECLARAR ID TABLA SIMBOLOS AMBITO************************/
 		case CASO_60:
 			fprintf(pf,"CASO 60\n"
-				"Buscar para declarar un parametro: ERR-> %s LA VARIABLE NO ESTA, SE PUEDE DECLARAR",elem->id);
+				"Buscar para declarar un parametro: ERR-> LA VARIABLE NO ESTA, SE PUEDE DECLARAR");
 			break;
 		case CASO_61:
 			fprintf(pf,"CASO 61\n"
-				"Buscar para declarar un parametro: ERR-> %s YA HA SIDO DECLARADO COMO FUNCION ",elem->id);
+				"Buscar para declarar un parametro: ERR-> YA HA SIDO DECLARADO COMO FUNCION ");
 			break;
 		case CASO_62:
 			fprintf(pf,"CASO 62\n"
-				"Buscar para declarar un parametro: ERR-> %s HA SIDO DECLARADO COMO FUNCION. NO ESTA Y SE UEDE DECLARAR",elem->id);
+				"Buscar para declarar un parametro: ERR-> HA SIDO DECLARADO COMO FUNCION. NO ESTA Y SE UEDE DECLARAR");
 			break;
 		case CASO_63:
 			fprintf(pf,"CASO 63\n"
@@ -222,12 +222,12 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_66:
 			fprintf(pf,"CASO 66\n"
-				"Buscar para declarar una variable local: ERR-> %s YA HA SIDO DECLARADA COMO FUNCION Y EL PREFIJO DE LA FUNCIÓN ES EL DE LA"
- 				"CLASE Y EL DE LA VARIABLE ES EL DEL METODO. NO ESTA DECLARADA Y SE PUEDE DECLARAR",elem->id);
+				"Buscar para declarar una variable local: ERR-> YA HA SIDO DECLARADA COMO FUNCION Y EL PREFIJO DE LA FUNCIÓN ES EL DE LA"
+ 				"CLASE Y EL DE LA VARIABLE ES EL DEL METODO. NO ESTA DECLARADA Y SE PUEDE DECLARAR");
 			break;
 		case CASO_67:
 			fprintf(pf,"CASO 67\n"
-				"Buscar para declarar una variable local: ERR-> %s LA FUNCION NO ESTA, SE PUEDE DECLARAR",elem->id);
+				"Buscar para declarar una variable local: ERR-> LA FUNCION NO ESTA, SE PUEDE DECLARAR");
 			break;
 
 		default:
@@ -248,6 +248,7 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			}
 			break;
 	}
+
 }
 
 int print_hash_table_from_class(FILE* pf, tsc* p_tsc, char* id_clase){
