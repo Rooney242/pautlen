@@ -18,14 +18,14 @@ int main(int argc, char* argv[])
     FILE* out;
 
     out = stdout;
-    /*if (argc!= 2){
+    if (argc!= 2){
         printf("Especifica fichero de salida\n");
         return 0;
     }
     
     if (( out = fopen(argv[1],"w")) == NULL){
         printf("Error al abrir el fichero de salida\n");
-    }*/
+    }
 
     /* Inicializar la tabla de las clases */
     p_omicron = init_tsc("entrega");
@@ -37,18 +37,13 @@ int main(int argc, char* argv[])
 
     insertarSimboloEnClase(p_omicron, "A", "aca", VARIABLE, BOOLEAN, ESCALAR, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-    tsa_aux = _get_tsa_from_scope(p_omicron, "A");
-    print_hash_table_from_class(out, tsa_aux);
+    print_hash_table_from_class(out, p_omicron, "A");
 
     insertarSimboloEnClase(p_omicron, "A", "aia", VARIABLE, BOOLEAN, ESCALAR, 0, 
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-    tsa_aux = _get_tsa_from_scope(p_omicron, "A");
-    print_hash_table_from_class(out, tsa_aux);
 
 
     abrirAmbitoEnClase(p_omicron, "A", "msA", METODO_SOBREESCRIBIBLE, NINGUNO, INT, 0, 0);
-    tsa_aux = _get_tsa_from_scope(p_omicron, "A");
-    print_hash_table_from_met(out, tsa_aux, "msA");
     cerrarAmbitoEnClase(p_omicron, "A", "msA");
 
     abrirAmbitoEnClase(p_omicron, "A", "mcA", METODO_NO_SOBREESCRIBIBLE, NINGUNO, INT, 0, 0);
@@ -104,7 +99,7 @@ int main(int argc, char* argv[])
     cerrarMain(p_omicron, 0, 0, 0, 0);
     close_tsc(p_omicron);
     free_tsc(p_omicron);
-    //fclose(out);
+    fclose(out);
 
     return 0;
 }

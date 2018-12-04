@@ -1,5 +1,5 @@
 CC = gcc
-LIB = -I$(INCLUDES)
+LIB = -I$(INCLUDES) -g
 
 INCLUDES = includes/
 SOURCES = src/
@@ -32,11 +32,13 @@ GENERADOR_NASM_DEPS = $(OBJ_FOLDER)tsc.o $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_ta
 
 DOT_GENERATOR = dot_generator
 
+PRACTICA4 = prueba_TS
 
 
-all: hash graph tsa tsc output generador_tsc generador_nasm 
 
-all-test: graph-test tsc-test dot-test generador_tsc-test generador_nasm-test
+all: hash graph tsa tsc output generador_tsc
+
+all-test: graph-test tsc-test dot-test generador_tsc-test 
 
 pre:
 	@mkdir $(OBJ_FOLDER)
@@ -71,7 +73,7 @@ tsc-test: tsc
 
 dot-test: tsc
 	@echo Compilando tester de la generacion de dot...
-	@$(CC) $(LIB) -o test_$(DOT) $(OBJ_FOLDER)$(TSC).o $(TESTS)test_$(DOT).c $(TSC_DEPS)
+	@$(CC) $(LIB) -o test_$(DOT_GENERATOR) $(OBJ_FOLDER)$(TSC).o $(TESTS)test_$(DOT_GENERATOR).c $(TSC_DEPS)
 
 generador_tsc: tsc
 	@echo Compilando modulo del generacion de tsc...
@@ -89,6 +91,9 @@ generador_nasm-test: generador_nasm
 	@echo Compilando tester del modulo de generacion de nasm...
 	@$(CC) $(LIB) -o test_$(GENERADOR_NASM) $(OBJ_FOLDER)$(GENERADOR_NASM).o $(TESTS)test_$(GENERADOR_NASM).c $(GENERADOR_NASM_DEPS)
 
+practica4: generador_tsc
+	@echo Compilando el archivo de prueba para la entrega de la practica 4...
+	@$(CC) $(LIB) -o $(PRACTICA4) $(OBJ_FOLDER)$(GENERADOR_TSC).o $(TESTS)$(PRACTICA4).c $(GENERADOR_TSC_DEPS)
 
 .PHONY : clean all
 clean :
@@ -98,5 +103,6 @@ clean :
 	@rm -f test_$(DOT_GENERATOR)
 	@rm -f test_$(GENERADOR_TSC)
 	@rm -f test_$(GENERADOR_NASM)
+	@rm -f $(PRACTICA4)
 	@rm -f grafo.dot
 	@rm -f $(OBJ_FOLDER)*.o

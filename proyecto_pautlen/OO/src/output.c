@@ -20,7 +20,7 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_21:
 			fprintf(pf, "CASO 21 -- ERR\n"
-				"-->FALLO en la busqueda del id %s en buscarIdNoCualificado desde %s \n", elem->id, ambito_desde);
+				"-->FALLO en la busqueda en buscarIdNoCualificado desde %s \n", ambito_desde);
 			break;
 		case CASO_22:
 			fprintf(pf, "CASO 22 -- OK\n"
@@ -28,7 +28,7 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_23:
 			fprintf(pf, "CASO 23 -- ERR\n"
-				"-->FALLO en la busqueda del id %s en buscarIdNoCualificado desde %s\n", elem->id, ambito_desde);
+				"-->FALLO en la busqueda en buscarIdNoCualificado desde %s\n", ambito_desde);
 			break;
 		case CASO_24:
 			fprintf(pf, "CASO 24 -- OK\n"
@@ -40,7 +40,7 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break; 
 		case CASO_26:
 			fprintf(pf, "CASO 26 -- ERR\n"
-				"-->FALLO en la busqueda del id %s en buscarIdNoCualificado desde %s\n",elem->id, ambito_desde);
+				"-->FALLO en la busqueda en buscarIdNoCualificado desde %s\n", ambito_desde);
 			break;
 
 		/************************BUSCAR PARA DECLARAR MIEMBRO CLASE************************/
@@ -50,7 +50,7 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_50:
 			fprintf(pf, "CASO 50\n"
-				"Buscar para declarar miembro clase: OK-> %s NO ESTA",elem->id);
+				"Buscar para declarar miembro clase: OK-> NO ESTA en %s", ambito_desde);
 			break;
 
 		/************************BUSCAR PARA DECLARAR MIEMBRO INSTANCIA************************/
@@ -64,7 +64,7 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break; 
 		case CASO_53:
 			fprintf(pf, "CASO 53\n"
-				"Buscar para declarar miembro instancia: OK-> %s NO ESTA",elem->id);
+				"Buscar para declarar miembro instancia: OK-> NO ESTA en la clase %s", ambito_desde;
 			break;
 
 		/************************BUSCAR ID CUALIFICADO CLASE************************/
@@ -74,15 +74,15 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_36:
 			(pf,"CASO 36\n"
-				"Buscar id cualificado clase: ERR-> %s ESTA EN LA JERARQUIA Y NO ES ACCESIBLE",elem->id);
+				"Buscar id cualificado clase: ERR-> ESTA EN LA JERARQUIA Y NO ES ACCESIBLE DESDE %s", ambito_desde);
 			break;
 		case CASO_37:
 			fprintf(pf,"CASO 37\n"
-				"Buscar id cualificado clase: ERR-> %s SE ACCEDE A ALGO CUALIFICADO POR UNA CLASE, EXISTE LA CLASE PERO NO LO BUSCADO",elem->id);
+				"Buscar id cualificado clase: ERR-> SE ACCEDE A ALGO CUALIFICADO POR LA CLASE %s, EXISTE LA CLASE PERO NO LO BUSCADO", ambito_desde);
 			break;
 		case CASO_38:
 			fprintf(pf,"CASO 38\n"
-				"Buscar id cualificado clase: ERR-> %s SE ACCEDE A ALGO CUALIFICADO POR UNA CLASE, NO EXISTE LA CLASE %s",elem->id, ambito_desde);
+				"Buscar id cualificado clase: ERR-> SE ACCEDE A ALGO CUALIFICADO POR LA CLASE , NO EXISTE LA CLASE");
 			break;
 
 		/************************BUSCAR ID CUALIFICADO CLASE************************/
@@ -231,10 +231,20 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 
 		default:
+			/*Estos casos hacen referencia a como tomamos nosotros los casos, para una ampliacion de casos esto tiene que ser actualizado*/
 			if(caso){
-				fprintf(pf, "Simbolo %s encontrado en %s.\n", elem->id, ambito_encontrado->ambito);
+				fprintf(pf, "Simbolo %s encontrado en %s. ", elem->id, ambito_encontrado->ambito);
+				if(caso >= 53 && caso < 271){//Es un buscar para declarar
+					fprintf(pf, "No se puede declarar.\n");
+				}else{
+					fprintf(pf, "Se puede acceder al simbolo.\n");
+				}
 			}else{
-				fprintf(pf, "Simbolo no encontrado desde %s.\n", ambito_desde);
+				if(caso <= -53 && caso > -271){//Es un buscar para declarar
+					fprintf(pf, "Se puede declarar.\n");
+				}else{
+					fprintf(pf, "No se puede acceder al simbolo.\n");
+				}
 			}
 			break;
 	}
