@@ -2,7 +2,7 @@ CC = gcc
 
 OO_FOLDER = ../../OO/
 
-LIB = -I $(OO_FOLDER)includes/
+LIB = -I $(OO_FOLDER)includes/ 
 
 OBJ_FOLDER = $(OO_FOLDER)obj/
 
@@ -19,7 +19,7 @@ TAB = y.tab
 all: flex bison
 	@echo Hacer make de la otra carpeta para que funcione
 	@echo Compilado del ejercicio
-	@$(CC) $(LIB) -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS)
+	@$(CC) $(LIB) -I ../P1 -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) ../P1/generacion.o
 	@echo Make success
 
 flex:

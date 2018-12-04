@@ -64,7 +64,7 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break; 
 		case CASO_53:
 			fprintf(pf, "CASO 53\n"
-				"Buscar para declarar miembro instancia: OK-> NO ESTA en la clase %s", ambito_desde;
+				"Buscar para declarar miembro instancia: OK-> NO ESTA en la clase %s", ambito_desde);
 			break;
 
 		/************************BUSCAR ID CUALIFICADO CLASE************************/

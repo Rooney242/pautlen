@@ -3,7 +3,10 @@
 	#include <stdio.h>
 	#include <string.h>
 	#include "omicron.h"
+	#include "output.h"
+	#include "macros.h"
 	#include "tsc.h"
+	#include "generacion.h"
 	extern int line_count;
 	extern int col_count;	
 	extern FILE* fout;
@@ -76,11 +79,11 @@
 %right MENOSU '!'
 %%
 
-programa: 	TOK_MAIN '{' declaraciones escritura1 funciones sentencias '}' 
+programa: 	TOK_MAIN '{' declaraciones escritura1 funciones escritura2 sentencias '}' 
 				{ 
 					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' declaraciones funciones sentencias '}'\n");
 				}	
-			| TOK_MAIN '{' funciones escritura1 sentencias '}'
+			| TOK_MAIN '{' funciones escritura1 escritura2 sentencias '}'
 				{
 					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' funciones sentencias '}'\n");
 					escribir_fin(asmfile);
@@ -91,7 +94,12 @@ escritura1: 	{
   					tabla_simbolos = init_tsc(TSA_MAIN);
   					escribir_subseccion_data(asmfile);
     				escribir_cabecera_bss(asmfile);
-    				escribir_segmento_codigo(salida);
+    				escribir_segmento_codigo(asmfile);
+         	 	}
+          		;
+
+escritura2: 	{
+    				escribir_inicio_main(asmfile);
          	 	}
           		;
 
@@ -216,18 +224,18 @@ clase_vector: 	TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
 
 identificadores: 	TOK_IDENTIFICADOR 
 						{
-							tsa** ambito_encontrado;
-							tsa_elem** elem;
+							tsa** ambito_encontrado = NULL;
+							tsa_elem** elem = NULL;
 							fprintf(fout, ";R:\tidentificadores: 	TOK_IDENTIFICADOR \n");
-							buscarParaDeclararIdMain(tabla_simbolos, strcat("main_", $1.lexema), ambito_encontrado, elem)
-							if (<buscarIdNoCualificado, ...> == OK)
+							if (buscarParaDeclararIdMain(tabla_simbolos, strcat("main_", $1.lexema), ambito_encontrado, elem) == OK)
 							    {
-							      /* TRATAR EL ERROR DE QUE YA EXISTE */
+							      	print_caso(fout, CASO_51, TSA_MAIN, ambito_encontrado[0], elem[0]);
+									return -1;
 							    }
 							    else 
 							    {
-							      <Función de inserción en la tabla del main del identificador basado en $1.lexema,..., tipo_actual, calse_actual,... >;
-
+							    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
+        								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 							    }
 						}
 					| TOK_IDENTIFICADOR ',' identificadores

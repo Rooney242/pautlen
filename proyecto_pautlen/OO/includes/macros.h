@@ -32,10 +32,8 @@
 
 /*Clase*/
 #define ESCALAR 1
-#define PUNTERO 2
+#define OBJETO 2
 #define VECTOR 3
-#define CONJUNTO 4
-#define OBJETO 5
 
 /*Tipo acceso*/
 #define NINGUNO 1 //(exposed)
