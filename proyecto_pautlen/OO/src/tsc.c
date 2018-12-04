@@ -650,7 +650,7 @@ int buscarParaDeclararMiembroInstancia(tsc *t, char * nombre_ambito_desde,
 	/*Buscamos el id en la clase y su jerarquia*/
 	ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_miembro, nombre_ambito_desde, ambito_encontrado, elem);
 	if(ret == TRUE){
-		if(strcmp(ambito_encontrado->ambito, nombre_ambito_desde)==0)
+		if(strcmp((*ambito_encontrado)->ambito, nombre_ambito_desde)==0)
 			return CASO_51;/*existe en la clase*/
 		else{
 			/*Comprobamos si es accesible desde esta clase*/
