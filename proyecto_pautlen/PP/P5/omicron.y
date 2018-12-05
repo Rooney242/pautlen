@@ -14,6 +14,7 @@
 	int tipo_actual;                                                                
 	int clase_actual;
 	tsc * tabla_simbolos;
+	
     tsa* tsa_aux;
     tsa_elem * elem_aux;
     char nombre_clase_desde[ID_MAX]
