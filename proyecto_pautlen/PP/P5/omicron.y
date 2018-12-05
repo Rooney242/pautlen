@@ -17,7 +17,7 @@
 
     tsa* tsa_aux;
     tsa_elem * elem_aux;
-    char nombre_clase_desde[ID_MAX]
+    char nombre_clase_desde[ID_MAX];
 
 
 %}
@@ -675,7 +675,6 @@ identificador_clase:	TOK_IDENTIFICADOR
 							{
 
 								strcpy($$.lexema,$1.lexema);
-								strcpy($$.atributos.lexema, $1.atributos.lexema);
 
 								fprintf(fout, ";R:\tidentificador_clase:	TOK_IDENTIFICADOR\n");
 							} 
