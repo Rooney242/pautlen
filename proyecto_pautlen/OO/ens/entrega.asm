@@ -1,3 +1,6 @@
+
+;sudo apt install g++-multilib libc6-dev-i386
+
 global _offset_msA, _offset_msB, _offset_msC, _ms_A, _ms_B, _ms_C, _msA, _BmsA, _CmsA, _msB, _CmsB, _msC
 
 segment .data
