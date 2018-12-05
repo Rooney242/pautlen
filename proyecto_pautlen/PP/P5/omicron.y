@@ -13,23 +13,7 @@
 	extern FILE* asmfile;
 	int tipo_actual;                                                                
 	int clase_actual;
-
 	tsc * tabla_simbolos;
-=======
-=======
-	#include <stdlib.h>
-	#include <string.h>
-	#include "omicron.h"
-	#include "macros.h"
-	#include "casos.h"
-	#include "tsc.h"
-
-
-	extern int line_count;
-	extern int col_count;	
-	extern FILE* fout;
-
-	tsc* p_omicron;
     tsa* tsa_aux;
     tsa_elem * elem_aux;
     char nombre_clase_desde[ID_MAX]
@@ -88,6 +72,10 @@
 %type <atributos> tipo
 %type <atributos> comparacion
 %type <atributos> constante
+%type <atributos> clase
+%type <atributos> clase_escalar
+%type <atributos> clase_vector
+%type <atributos> clase_objeto
 %type <atributos> exp
 %type <atributos> asignacion
 %type <atributos> identificador_clase
@@ -103,10 +91,6 @@
 
 programa: 	TOK_MAIN '{' declaraciones escritura1 funciones escritura2 sentencias '}' 
 				{ 
-
-
-programa: 	inicioTabla TOK_MAIN '{' declaraciones funciones sentencias '}' 
-				{
 					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' declaraciones funciones sentencias '}'\n");
 				}	
 			| TOK_MAIN '{' funciones escritura1 escritura2 sentencias '}'
@@ -117,7 +101,7 @@ programa: 	inicioTabla TOK_MAIN '{' declaraciones funciones sentencias '}'
 			;
 
 escritura1: 	{
-  					tabla_simbolos = init_tsc(TSA_MAIN);
+  					tabla_simbolos = init_tsc("TSC_Omicron");
   					escribir_subseccion_data(asmfile);
     				escribir_cabecera_bss(asmfile);
     				escribir_segmento_codigo(asmfile);
@@ -129,11 +113,6 @@ escritura2: 	{
          	 	}
           		;
 
-inicioTabla:	{
-					/* Inicializar la tabla de las clases */
-    				p_omicron = init_tsc("TSC_Omicron");
-				}
-				;
 
 declaraciones:	declaracion
 					{
@@ -223,12 +202,12 @@ declaracion_clase:	abrirAmbitoClase TOK_INHERITS identificadores '{' declaracion
 abrirAmbitoClase: 	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR
 					{
 						/* Abrimos el ambito de la clase */
-						if(!abrirClase(p_omicron, $3.lexema)) {
+						if(!abrirClase(tabla_simbolos, $3.lexema)) {
 							fprintf(stdout,"ERROR AL ABRIR CLASE :%d:%d\n", line_count, col_count);
 							return -1;
 						}
 
-						if(!abrirAmbitoClase(p_omicron, $3.lexema, 0)){
+						if(!abrirAmbitoClase(tabla_simbolos, $3.lexema, 0)){
 					        fprintf(stdout, "ERROR AL ABRIR AMBITO CLASE :%d:%d\n", error);
 					        return 0;
 					    }
@@ -289,16 +268,23 @@ identificadores: 	TOK_IDENTIFICADOR
 							    	insertarSimboloEnMain(tabla_simbolos, strcat("_", $1.lexema), VARIABLE, tipo_actual, clase_actual,0, 
         								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 							    }
-							buscarIdNoCualificado(p_omicron, $1.atributos.lexema, nombre_clase_desde, tsa_aux, elem_aux);
 
 						}
 					| TOK_IDENTIFICADOR ',' identificadores
 						{
+							tsa** ambito_encontrado = NULL;
+							tsa_elem** elem = NULL;
 							fprintf(fout, ";R:\tidentificadores:	TOK_IDENTIFICADOR ',' identificadores\n");
-							if (buscarIdNoCualificado(p_omicron, $1.atributos.lexema, nombre_clase_desde, tsa_aux, elem_aux) == TRUE) {
-								/* EL identificador ya existe en la tabla de simbolos */
-
-							}
+							if (buscarParaDeclararIdMain(tabla_simbolos, strcat("_", $1.lexema), ambito_encontrado, elem) == OK)
+							    {
+							      	print_caso(fout, CASO_51, TSA_MAIN, ambito_encontrado[0], elem[0]);
+									return -1;
+							    }
+							    else 
+							    {
+							    	insertarSimboloEnMain(tabla_simbolos, strcat("_", $1.lexema), VARIABLE, tipo_actual, clase_actual,0, 
+        								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+							    }
 						}
 					;
 
@@ -833,3 +819,4 @@ constante_entera: TOK_CONSTANTE_ENTERA
 void yyerror(char* s) {
 	fprintf(stdout,"ERROR SINTACTICO:%d:%d\n", line_count, col_count);
 }
+
