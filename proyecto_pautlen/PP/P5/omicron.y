@@ -1,6 +1,6 @@
 %{	
-	#include <stdlib.h>
 	#include <stdio.h>
+<<<<<<< Updated upstream
 	#include <string.h>
 	#include "omicron.h"
 	#include "output.h"
@@ -13,7 +13,28 @@
 	extern FILE* asmfile;
 	int tipo_actual;                                                                
 	int clase_actual;
+<<<<<<< Updated upstream
 	tsc * tabla_simbolos;
+=======
+=======
+	#include <stdlib.h>
+	#include <string.h>
+	#include "omicron.h"
+	#include "macros.h"
+	#include "casos.h"
+	#include "tsc.h"
+
+
+	extern int line_count;
+	extern int col_count;	
+	extern FILE* fout;
+
+	tsc* p_omicron;
+    tsa* tsa_aux;
+    tsa_elem * elem_aux;
+    char nombre_clase_desde[ID_MAX]
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 %}
 
 %union	
@@ -80,8 +101,13 @@
 %right MENOSU '!'
 %%
 
+<<<<<<< Updated upstream
 programa: 	TOK_MAIN '{' declaraciones escritura1 funciones escritura2 sentencias '}' 
 				{ 
+=======
+programa: 	inicioTabla TOK_MAIN '{' declaraciones funciones sentencias '}' 
+				{
+>>>>>>> Stashed changes
 					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' declaraciones funciones sentencias '}'\n");
 				}	
 			| TOK_MAIN '{' funciones escritura1 escritura2 sentencias '}'
@@ -91,6 +117,7 @@ programa: 	TOK_MAIN '{' declaraciones escritura1 funciones escritura2 sentencias
 				}	
 			;
 
+<<<<<<< Updated upstream
 escritura1: 	{
   					tabla_simbolos = init_tsc(TSA_MAIN);
   					escribir_subseccion_data(asmfile);
@@ -103,6 +130,13 @@ escritura2: 	{
     				escribir_inicio_main(asmfile);
          	 	}
           		;
+=======
+inicioTabla:	{
+					/* Inicializar la tabla de las clases */
+    				p_omicron = init_tsc("TSC_Omicron");
+				}
+				;
+>>>>>>> Stashed changes
 
 declaraciones:	declaracion
 					{
@@ -160,30 +194,57 @@ modificadores_acceso: /*vacio*/
 
 clase:	clase_escalar
 			{
+<<<<<<< Updated upstream
 				clase_actual = ESCALAR;
+=======
+				strcpy(nombre_clase_desde, $1.atributos.lexema);
+>>>>>>> Stashed changes
 				fprintf(fout, ";R:\tclase:	clase_escalar\n");
 			}
 		| clase_vector
 			{
+<<<<<<< Updated upstream
 				clase_actual = VECTOR;
+=======
+				strcpy(nombre_clase_desde, $1.atributos.lexema);
+>>>>>>> Stashed changes
 				fprintf(fout, ";R:\tclase:	clase_vector\n");
 			}
 		| clase_objeto
 			{
+<<<<<<< Updated upstream
 				clase_actual = OBJETO;
+=======
+				strcpy(nombre_clase_desde, $1.atributos.lexema);
+>>>>>>> Stashed changes
 				fprintf(fout, ";R:\tclase:	clase_objeto\n");
 			}
 		;
 
-declaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'
+declaracion_clase:	abrirAmbitoClase TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}' cerrarAmbitoClase
 						{
 							fprintf(fout, ";R:\tdeclaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'\n");
 						}
-					| modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones_funcion funciones '}'
+					| abrirAmbitoClase '{' declaraciones_funcion funciones '}'
 						{
 							fprintf(fout, ";R:\tdeclaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones_funcion funciones '}'\n");
 						}
 					;
+
+abrirAmbitoClase: 	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR
+					{
+						/* Abrimos el ambito de la clase */
+						if(!abrirClase(p_omicron, $3.lexema)) {
+							fprintf(stdout,"ERROR AL ABRIR CLASE :%d:%d\n", line_count, col_count);
+							return -1;
+						}
+
+						if(!abrirAmbitoClase(p_omicron, $3.lexema, 0)){
+					        fprintf(stdout, "ERROR AL ABRIR AMBITO CLASE :%d:%d\n", error);
+					        return 0;
+					    }
+
+					}
 
 modificadores_clase: /*vacio*/
 						{
@@ -228,6 +289,7 @@ identificadores: 	TOK_IDENTIFICADOR
 							tsa** ambito_encontrado = NULL;
 							tsa_elem** elem = NULL;
 							fprintf(fout, ";R:\tidentificadores: 	TOK_IDENTIFICADOR \n");
+<<<<<<< Updated upstream
 							if (buscarParaDeclararIdMain(tabla_simbolos, strcat("_", $1.lexema), ambito_encontrado, elem) == OK)
 							    {
 							      	print_caso(fout, CASO_51, TSA_MAIN, ambito_encontrado[0], elem[0]);
@@ -238,10 +300,17 @@ identificadores: 	TOK_IDENTIFICADOR
 							    	insertarSimboloEnMain(tabla_simbolos, strcat("_", $1.lexema), VARIABLE, tipo_actual, clase_actual,0, 
         								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 							    }
+=======
+							buscarIdNoCualificado(p_omicron, $1.atributos.lexema, nombre_clase_desde, tsa_aux, elem_aux);
+>>>>>>> Stashed changes
 						}
 					| TOK_IDENTIFICADOR ',' identificadores
 						{
 							fprintf(fout, ";R:\tidentificadores:	TOK_IDENTIFICADOR ',' identificadores\n");
+							if (buscarIdNoCualificado(p_omicron, $1.atributos.lexema, nombre_clase_desde, tsa_aux, elem_aux) == TRUE) {
+								/* EL identificador ya existe en la tabla de simbolos */
+
+							}
 						}
 					;
 
@@ -628,7 +697,11 @@ exp:	exp '+' exp
 
 identificador_clase:	TOK_IDENTIFICADOR
 							{
+<<<<<<< Updated upstream
 								strcpy($$.lexema,$1.lexema);
+=======
+								strcpy($$.atributos.lexema, $1.atributos.lexema);
+>>>>>>> Stashed changes
 								fprintf(fout, ";R:\tidentificador_clase:	TOK_IDENTIFICADOR\n");
 							} 
 						| TOK_ITSELF
