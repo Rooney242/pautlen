@@ -38,3 +38,4 @@ clean :
 	@rm -f $(TAB).c
 	@rm -f $(TAB).h
 	@rm -f y.output
+	@rm -f omicron.asm

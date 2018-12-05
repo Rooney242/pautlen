@@ -16,7 +16,7 @@ FILE* asmfile;
 int main(int argc, char **argv){
 
 	if (argc!= 3){
-		printf("Especifica fichero de entrada y de salida");
+		printf("Especifica fichero de entrada, de salida");
 		return 0;
 	}
 	
@@ -28,6 +28,7 @@ int main(int argc, char **argv){
 		printf("Error al abrir el fichero de salida");
 	}
 
+	asmfile = fopen("omicron.asm","w");
 	yyout = fopen("residuo.txt","w");
 
 	yyparse();

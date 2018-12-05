@@ -68,6 +68,7 @@
 %type <atributos> comparacion
 %type <atributos> constante
 %type <atributos> exp
+%type <atributos> asignacion
 %type <atributos> identificador_clase
 %type <atributos> elemento_vector
 %type <atributos> constante_logica
@@ -227,14 +228,14 @@ identificadores: 	TOK_IDENTIFICADOR
 							tsa** ambito_encontrado = NULL;
 							tsa_elem** elem = NULL;
 							fprintf(fout, ";R:\tidentificadores: 	TOK_IDENTIFICADOR \n");
-							if (buscarParaDeclararIdMain(tabla_simbolos, strcat("main_", $1.lexema), ambito_encontrado, elem) == OK)
+							if (buscarParaDeclararIdMain(tabla_simbolos, strcat("_", $1.lexema), ambito_encontrado, elem) == OK)
 							    {
 							      	print_caso(fout, CASO_51, TSA_MAIN, ambito_encontrado[0], elem[0]);
 									return -1;
 							    }
 							    else 
 							    {
-							    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
+							    	insertarSimboloEnMain(tabla_simbolos, strcat("_", $1.lexema), VARIABLE, tipo_actual, clase_actual,0, 
         								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 							    }
 						}
@@ -380,6 +381,23 @@ bloque:	condicional
 
 asignacion:	TOK_IDENTIFICADOR '=' exp
 				{
+					tsa** tsa_encontrada = NULL;
+					tsa_elem** elem = NULL;
+					if (buscarIdNoCualificado(tabla_simbolos, strcat("_", $1.lexema), TSA_MAIN, tsa_encontrada, elem) == FALSE){
+						      	print_caso(fout, CASO_23, TSA_MAIN, tsa_encontrada[0], elem[0]);
+								return -1;
+						}
+					if (elem[0]->categoria == FUNCION){
+						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+						return -1;
+					}
+					if (elem[0]->clase == VECTOR){
+						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+						return -1;
+					}
+					$$.tipo = elem[0]->tipo;
+					$$.es_direccion = 1;
+					escribir_operando(asmfile, strcat("_", $1.lexema), $$.es_direccion);
 					fprintf(fout, ";R:\tasignacion:	TOK_IDENTIFICADOR '=' exp\n");
 				}
 			| elemento_vector '=' exp
@@ -454,6 +472,9 @@ lectura:	TOK_SCANF TOK_IDENTIFICADOR
 
 escritura:	TOK_PRINTF exp
 				{
+					if ($2.es_direccion)
+						asignar(asmfile, strcat("_", $2.lexema), $2.es_direccion);
+					escribir(asmfile, $2.es_direccion, $2.tipo);
 					fprintf(fout, ";R:\tescritura:	TOK_PRINTF exp\n");
 				}
 			;

@@ -331,14 +331,8 @@ char * _print_info(tsa_elem* elem){
 		case ESCALAR:
 			strcpy(clase,"ESCALAR");
 			break;
-		case PUNTERO:
-			strcpy(clase,"PUNTERO");
-			break;
 		case VECTOR:
 			strcpy(clase,"VECTOR");
-			break;
-		case CONJUNTO:
-			strcpy(clase,"CONJUNTO");
 			break;
 		default:
 			strcpy(clase, "DESCONOCIDO");
