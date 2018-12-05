@@ -14,7 +14,7 @@
 	int tipo_actual;                                                                
 	int clase_actual;
 	tsc * tabla_simbolos;
-	
+
     tsa* tsa_aux;
     tsa_elem * elem_aux;
     char nombre_clase_desde[ID_MAX]
@@ -172,25 +172,25 @@ modificadores_acceso: /*vacio*/
 clase:	clase_escalar
 			{
 				clase_actual = ESCALAR;
-				strcpy(nombre_clase_desde, $1.atributos.lexema);
+				strcpy(nombre_clase_desde, $1.lexema);
 				fprintf(fout, ";R:\tclase:	clase_escalar\n");
 			}
 		| clase_vector
 			{
 				clase_actual = VECTOR;
-				strcpy(nombre_clase_desde, $1.atributos.lexema);
+				strcpy(nombre_clase_desde, $1.lexema);
 				fprintf(fout, ";R:\tclase:	clase_vector\n");
 			}
 		| clase_objeto
 			{
 
 				clase_actual = OBJETO;
-				strcpy(nombre_clase_desde, $1.atributos.lexema);
+				strcpy(nombre_clase_desde, $1.lexema);
 				fprintf(fout, ";R:\tclase:	clase_objeto\n");
 			}
 		;
 
-declaracion_clase:	abrirAmbitoClase TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}' cerrarAmbitoClase
+declaracion_clase:	abrirAmbitoClase TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'
 						{
 							fprintf(fout, ";R:\tdeclaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'\n");
 						}
@@ -203,17 +203,18 @@ declaracion_clase:	abrirAmbitoClase TOK_INHERITS identificadores '{' declaracion
 abrirAmbitoClase: 	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR
 					{
 						/* Abrimos el ambito de la clase */
-						if(!abrirClase(tabla_simbolos, $3.lexema)) {
+						if(!abrirClase(tabla_simbolos, strcat("_", $3.lexema))) {
 							fprintf(stdout,"ERROR AL ABRIR CLASE :%d:%d\n", line_count, col_count);
 							return -1;
 						}
 
-						if(!abrirAmbitoClase(tabla_simbolos, $3.lexema, 0)){
-					        fprintf(stdout, "ERROR AL ABRIR AMBITO CLASE :%d:%d\n", error);
+						if(!abrirAmbitoClase(tabla_simbolos, strcat("_", $3.lexema), 0)){
+					        fprintf(stdout, "ERROR AL ABRIR AMBITO CLASE :%d:%d\n", line_count, col_count);
 					        return 0;
 					    }
 
 					}
+					;
 
 modificadores_clase: /*vacio*/
 						{
@@ -261,7 +262,7 @@ identificadores: 	TOK_IDENTIFICADOR
 
 							if (buscarParaDeclararIdMain(tabla_simbolos, strcat("_", $1.lexema), ambito_encontrado, elem) == OK)
 							    {
-							      	print_caso(fout, CASO_51, TSA_MAIN, ambito_encontrado[0], elem[0]);
+									fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);	
 									return -1;
 							    }
 							    else 
@@ -277,8 +278,8 @@ identificadores: 	TOK_IDENTIFICADOR
 							tsa_elem** elem = NULL;
 							fprintf(fout, ";R:\tidentificadores:	TOK_IDENTIFICADOR ',' identificadores\n");
 							if (buscarParaDeclararIdMain(tabla_simbolos, strcat("_", $1.lexema), ambito_encontrado, elem) == OK)
-							    {
-							      	print_caso(fout, CASO_51, TSA_MAIN, ambito_encontrado[0], elem[0]);
+							    {							      	
+									fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 									return -1;
 							    }
 							    else 
