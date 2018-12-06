@@ -39,7 +39,6 @@ debug:
 .PHONY : clean all
 clean :
 	@rm -f $(EJ)
-	@rm -f *.o
 	@rm -f salida.txt
 	@rm -f residuo.txt
 	@rm -f $(LEX)
