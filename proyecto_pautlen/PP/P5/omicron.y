@@ -1,6 +1,5 @@
 %{	
 	#include <stdio.h>
-
 	#include <string.h>
 	#include "omicron.h"
 	#include "output.h"
@@ -14,7 +13,6 @@
 	int tipo_actual;                                                                
 	int clase_actual;
 	tsc * tabla_simbolos;
-
     tsa* tsa_aux;
     tsa_elem * elem_aux;
     char nombre_clase_desde[ID_MAX];
@@ -90,19 +88,24 @@
 %right MENOSU '!'
 %%
 
-programa: 	TOK_MAIN '{' declaraciones escritura1 funciones escritura2 sentencias '}' 
+programa: 	inicio_tsc TOK_MAIN '{' declaraciones escritura1 funciones escritura2 sentencias '}' 
 				{ 
 					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' declaraciones funciones sentencias '}'\n");
 				}	
-			| TOK_MAIN '{' funciones escritura1 escritura2 sentencias '}'
+			| inicio_tsc TOK_MAIN '{' escritura1 funciones escritura2 sentencias '}'
 				{
 					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' funciones sentencias '}'\n");
 					escribir_fin(asmfile);
 				}	
 			;
 
-escritura1: 	{
+inicio_tsc:		{
   					tabla_simbolos = init_tsc("TSC_Omicron");
+         	 	}
+          		;
+
+
+escritura1: 	{
   					escribir_subseccion_data(asmfile);
     				escribir_cabecera_bss(asmfile);
     				escribir_segmento_codigo(asmfile);
@@ -203,12 +206,12 @@ declaracion_clase:	abrirAmbitoClase TOK_INHERITS identificadores '{' declaracion
 abrirAmbitoClase: 	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR
 					{
 						/* Abrimos el ambito de la clase */
-						if(!abrirClase(tabla_simbolos, strcat("_", $3.lexema))) {
+						if(!abrirClase(tabla_simbolos, $3.lexema)) {
 							fprintf(stdout,"ERROR AL ABRIR CLASE :%d:%d\n", line_count, col_count);
 							return -1;
 						}
 
-						if(!abrirAmbitoClase(tabla_simbolos, strcat("_", $3.lexema), 0)){
+						if(!abrirAmbitoClase(tabla_simbolos, $3.lexema, 0)){
 					        fprintf(stdout, "ERROR AL ABRIR AMBITO CLASE :%d:%d\n", line_count, col_count);
 					        return 0;
 					    }
@@ -256,35 +259,35 @@ clase_vector: 	TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
 
 identificadores: 	TOK_IDENTIFICADOR 
 						{
-							tsa** ambito_encontrado = NULL;
-							tsa_elem** elem = NULL;
+							tsa* ambito_encontrado = NULL;
+							tsa_elem* elem = NULL;
 							fprintf(fout, ";R:\tidentificadores: 	TOK_IDENTIFICADOR \n");
 
-							if (buscarParaDeclararIdMain(tabla_simbolos, strcat("_", $1.lexema), ambito_encontrado, elem) == OK)
+							if (buscarParaDeclararIdMain(tabla_simbolos, $1.lexema, &ambito_encontrado, &elem) == OK)
 							    {
 									fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);	
 									return -1;
 							    }
 							    else 
 							    {
-							    	insertarSimboloEnMain(tabla_simbolos, strcat("_", $1.lexema), VARIABLE, tipo_actual, clase_actual,0, 
+							    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
         								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 							    }
 
 						}
 					| TOK_IDENTIFICADOR ',' identificadores
 						{
-							tsa** ambito_encontrado = NULL;
-							tsa_elem** elem = NULL;
+							tsa* ambito_encontrado = NULL;
+							tsa_elem* elem = NULL;
 							fprintf(fout, ";R:\tidentificadores:	TOK_IDENTIFICADOR ',' identificadores\n");
-							if (buscarParaDeclararIdMain(tabla_simbolos, strcat("_", $1.lexema), ambito_encontrado, elem) == OK)
+							if (buscarParaDeclararIdMain(tabla_simbolos, $1.lexema, &ambito_encontrado, &elem) == OK)
 							    {							      	
 									fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 									return -1;
 							    }
 							    else 
 							    {
-							    	insertarSimboloEnMain(tabla_simbolos, strcat("_", $1.lexema), VARIABLE, tipo_actual, clase_actual,0, 
+							    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
         								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 							    }
 						}
@@ -314,6 +317,10 @@ tipo_retorno:	TOK_NONE
 				| tipo
 					{
 						fprintf(fout, ";R:\ttipo_retorno:	tipo\n");
+					}
+				| clase_objeto
+					{
+						fprintf(fout, ";R:\ttipo_retorno:	clase_objeto\n");
 					}
 				;
 
@@ -345,6 +352,10 @@ idpf:	TOK_IDENTIFICADOR
 parametro_funcion:	tipo idpf
 						{
 							fprintf(fout, ";R:\tparametro_funcion:	tipo idpf\n");
+						}
+					| clase_objeto TOK_IDENTIFICADOR
+						{
+							fprintf(fout, ";R:\tparametro_funcion:	clase_objeto TOK_IDENTIFICADOR\n");
 						}
 					;
 
@@ -426,23 +437,22 @@ bloque:	condicional
 
 asignacion:	TOK_IDENTIFICADOR '=' exp
 				{
-					tsa** tsa_encontrada = NULL;
-					tsa_elem** elem = NULL;
-					if (buscarIdNoCualificado(tabla_simbolos, strcat("_", $1.lexema), TSA_MAIN, tsa_encontrada, elem) == FALSE){
-						      	print_caso(fout, CASO_23, TSA_MAIN, tsa_encontrada[0], elem[0]);
+					tsa* tsa_encontrada = NULL;
+					tsa_elem* elem = NULL;
+					if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, TSA_MAIN, &tsa_encontrada, &elem) == FALSE){
 								return -1;
 						}
-					if (elem[0]->categoria == FUNCION){
+					if (elem->categoria == FUNCION){
 						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 						return -1;
 					}
-					if (elem[0]->clase == VECTOR){
+					if (elem->clase == VECTOR){
 						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 						return -1;
 					}
-					$$.tipo = elem[0]->tipo;
+					$$.tipo = elem->tipo;
 					$$.es_direccion = 1;
-					escribir_operando(asmfile, strcat("_", $1.lexema), $$.es_direccion);
+					escribir_operando(asmfile, elem->id, $$.es_direccion);
 					fprintf(fout, ";R:\tasignacion:	TOK_IDENTIFICADOR '=' exp\n");
 				}
 			| elemento_vector '=' exp
@@ -517,8 +527,9 @@ lectura:	TOK_SCANF TOK_IDENTIFICADOR
 
 escritura:	TOK_PRINTF exp
 				{
+					//Hacer para ambitos esto_concat_prefix(t->main->ambito, nombre_id)
 					if ($2.es_direccion)
-						asignar(asmfile, strcat("_", $2.lexema), $2.es_direccion);
+						asignar(asmfile, $2.lexema, $2.es_direccion);
 					escribir(asmfile, $2.es_direccion, $2.tipo);
 					fprintf(fout, ";R:\tescritura:	TOK_PRINTF exp\n");
 				}

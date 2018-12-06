@@ -16,16 +16,18 @@ FILE* asmfile;
 int main(int argc, char **argv){
 
 	if (argc!= 3){
-		printf("Especifica fichero de entrada, de salida");
+		printf("Especifica fichero de entrada y de salida\n");
 		return 0;
 	}
 	
 	if ((yyin = fopen(argv[1],"r")) == NULL){
-		printf("Error al abrir el fichero de entrada");
+		printf("Error al abrir el fichero de entrada\n");
+		return -1;
 	}
 
 	if ((fout = fopen(argv[2],"w")) == NULL){
-		printf("Error al abrir el fichero de salida");
+		printf("Error al abrir el fichero de salida\n");
+		return -1;
 	}
 
 	asmfile = fopen("omicron.asm","w");
