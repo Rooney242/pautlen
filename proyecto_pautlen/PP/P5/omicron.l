@@ -70,7 +70,7 @@ true				{col_count+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_TRUE;
 "!"					{col_count+=yyleng; fprintf(fout, ";D:\t!\n"); return yytext[0];}
 "."					{col_count+=yyleng; fprintf(fout, ";D:\t.\n"); return yytext[0];}
 [ \t\r]				{col_count += yyleng;}
-{ENTERO}			{col_count+=yyleng; yylval.atributos.valor_entero = atoi(yytext); fprintf(fout, ";D:\t%s\n", yytext); return TOK_CONSTANTE_ENTERA;}
+{ENTERO}			{col_count+=yyleng; strcpy(yylval.atributos.valor_entero, yytext); fprintf(fout, ";D:\t%s\n", yytext); return TOK_CONSTANTE_ENTERA;}
 {COMENTARIO}|"\n"	{col_count = 0; line_count++;}
 {IDENTIFICADOR}		{
 						if (yyleng > 50) {

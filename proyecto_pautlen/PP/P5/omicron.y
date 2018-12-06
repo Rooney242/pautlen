@@ -88,11 +88,11 @@
 %right MENOSU '!'
 %%
 
-programa: 	inicio_tsc TOK_MAIN '{' declaraciones escritura1 funciones escritura2 sentencias '}' 
+programa: 	inicio_tsc TOK_MAIN '{' escritura1 declaraciones escritura2 funciones escritura_main sentencias '}' 
 				{ 
 					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' declaraciones funciones sentencias '}'\n");
 				}	
-			| inicio_tsc TOK_MAIN '{' escritura1 funciones escritura2 sentencias '}'
+			| inicio_tsc TOK_MAIN '{' escritura1 escritura2 funciones escritura_main sentencias '}'
 				{
 					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' funciones sentencias '}'\n");
 					escribir_fin(asmfile);
@@ -108,11 +108,15 @@ inicio_tsc:		{
 escritura1: 	{
   					escribir_subseccion_data(asmfile);
     				escribir_cabecera_bss(asmfile);
-    				escribir_segmento_codigo(asmfile);
          	 	}
           		;
 
 escritura2: 	{
+          		    escribir_segmento_codigo(asmfile);
+         	 	}
+          		;
+
+escritura_main: {
     				escribir_inicio_main(asmfile);
          	 	}
           		;
@@ -261,6 +265,7 @@ identificadores: 	TOK_IDENTIFICADOR
 						{
 							tsa* ambito_encontrado = NULL;
 							tsa_elem* elem = NULL;
+							char * real_id;
 							fprintf(fout, ";R:\tidentificadores: 	TOK_IDENTIFICADOR \n");
 
 							if (buscarParaDeclararIdMain(tabla_simbolos, $1.lexema, &ambito_encontrado, &elem) == OK)
@@ -272,6 +277,9 @@ identificadores: 	TOK_IDENTIFICADOR
 							    {
 							    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
         								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+							    	real_id = _concat_prefix(TSA_MAIN, $1.lexema);
+							    	declarar_variable(asmfile, real_id, tipo_actual, clase_actual);
+							    	free(real_id);
 							    }
 
 						}
@@ -289,6 +297,7 @@ identificadores: 	TOK_IDENTIFICADOR
 							    {
 							    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
         								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+							    	declarar_variable(asmfile, elem->id, tipo_actual, clase_actual);
 							    }
 						}
 					;
@@ -443,16 +452,18 @@ asignacion:	TOK_IDENTIFICADOR '=' exp
 								return -1;
 						}
 					if (elem->categoria == FUNCION){
-						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d Asignacion Incompatible\n", line_count, col_count);
 						return -1;
 					}
 					if (elem->clase == VECTOR){
-						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d Asignacion Incompatible\n", line_count, col_count);
 						return -1;
 					}
-					$$.tipo = elem->tipo;
-					$$.es_direccion = 1;
-					escribir_operando(asmfile, elem->id, $$.es_direccion);
+					if($3.tipo != elem->tipo){
+						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d Asignacion Incompatible\n",elem->tipo, line_count, col_count);
+						return -1;
+					}
+					asignar(asmfile, elem->id, $3.es_direccion);
 					fprintf(fout, ";R:\tasignacion:	TOK_IDENTIFICADOR '=' exp\n");
 				}
 			| elemento_vector '=' exp
@@ -528,8 +539,12 @@ lectura:	TOK_SCANF TOK_IDENTIFICADOR
 escritura:	TOK_PRINTF exp
 				{
 					//Hacer para ambitos esto_concat_prefix(t->main->ambito, nombre_id)
-					if ($2.es_direccion)
-						asignar(asmfile, $2.lexema, $2.es_direccion);
+					char * real_id;
+					if ($2.es_direccion){
+						real_id = _concat_prefix(TSA_MAIN, $2.lexema);
+						escribir_operando(asmfile, real_id, $2.es_direccion);
+						free(real_id);
+					}
 					escribir(asmfile, $2.es_direccion, $2.tipo);
 					fprintf(fout, ";R:\tescritura:	TOK_PRINTF exp\n");
 				}
@@ -642,6 +657,22 @@ exp:	exp '+' exp
 			}
 		| TOK_IDENTIFICADOR
 			{
+				tsa* tsa_encontrada = NULL;
+				tsa_elem* elem = NULL;
+				if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, TSA_MAIN, &tsa_encontrada, &elem) == FALSE){
+							return -1;
+					}
+				if (elem->categoria == FUNCION){
+					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					return -1;
+				}
+				if (elem->clase == VECTOR){
+					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					return -1;
+				}
+				$$.tipo = elem->tipo;
+				$$.es_direccion = 1;
+				escribir_operando(asmfile, elem->id, $$.es_direccion);
 				fprintf(fout, ";R:\texp:	TOK_IDENTIFICADOR\n");
 			}
 		| constante 
@@ -821,6 +852,8 @@ constante_entera: TOK_CONSTANTE_ENTERA
 				{	
 					$$.tipo = INT;
 					$$.es_direccion = 0;
+					strcpy($$.valor_entero, $1.valor_entero);
+					escribir_operando(asmfile, $1.valor_entero, 0);
 					fprintf(fout, ";R:\tconstante_entera:	TOK_CONSTANTE_ENTERA \n");
 				}
 				;

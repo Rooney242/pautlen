@@ -5,8 +5,8 @@
 
 
 /* Declaraciones de tipos de datos del compilador */
-#define ENTERO    0
-#define BOOLEANO     1
+#define ENTERO    1
+#define BOOLEANO     3
 
 
 /* OBSERVACIÓN GENERAL A TODAS LAS FUNCIONES:

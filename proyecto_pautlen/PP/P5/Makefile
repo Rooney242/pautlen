@@ -19,7 +19,7 @@ TAB = y.tab
 all: flex bison
 	@echo Hacer make de la otra carpeta para que funcione
 	@echo Compilado del ejercicio
-	@$(CC) -ggdb $(LIB) -I ../P1 -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) ../P1/generacion.o
+	@$(CC) $(LIB) -I ../P1 -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) ../P1/generacion.o
 	@echo Make success
 
 flex:
@@ -27,7 +27,15 @@ flex:
 
 bison:
 	@bison -d -y -v omicron.y 
-	
+
+asm:
+	nasm -felf32 omicron.asm
+	@$(CC) -m32 -o omicron omicron.o olib.o
+
+debug:
+	@$(CC) -ggdb $(LIB) -I ../P1 -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) ../P1/generacion.o
+	@echo Make success
+
 .PHONY : clean all
 clean :
 	@rm -f $(EJ)
@@ -39,3 +47,4 @@ clean :
 	@rm -f $(TAB).h
 	@rm -f y.output
 	@rm -f omicron.asm
+	@rm -f omicron

@@ -17,7 +17,7 @@ typedef struct tipo_atributos
 {
    char lexema[MAX_LONG_ID+1];
    int tipo;
-   int valor_entero;
+   char valor_entero[15];
    int es_direccion;
    int etiqueta;
    int clase;

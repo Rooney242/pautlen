@@ -38,6 +38,8 @@ int main(int argc, char **argv){
 	fclose(yyin);
 	fclose(yyout);
 	fclose(fout);
+	escribir_fin(asmfile);
+    fclose(asmfile);
 
 	return 1;
 }
