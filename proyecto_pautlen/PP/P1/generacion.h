@@ -116,5 +116,63 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
 void leer(FILE* fpasm, char* nombre, int tipo);
 void escribir(FILE* fpasm, int es_variable, int tipo);
 
+/*Generación de código para el inicio de una estructura if-then-else
+exp_es_variable 
+Es 1 si la expresión de la condición es algo asimilable a una variable (identificador, acceso a atributo de instancia o clase, elemento de vector
+Es 0 en caso contrario (constante u otro tipo de expresión)
+*/
+
+void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta);
+
+/*Generación de código para el inicio de una estructura if-then
+exp_es_variable 
+Es 1 si la expresión de la condición es algo asimilable a una variable (identificador, acceso a atributo de instancia o clase, elemento de vector
+Es 0 en caso contrario (constante u otro tipo de expresión)
+*/
+
+void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta);
+
+/*Generación de código para el fin de una estructura if-then*/
+
+void ifthen_fin(FILE * fpasm, int etiqueta);
+
+/*Generación de código para el fin de la rama then de una estructura if-then-else*/
+
+void ifthenelse_fin_then( FILE * fpasm, int etiqueta);
+
+/*Generación de código para el fin de una estructura if-then-else*/
+
+void ifthenelse_fin( FILE * fpasm, int etiqueta);
+
+/*Función que genera el código para realizar una asignación que toma de la pila 
+Primero el valor
+Si es el valor que hay que asignar es_variable es 0
+En otro caso (es variable o equivalente) es 1
+Encima la dirección donde hay que dejarlo
+Sobre las asignaciones es importante mencionar
+Las asignaciones sólo usan la pila.
+Eso quiere decir que todo está en la pila.. 
+El hecho de poder indexar y asignar por ejemplo algo de un objeto hace que la secuencia de acciones pueda parecer un poco enrevesada pero basta con introducir en la pila las cosas en orden inverso. 
+Por ejemplo, para v = a[3];
+ Primero 3
+ Luego se escribe el elemento 3 del vector a
+ Luego se escribe v
+ Luego se llama a asignar con destino en pila
+Por ejemplo a.b = b[3].c;
+ Primero 3
+ Luego se escribe el elemento 3 del vector b
+ Luego se accede al atributo c de la instancia en la pila
+ Luego se escribe a
+ Luego se accede al atributo b de la instancia en la pila
+ Luego se llama a asignar con destino en pila.
+Respecto a qué es variable y que no en las asignaciones
+Los valores concretos como c = 9;  a.c = 9; o a[3] = 8; o a[4].c = 8; no lo son y es_variable == 0
+Las instancias como a = instance_of C no lo es y es_variable == 0
+Cuando la  parte derecha de una asignación es variable (x = y;) o equivalente (x = c.a; x = a[4];) sí lo es y es_variable == 1
+*/
+
+void asignarDestinoEnPila(FILE* fpasm, int es_variable);
+
+
 #endif
 

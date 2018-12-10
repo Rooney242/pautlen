@@ -421,4 +421,47 @@ void escribir(FILE* fpasm, int es_variable, int tipo) {
 
 }
  
+void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta) {
+	
+	fprintf(fpasm, "\tpop eax\n");
+	
+	if(exp_es_variable)
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
+	
+	fprintf(fpasm, "\texp > 0\n");
+	fprintf(fpasm, "\tcmp eax, 0\n");
+	fprintf(fpasm, "\tje near _fin_si_%d\n", etiqueta);
+}
 
+void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta){
+
+	fprintf(fpasm, "\tpop eax\n");
+	
+	if(exp_es_variable)
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
+	
+	fprintf(fpasm, "\texp > 0\n");
+	fprintf(fpasm, "\tcmp eax, 0\n");
+	fprintf(fpasm, "\tje near _fin_si_%d\n", etiqueta);
+}
+
+void ifthen_fin(FILE * fpasm, int etiqueta){
+
+	fprintf(fpasm, "_fin_si_%d:\n", etiqueta);
+}
+
+void ifthenelse_fin_then(FILE * fpasm, int etiqueta){
+
+	fprintf(fpasm, "\tjmp near _fin_sino_%d\n", etiqueta);
+	fprintf(fpasm, "_fin_si_%d:\n", etiqueta);
+}
+
+void ifthenelse_fin(FILE * fpasm, int etiqueta){
+
+	fprintf(fpasm, "_fin_sino_%d:\n", etiqueta);
+}
+
+void asignarDestinoEnPila(FILE* fpasm, int es_variable){
+
+	
+}

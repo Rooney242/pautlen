@@ -528,6 +528,38 @@ while_exp:	TOK_WHILE '(' exp
 
 lectura:	TOK_SCANF TOK_IDENTIFICADOR 
 				{
+					char * real_id;
+					/* Si al buscar el identificdor en la tabla de símbolos, no está... salir con ERROR */
+					if (buscarIdNoCualificado(tabla_simbolos, $2.lexema, TSA_MAIN, &tsa_encontrada, &elem) == FALSE){
+							return -1;
+					}
+					if (elem->categoria == FUNCION){
+						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+						return -1;
+					}
+					if (elem->clase == VECTOR){
+						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+						return -1;
+					}
+					if ($2.es_direccion){
+						real_id = _concat_prefix(TSA_MAIN, $2.lexema);
+						leer(asmfile, real_id, $2.es_direccion)
+						escribir_operando(asmfile, real_id, $2.es_direccion);
+						
+					}
+					 
+					free(real_id);
+					/* Se apila la dirección sobre la que se va a leer*/
+					   /* Generar código para escribir push dword _$2.lexema */
+					/* Invoca a la función de librería adecuada al tipo del ID*/
+					/*    if (tipo(··· )== INT) generar código para 
+					            call scan_int
+					            add esp, 4
+					    if (tipo(··· )== BOOLEAN) generar código para 
+					            call scan_boolean
+					            add esp, 4*/
+
+
 					fprintf(fout, ";R:\tlectura:	TOK_SCANF TOK_IDENTIFICADOR \n");
 				}
 			| TOK_SCANF elemento_vector
