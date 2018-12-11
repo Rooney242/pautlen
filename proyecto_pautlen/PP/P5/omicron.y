@@ -543,23 +543,10 @@ lectura:	TOK_SCANF TOK_IDENTIFICADOR
 					}
 					if ($2.es_direccion){
 						real_id = _concat_prefix(TSA_MAIN, $2.lexema);
-						leer(asmfile, real_id, $2.es_direccion)
-						escribir_operando(asmfile, real_id, $2.es_direccion);
-						
+						leer(asmfile, real_id, $2.tipo);	
+						free(real_id);
 					}
 					 
-					free(real_id);
-					/* Se apila la dirección sobre la que se va a leer*/
-					   /* Generar código para escribir push dword _$2.lexema */
-					/* Invoca a la función de librería adecuada al tipo del ID*/
-					/*    if (tipo(··· )== INT) generar código para 
-					            call scan_int
-					            add esp, 4
-					    if (tipo(··· )== BOOLEAN) generar código para 
-					            call scan_boolean
-					            add esp, 4*/
-
-
 					fprintf(fout, ";R:\tlectura:	TOK_SCANF TOK_IDENTIFICADOR \n");
 				}
 			| TOK_SCANF elemento_vector
