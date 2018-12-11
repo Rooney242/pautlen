@@ -71,3 +71,68 @@ int _get_metodos_sobreescribibles_sin_repeticion(tsc* t, tsa_elem *** ms_list){
 
 
 }
+
+
+/******************* NUEVAS OO *********************************************/
+char * claseATabla(char * nombre_fuente_clase){
+	char* ret;
+	if(!nombre_fuente_clase) return NULL;
+
+	ret = (char*) malloc(sizeof(char)*(strlen(nombre_fuente_clase)+strlen(PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES)+1));
+	if(!ret) return NULL;
+
+	spfintf(ret, "%s%s", PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES, nombre_fuente_clase);
+
+	return ret; 	
+}
+
+void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia){
+	/*TODO: para que se necesita el nombre de la clase?*/
+
+	/*Meto el espacio que quiero reservar TODO: Hay que multiplicarlo por algo o algo asi?*/
+	fprintf(fpasm, "\tpush %d\n", numero_atributos_instancia);
+
+	fprintf(fpasm, "\tcall malloc\n");
+
+	/*Restauro la pila*/
+	fprintf(fpasm, "\tadd esp, 4\n");
+
+	/*Meto la direccion que ha devuelto malloc en eax en la pila*/
+	fprintf(fpasm, "\tpush eax\n");
+
+	//TODO: no se si queda algo mas por hacer en cuanto a la pila
+	return;
+
+}
+void discardPila (FILE * fd_asm); /*TODO*/
+void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo){
+	/*Cojo de la pila la direccion de lo que cualifica*/
+	fprintf(fpasm, "\tpop dword eax\n");
+
+	/*TODO: Ahora entiendo que hay que concatenar el offset de lo que cualifica con el offset del metodo*/
+
+
+
+	//TODO: no se si queda algo mas por hacer en cuanto a la pila
+	return;
+} 
+void limpiarPila(FILE * fd_asm, int num_argumentos); /*TODO*/
+void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo);/*TODO*/
+// ESTA FUNCIÓN ES LA QUE SE USA DESPUÉS DE 
+// - escribir_operando (para una variable global)
+// - escribirParametro 
+// - escribirVariableLocal
+void asignarDestinoEnPila(FILE* fpasm, int es_variable){
+	/*Cargamos el valor a asignar*/
+	fprintf(fpasm, "\tpop dword eax\n");
+	if (es_variable) fprintf(fpasm, "\tmov dword eax, [eax]\n");
+
+	/*Cargamos la direccion donde hay que dejarlo*/
+	fprintf(fpasm, "\tpop dword edx\n");
+
+	/*Asignamos el valor*/
+	fprintf(fpasm, "\tmov [edx], eax\n");
+
+	//TODO: no se si queda algo mas por hacer en cuanto a la pila
+	return;
+}
