@@ -173,6 +173,21 @@ Cuando la  parte derecha de una asignación es variable (x = y;) o equivalente (
 
 void asignarDestinoEnPila(FILE* fpasm, int es_variable);
 
+void instance_of (FILE * fd_asm, char * nombre_fuente_clase, 
+                  int numero_atributos_instancia);
+
+void discardPila (FILE * fd_asm);
+
+
+
+void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc);
+void retornarFuncion(FILE * fd_asm, int es_variable);
+void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros);
+void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
+void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable);
+void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos);
+void limpiarPila(FILE * fd_asm, int num_argumentos);
+
 
 #endif
 

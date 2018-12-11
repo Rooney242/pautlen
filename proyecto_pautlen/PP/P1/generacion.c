@@ -461,7 +461,62 @@ void ifthenelse_fin(FILE * fpasm, int etiqueta){
 	fprintf(fpasm, "_fin_sino_%d:\n", etiqueta);
 }
 
+/* Guion 11 Parte OO */
 void asignarDestinoEnPila(FILE* fpasm, int es_variable){
-
 	
 }
+
+void instance_of (FILE * fd_asm, char * nombre_fuente_clase, 
+                  int numero_atributos_instancia) {
+
+}
+
+void discardPila (FILE * fd_asm) {
+
+}
+
+/* Guion 12 Parte PROC */
+void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc) {
+	fprintf(fpasm, "_%s:\n", nombre_funcion);
+	fprintf(fpasm, "\tpush ebp\n");
+	fprintf(fpasm, "\tmov ebp, esp");
+	fprintf(fpasm, "\tsub esp, %d", 4*num_var_loc);
+}
+
+void retornarFuncion(FILE * fd_asm, int es_variable) {
+	fprintf(fpasm, "\tpop dword eax\n");
+
+	if (es_variable)
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
+
+	fprintf(fpasm, "\tmov dword esp, ebp\n");
+	fprintf(fpasm, "\tpop dword ebp\n");
+	fprintf(fpasm, "\tret\n");
+}
+
+
+void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros) {
+	fprintf(fpasm, "\tlea eax, [ebp+%d]\n", 4 + 4 * (num_total_parametros - pos_parametro));
+}
+
+void escribirVariableLocal(FILE* fpasm, int posicion_variable_local) {
+	fprintf(fpasm, "\tlea eax, [ebp-%d]\n", 4 * posicion_variable_local);
+}
+
+// TODO Creo que no hace falta comprobar el caso de que no sea variable porque se
+// supone que ya está escrito en pila
+void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable) {
+	if (es_variable) {
+		fprintf(fd_asm, "\tpop eax\n");
+		fprintf(fd_asm, "\tpush dword [eax]\n");
+	} 
+}
+
+void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos) {
+	fprintf(fpasm, "call _%s\n", nombre_funcion);
+	fprintf(fpasm, "add esp, 4*%d\n", num_argumentos);
+	fprintf(fpasm, "push dword eax\n");
+}
+void limpiarPila(FILE * fd_asm, int num_argumentos);
+
+
