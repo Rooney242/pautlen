@@ -31,6 +31,7 @@ bison:
 asm:
 	nasm -felf32 omicron.asm
 	@$(CC) -m32 -o omicron omicron.o olib.o
+	./omicron
 
 debug:
 	@$(CC) -ggdb $(LIB) -I ../P1 -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) ../P1/generacion.o
@@ -46,4 +47,5 @@ clean :
 	@rm -f $(TAB).h
 	@rm -f y.output
 	@rm -f omicron.asm
+	@rm -f omicron.o
 	@rm -f omicron
