@@ -17,7 +17,7 @@ LEX = lex.yy.c
 TAB = y.tab
 
 all: flex bison
-	@echo Hacer make de la otra carpeta para que funcione
+	@echo Hacer make de las carpetas PP/P1 y OO para que funcione
 	@echo Compilado del ejercicio
 	@$(CC) $(LIB) -I ../P1 -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) ../P1/generacion.o
 	@echo Make success
