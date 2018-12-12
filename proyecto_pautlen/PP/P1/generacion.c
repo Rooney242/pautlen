@@ -125,7 +125,6 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 // saltar a la rutina de error controlado (restaurando 
 // el puntero de pila en ese caso y comprobando en el retorno 
 // que no se produce “Segmentation Fault”)
-
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Sacamos las variables de pila
@@ -133,7 +132,7 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable_2) {
-		fprintf(fpasm, "\tmov edx, dword [ebx]\n");
+		fprintf(fpasm, "\tmov ebx, dword [ebx]\n");
 	}
 	if (es_variable_1) {
 		fprintf(fpasm, "\tmov eax, dword [eax]\n");
