@@ -505,4 +505,32 @@ void limpiarPila(FILE * fd_asm, int num_argumentos) {
 	fprintf(fpasm, "add esp, %d\n", 4 * num_argumentos);
 }
 
+void while_inicio(FILE * fpasm, int etiqueta){
 
+	fprintf(fpasm, "_inicio_while_%d:\n", etiqueta);
+}
+
+void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta){
+	fprintf(fpasm, "\tpop eax\n");
+	
+	if(exp_es_variable)
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
+	
+	fprintf(fpasm, "\tcmp eax, 0\n");
+	fprintf(fpasm, "\tje near _fin_while_%d\n", etiqueta);
+}
+
+void while_fin( FILE * fpasm, int etiqueta){
+	fprintf(fpasm, "\tjmp near _inicio_while_%d\n", etiqueta);
+	fprintf(fpasm, "_fin_while_%d:\n", etiqueta);
+}
+
+void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, 
+                   int tam_max, int exp_es_direccion){
+	
+	fprintf(fpasm, "\tmov dword edx, _%s\n", nombre);
+	fprintf(fpasm, "\tlea eax, [edx + eax*4]\n");
+	fprintf(fpasm, "\tpush dword eax\n");
+	fprintf(fpasm, "\tadd eax, edx\n");
+	fprintf(fpasm, "\tpush dword eax\n");
+}
