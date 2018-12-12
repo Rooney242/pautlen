@@ -428,7 +428,6 @@ void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta) {
 	if(exp_es_variable)
 		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	
-	fprintf(fpasm, "\texp > 0\n");
 	fprintf(fpasm, "\tcmp eax, 0\n");
 	fprintf(fpasm, "\tje near _fin_si_%d\n", etiqueta);
 }
@@ -440,7 +439,6 @@ void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta){
 	if(exp_es_variable)
 		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	
-	fprintf(fpasm, "\texp > 0\n");
 	fprintf(fpasm, "\tcmp eax, 0\n");
 	fprintf(fpasm, "\tje near _fin_si_%d\n", etiqueta);
 }
@@ -462,14 +460,14 @@ void ifthenelse_fin(FILE * fpasm, int etiqueta){
 }
 
 /* Guion 12 Parte PROC */
-void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc) {
+void declararFuncion(FILE * fpasm, char * nombre_funcion, int num_var_loc) {
 	fprintf(fpasm, "_%s:\n", nombre_funcion);
 	fprintf(fpasm, "\tpush ebp\n");
 	fprintf(fpasm, "\tmov ebp, esp");
 	fprintf(fpasm, "\tsub esp, %d", 4*num_var_loc);
 }
 
-void retornarFuncion(FILE * fd_asm, int es_variable) {
+void retornarFuncion(FILE * fpasm, int es_variable) {
 	fprintf(fpasm, "\tpop dword eax\n");
 
 	if (es_variable)
@@ -498,7 +496,7 @@ void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable) {
 	} 
 }
 
-void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos) {
+void llamarFuncion(FILE * fpasm, char * nombre_funcion, int num_argumentos) {
 	fprintf(fpasm, "call _%s\n", nombre_funcion);
 	fprintf(fpasm, "add esp, 4*%d\n", num_argumentos);
 	fprintf(fpasm, "push dword eax\n");

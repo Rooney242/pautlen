@@ -10,6 +10,7 @@
 	extern int col_count;	
 	extern FILE* fout;
 	extern FILE* asmfile;
+	int etiqueta = 1;
 	int tipo_actual;                                                                
 	int clase_actual;
 	tsc * tabla_simbolos;
@@ -75,6 +76,9 @@
 %type <atributos> clase_escalar
 %type <atributos> clase_vector
 %type <atributos> clase_objeto
+%type <atributos> condicional
+%type <atributos> if_exp_sentencias
+%type <atributos> if_exp
 %type <atributos> exp
 %type <atributos> asignacion
 %type <atributos> identificador_clase
@@ -95,7 +99,6 @@ programa: 	inicio_tsc TOK_MAIN '{' escritura1 declaraciones escritura2 funciones
 			| inicio_tsc TOK_MAIN '{' escritura1 escritura2 funciones escritura_main sentencias '}'
 				{
 					fprintf(fout, ";R:\tprograma: 	TOK_MAIN '{' funciones sentencias '}'\n");
-					escribir_fin(asmfile);
 				}	
 			;
 
@@ -287,6 +290,7 @@ identificadores: 	TOK_IDENTIFICADOR
 						{
 							tsa* ambito_encontrado = NULL;
 							tsa_elem* elem = NULL;
+							char * real_id;
 							fprintf(fout, ";R:\tidentificadores:	TOK_IDENTIFICADOR ',' identificadores\n");
 							if (buscarParaDeclararIdMain(tabla_simbolos, $1.lexema, &ambito_encontrado, &elem) == OK)
 							    {							      	
@@ -297,7 +301,9 @@ identificadores: 	TOK_IDENTIFICADOR
 							    {
 							    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
         								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-							    	declarar_variable(asmfile, elem->id, tipo_actual, clase_actual);
+							    	real_id = _concat_prefix(TSA_MAIN, $1.lexema);
+							    	declarar_variable(asmfile, real_id, tipo_actual, clase_actual);
+							    	free(real_id);
 							    }
 						}
 					;
@@ -460,7 +466,7 @@ asignacion:	TOK_IDENTIFICADOR '=' exp
 						return -1;
 					}
 					if($3.tipo != elem->tipo){
-						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d Asignacion Incompatible\n",elem->tipo, line_count, col_count);
+						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d Asignacion Incompatible\n", line_count, col_count);
 						return -1;
 					}
 					asignar(asmfile, elem->id, $3.es_direccion);
@@ -492,21 +498,32 @@ elemento_vector:	TOK_IDENTIFICADOR '[' exp ']'
 
 condicional:	if_exp ')' '{' sentencias '}' 
 					{
+						ifthen_fin(asmfile, $1.etiqueta);
 						fprintf(fout, ";R:\tcondicional:	if_exp ')' '{' sentencias '}' \n");
 					}
-				| if_exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'
+				| if_exp_sentencias TOK_ELSE '{' sentencias '}'
 					{
-						fprintf(fout, ";R:\tcondicional:	if_exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'\n");
+						ifthenelse_fin(asmfile, $1.etiqueta);
+						fprintf(fout, ";R:\tcondicional:	if_exp_sentencias TOK_ELSE '{' sentencias '}'\n");
 					}
 				;
 
-if_exp:	TOK_IF '(' exp
+if_exp_sentencias:	if_exp sentencias '}'
+					{
+						$$.etiqueta = $1.etiqueta;
+						ifthenelse_fin_then(asmfile, $1.etiqueta);
+						fprintf(fout, ";R:\tif_exp_sentencias:	if_exp sentencias '}'\n");
+					}
+
+if_exp:	TOK_IF '(' exp ')' '{' 
 			{
 				if($3.tipo != BOOLEAN){
 					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 					return -1;
 				}
-				fprintf(fout, ";R:\tif_exp:	TOK_IF '(' exp \n");
+				$$.etiqueta = etiqueta ++;
+				ifthenelse_inicio(asmfile, $3.es_direccion, $$.etiqueta);
+				fprintf(fout, ";R:\tif_exp:	TOK_IF '(' exp ')' '{' \n");
 			}
 			;
 
@@ -528,7 +545,8 @@ while_exp:	TOK_WHILE '(' exp
 
 lectura:	TOK_SCANF TOK_IDENTIFICADOR 
 				{
-					char * real_id;
+					tsa * tsa_encontrada = NULL;
+					tsa_elem* elem = NULL;
 					/* Si al buscar el identificdor en la tabla de símbolos, no está... salir con ERROR */
 					if (buscarIdNoCualificado(tabla_simbolos, $2.lexema, TSA_MAIN, &tsa_encontrada, &elem) == FALSE){
 							return -1;
@@ -541,12 +559,7 @@ lectura:	TOK_SCANF TOK_IDENTIFICADOR
 						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
 						return -1;
 					}
-					if ($2.es_direccion){
-						real_id = _concat_prefix(TSA_MAIN, $2.lexema);
-						leer(asmfile, real_id, $2.tipo);	
-						free(real_id);
-					}
-					 
+					leer(asmfile, elem->id,  elem->tipo);
 					fprintf(fout, ";R:\tlectura:	TOK_SCANF TOK_IDENTIFICADOR \n");
 				}
 			| TOK_SCANF elemento_vector
@@ -581,6 +594,7 @@ retorno_funcion:	TOK_RETURN exp
 exp:	exp '+' exp
 			{
 				if($1.tipo == INT && $3.tipo == INT){
+					sumar(asmfile, $1.es_direccion, $3.es_direccion);
 					$$.tipo = 1;
 					$$.es_direccion = 0;
 				}
@@ -768,6 +782,8 @@ resto_lista_expresiones:	',' exp resto_lista_expresiones
 comparacion:	exp TOK_IGUAL exp 
 					{	
 						if($1.tipo == INT && $3.tipo == INT){
+							igual(asmfile, $1.es_direccion, $3.es_direccion, etiqueta);
+							etiqueta ++;
 							$$.tipo = BOOLEAN;
 							$$.es_direccion = 0;
 						}
