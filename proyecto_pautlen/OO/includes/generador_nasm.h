@@ -2,11 +2,8 @@
 #define GENERADOR_NASM_H
 
 
-#include "tsc.h"
+#define PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES "_ms"
 
-#define PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES "_ms_"
-
-//int print_metodos_sobreescribibles(FILE * out, tsc* t);
 
 /******************* NUEVAS OO *********************************************/
 char * claseATabla(char * nombre_fuente_clase);
