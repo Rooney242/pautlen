@@ -534,3 +534,99 @@ void escribir_elemento_vector(FILE * fpasm,char * nombre_vector,
 	fprintf(fpasm, "\tadd eax, edx\n");
 	fprintf(fpasm, "\tpush dword eax\n");
 }
+
+
+/******************* NUEVAS OO *********************************************/
+char * claseATabla(char * nombre_fuente_clase){
+	char* ret;
+	if(!nombre_fuente_clase) return NULL;
+
+	ret = (char*) malloc(sizeof(char)*(strlen(nombre_fuente_clase)+strlen(PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES)+1));
+	if(!ret) return NULL;
+
+	sprintf(ret, "%s%s", PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES, nombre_fuente_clase);
+
+	return ret; 	
+}
+
+void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia){
+	char* nombre_final;
+	/*Meto el espacio que quiero reservar*/
+	fprintf(fd_asm, "\tpush %d\n", numero_atributos_instancia*4);
+
+	fprintf(fd_asm, "\tcall malloc\n");
+
+	/*Restauro la pila*/
+	fprintf(fd_asm, "\tadd esp, 4\n");
+
+	/*Meto la direccion que ha devuelto malloc en eax en la pila*/
+	fprintf(fd_asm, "\tpush eax\n");
+
+	nombre_final = claseATabla(nombre_fuente_clase);
+	/*Hacemos que esa direccion apunte a la tabla de metodos sobreescribibles de la clase*/
+	fprintf(fd_asm, "\tmov dword [eax], %s\n", nombre_final);
+
+	free(nombre_final);
+	return;
+
+}
+void discardPila (FILE * fd_asm){
+	/*Como la direccion de la instancia esta ya en la cima de la pila llamo directamente a free*/
+	/*fprintf(fd_asm, "\tpop dword eax\n");
+	fprintf(fd_asm, "\tmov dword ebx, [eax]\n");
+	fprintf(fd_asm, "\tpush dword [eax]\n");*/
+	fprintf(fd_asm, "\tcall free\n");
+	fprintf(fd_asm, "\tadd esp, 4\n");
+	return;
+}
+
+void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo){
+	/*Sacamos de pila la direccion de lo que cualifica*/
+	fprintf(fd_asm, "\tpop dword ebx\n");
+
+	/*Hacemos ebx apuntar al comienzo de la tabla de metodos sobreescribibles*/
+	fprintf(fd_asm, "\tmov dword ebx, [ebx]\n");
+
+	/*Sumamos el offset de la tabla de simbolos y el del metodo*/
+	fprintf(fd_asm, "\tmov dword ecx, [_offset_%s]\n", nombre_metodo);
+	fprintf(fd_asm, "\tlea ecx, [ebx+ecx]\n");
+
+	/*Accedemos a la direccion real del metodo*/
+	fprintf(fd_asm, "\tmov ecx, [ecx]\n");
+
+	/*Lo llamamos*/
+	fprintf(fd_asm, "\tcall ecx\n");
+
+	return;
+} 
+
+void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo){
+	/*Sacamos de pila la direccion de lo que cualifica*/
+	fprintf(fd_asm, "\tpop dword ebx\n");
+
+	/*Apuntamos al offset del atributo de la isntancia sumando el de la instancia con el del atributo*/
+	fprintf(fd_asm, "\tmov dword ecx, [_offset_%s\n", nombre_atributo);
+	fprintf(fd_asm, "\tlea ecx, [ebx+ecx]\n");
+
+	/*Dejo la direccion en la pila*/
+	fprintf(fd_asm, "\tpush ecx\n");
+
+}
+
+// ESTA FUNCIÓN ES LA QUE SE USA DESPUÉS DE 
+// - escribir_operando (para una variable global)
+// - escribirParametro 
+// - escribirVariableLocal
+void asignarDestinoEnPila(FILE* fd_asm, int es_variable){
+	/*Cargamos la direccion donde hay que dejarlo*/
+	fprintf(fd_asm, "\tpop dword eax\n");
+
+	/*Cargamos el valor a asignar*/
+	fprintf(fd_asm, "\tpop dword ebx\n");
+	if (es_variable) fprintf(fd_asm, "\tmov dword ebx, [ebx]\n");
+
+	/*Asignamos el valor*/
+	fprintf(fd_asm, "\tmov [eax], ebx\n");
+
+	return;
+}
