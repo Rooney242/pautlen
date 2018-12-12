@@ -461,20 +461,6 @@ void ifthenelse_fin(FILE * fpasm, int etiqueta){
 	fprintf(fpasm, "_fin_sino_%d:\n", etiqueta);
 }
 
-/* Guion 11 Parte OO */
-void asignarDestinoEnPila(FILE* fpasm, int es_variable){
-	
-}
-
-void instance_of (FILE * fd_asm, char * nombre_fuente_clase, 
-                  int numero_atributos_instancia) {
-
-}
-
-void discardPila (FILE * fd_asm) {
-
-}
-
 /* Guion 12 Parte PROC */
 void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc) {
 	fprintf(fpasm, "_%s:\n", nombre_funcion);
@@ -517,6 +503,9 @@ void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos) {
 	fprintf(fpasm, "add esp, 4*%d\n", num_argumentos);
 	fprintf(fpasm, "push dword eax\n");
 }
-void limpiarPila(FILE * fd_asm, int num_argumentos);
+
+void limpiarPila(FILE * fd_asm, int num_argumentos) {
+	fprintf(fpasm, "add esp, %d\n", 4 * num_argumentos);
+}
 
 
