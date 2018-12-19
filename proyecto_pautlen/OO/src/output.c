@@ -351,16 +351,15 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 
 		default:
 			/*Estos casos hacen referencia a como tomamos nosotros los casos, para una ampliacion de casos esto tiene que ser actualizado*/
-			/*TODO: cambiar los limites de los if*/
 			if(caso){
 				fprintf(pf, "Simbolo %s encontrado en %s. ", elem->id, ambito_encontrado->ambito);
-				if(caso >= 53 && caso < 271){//Es un buscar para declarar
+				if(caso >= 67 && caso < 401){//Es un buscar para declarar
 					fprintf(pf, "No se puede declarar.\n");
 				}else{
 					fprintf(pf, "Se puede acceder al simbolo.\n");
 				}
 			}else{
-				if(caso <= -53 && caso > -271){//Es un buscar para declarar
+				if(caso <= -67 && caso > -401){//Es un buscar para declarar
 					fprintf(pf, "Se puede declarar.\n");
 				}else{
 					fprintf(pf, "No se puede acceder al simbolo.\n");
