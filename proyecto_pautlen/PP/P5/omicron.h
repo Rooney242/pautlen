@@ -2,6 +2,7 @@
 #define OMICRON_H
 
 #define MAX_LONG_ID 50
+#define MAX_TAMANIO_VECTOR 64
 
 /*TIPOS*/
 #define INT 1

@@ -11,8 +11,11 @@
 	extern FILE* fout;
 	extern FILE* asmfile;
 	int etiqueta = 1;
+
 	int tipo_actual;                                                                
 	int clase_actual;
+	char tamanio_vector_actual[15];
+
 	tsc * tabla_simbolos;
     tsa* tsa_aux;
     tsa_elem * elem_aux;
@@ -260,6 +263,11 @@ clase_objeto: 	'{' TOK_IDENTIFICADOR '}'
 
 clase_vector: 	TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
 					{
+						strcpy(tamanio_vector_actual, $4.valor_entero);
+						if (atoi(tamanio_vector_actual) < 1 || atoi(tamanio_vector_actual) > MAX_TAMANIO_VECTOR) {
+							fprintf(stdout,"****Error semantico en linea %d:\n\tEl tamanyo del vector <%s> excede los limites permitidos (1,64)", line_count, nombre_clase_desde);
+							return -1;
+						}
 						fprintf(fout, ";R:\tclase_vector: 	TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'\n");
 					}
 				;
@@ -454,9 +462,10 @@ asignacion:	TOK_IDENTIFICADOR '=' exp
 				{
 					tsa* tsa_encontrada = NULL;
 					tsa_elem* elem = NULL;
-					if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, TSA_MAIN, &tsa_encontrada, &elem) == FALSE){
-								return -1;
-						}
+					if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, TSA_MAIN, &tsa_encontrada, &elem) == FALSE) {
+						return -1;
+					}
+					
 					if (elem->categoria == FUNCION){
 						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d Asignacion Incompatible\n", line_count, col_count);
 						return -1;
@@ -607,6 +616,7 @@ exp:	exp '+' exp
 		| exp '-' exp
 			{
 				if($1.tipo == INT && $3.tipo == INT){
+
 					$$.tipo = 1;
 					$$.es_direccion = 0;
 				}
