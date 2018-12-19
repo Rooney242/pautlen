@@ -161,7 +161,7 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 		case CASO_473:
 			fprintf(pf,"CASO 47.3\n"
 				"Buscar id cualificado instancia desde un metodo: OK-> %s SE ACCEDE A UN ATRIBUTO QUE EXISTE EN LA JERARQUÍA Y ESTA "
-				"ACCESIBLE CUALIFICANDO POR UNA INSTANCIA ACCESIBLE",elem->id);
+				"ACCESIBLE CUALIFICANDO POR UNA INSTANCIA ACCESIBLE", elem->id);
 			break;
 		case CASO_48:
 			fprintf(pf,"CASO 48\n"
@@ -184,7 +184,7 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_57:
 			fprintf(pf,"CASO 57\n"
-				"Buscar para declarar id tabla simbolos ambito: OK-> %s VARIABLE YA DECLARADA, NO SE PUEDE DECLARAR",elem->id);
+				"Buscar para declarar id tabla simbolos ambito: OK-> %s VARIABLE YA DECLARADA, NO SE PUEDE DECLARAR", elem->id);
 			break;
 		case CASO_58:
 			fprintf(pf,"CASO 58\n"
@@ -192,10 +192,10 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_59:
 			fprintf(pf,"CASO 59\n"
-				"Buscar para declarar id tabla simbolos ambito: OK-> %s PARAMETRO YA DECLARADO, NO SE PUEDE DECLARAR",elem->id);
+				"Buscar para declarar id tabla simbolos ambito: OK-> %s PARAMETRO YA DECLARADO, NO SE PUEDE DECLARAR", elem->id);
 			break;
 
-		/************************BUSCAR PARA DECLARAR ID TABLA SIMBOLOS AMBITO************************/
+		/************************BUSCAR PARA DECLARAR ID LOCAL EN METODO************************/
 		case CASO_60:
 			fprintf(pf,"CASO 60\n"
 				"Buscar para declarar un parametro: ERR-> LA VARIABLE NO ESTA, SE PUEDE DECLARAR");
@@ -206,19 +206,19 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			break;
 		case CASO_62:
 			fprintf(pf,"CASO 62\n"
-				"Buscar para declarar un parametro: ERR-> HA SIDO DECLARADO COMO FUNCION. NO ESTA Y SE UEDE DECLARAR");
+				"Buscar para declarar un parametro: ERR-> HA SIDO DECLARADO COMO FUNCION. NO ESTA Y SE PUEDE DECLARAR");
 			break;
 		case CASO_63:
 			fprintf(pf,"CASO 63\n"
-				"Buscar para declarar una variable local: OK-> %s VARIABLE NO DECLARADA, SE PUEDE DECLARAR",elem->id);
+				"Buscar para declarar una variable local: OK-> %s VARIABLE NO DECLARADA, SE PUEDE DECLARAR", elem->id);
 			break;
 		case CASO_64:
 			fprintf(pf,"CASO 64\n"
-				"Buscar para declarar una variable local: OK-> %s DECLARADA PREVIAMENTE COMO ARGUMENTO, ESTA DECLARADO Y NO SE PUEDE DECLARAR",elem->id);
+				"Buscar para declarar una variable local: OK-> %s DECLARADA PREVIAMENTE COMO ARGUMENTO, ESTA DECLARADO Y NO SE PUEDE DECLARAR", elem->id);
 			break;
 		case CASO_65:
 			fprintf(pf,"CASO 65\n"
-				"Buscar para declarar una variable local: OK-> %s HA SIDO DECLARADA COMO FUNCION. YA ESTA DECLARADA Y NO SE PUEDE DECLARAR",elem->id);
+				"Buscar para declarar una variable local: OK-> %s HA SIDO DECLARADA COMO FUNCION. YA ESTA DECLARADA Y NO SE PUEDE DECLARAR", elem->id);
 			break;
 		case CASO_66:
 			fprintf(pf,"CASO 66\n"
