@@ -8,6 +8,7 @@
 #define ENTERO    1
 #define BOOLEANO     3
 
+#define PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES "_ms"
 
 /* OBSERVACIÓN GENERAL A TODAS LAS FUNCIONES:
    Todas ellas escriben el código NASM a un FILE* proporcionado como primer argumento.
@@ -152,6 +153,69 @@ void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
 void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable);
 void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos);
 void limpiarPila(FILE * fd_asm, int num_argumentos);
+
+
+
+void while_inicio(FILE * fpasm, int etiqueta);
+
+/*Generación de código para el inicio de una estructura while
+Como es el inicio de uno bloque de control de flujo de programa que requiere de una nueva etiquet debe ejecutarse antes el código correspondiente que hemos resumido como
+        getiqueta++;
+        cima_etiquetas++;
+        etiquetas[cima_etiquetas]=getiqueta;
+        etiqueta = getiqueta;
+exp_es_variable 
+*/
+
+
+
+
+void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
+
+/*Generación de código para el momento en el que se ha generado el código de la expresión de control del bucle
+Sólo necesita usar la etiqueta adecuada, por lo que sólo se necesita que se ejecute el procedimiento
+        etiqueta = etiquetas[cima_etiquetas];
+exp_es_variable 
+Es 1 si la expresión de la condición es algo asimilable a una variable (identificador, acceso a atributo de instancia o clase, elemento de vector
+Es 0 en caso contrario (constante u otro tipo de expresión)
+*/
+
+
+void while_fin( FILE * fpasm, int etiqueta);
+
+/*Generación de código para el final de una estructura while
+Como es el fin de uno bloque de control de flujo de programa que hace uso de la etiqueta del mismo se requiere que antes de su invocación tome el valor de la etiqueta que le toca con el procedimiento que hemos resumido como
+        etiqueta = etiquetas[cima_etiquetas];
+Y tras ser invocada debe realizar el proceso para ajustar la información de las etiquetas
+        cima_etiquetas--;
+*/
+
+
+
+
+void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, 
+                   int tam_max, int exp_es_direccion);
+
+/*Generación de código para indexar un vector
+Cuyo nombre es nombre_vector
+Declarado con un tamaño tam_max
+La expresión que lo indexa está en la cima de la pila
+Puede ser una variable (o algo equivalente) en cuyo caso exp_es_direccion vale 1
+Puede ser un valor concreto (en ese caso exp_es_direccion vale 0)
+Según se especifica en el material, es suficiente con utilizar dos registros para realizar esta tarea. 
+*/
+
+/******************* NUEVAS OO *********************************************/
+char * claseATabla(char * nombre_fuente_clase);
+void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia); 
+void discardPila (FILE * fd_asm);  
+void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo); 
+void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo);
+// ESTA FUNCIÓN ES LA QUE SE USA DESPUÉS DE 
+// - escribir_operando (para una variable global)
+// - escribirParametro 
+// - escribirVariableLocal
+void asignarDestinoEnPila(FILE* fpasm, int es_variable);
 
 
 #endif
