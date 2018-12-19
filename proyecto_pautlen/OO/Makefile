@@ -27,9 +27,6 @@ TSC_DEPS = $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(O
 GENERADOR_TSC = generador_tsc
 GENERADOR_TSC_DEPS = $(OBJ_FOLDER)tsc.o $(OBJ_FOLDER)tsa.o $(OBJ_FOLDER)hash_table.o $(OBJ_FOLDER)graph.o $(OBJ_FOLDER)output.o
 
-GENERADOR_NASM = generador_nasm
-GENERADOR_NASM_DEPS =
-
 DOT_GENERATOR = dot_generator
 
 PRACTICA4 = prueba_TS
@@ -82,14 +79,6 @@ generador_tsc: tsc
 generador_tsc-test: generador_tsc
 	@echo Compilando tester del modulo de generacion de tsc...
 	@$(CC) $(LIB) -o test_$(GENERADOR_TSC) $(OBJ_FOLDER)$(GENERADOR_TSC).o $(TESTS)test_$(GENERADOR_TSC).c $(GENERADOR_TSC_DEPS)
-
-generador_nasm:
-	@echo Compilando modulo del generacion de nasm...
-	@$(CC) $(LIB) -c $(SOURCES)$(GENERADOR_NASM).c -o $(OBJ_FOLDER)$(GENERADOR_NASM).o
-
-generador_nasm-test: generador_nasm
-	@echo Compilando tester del modulo de generacion de nasm...
-	@$(CC) $(LIB) -o test_$(GENERADOR_NASM) $(OBJ_FOLDER)$(GENERADOR_NASM).o $(TESTS)test_$(GENERADOR_NASM).c $(GENERADOR_NASM_DEPS)
 
 practica4: generador_tsc
 	@echo Compilando el archivo de prueba para la entrega de la practica 4...
