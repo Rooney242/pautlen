@@ -13,8 +13,87 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 	if(!pf) return ERROR;
 
 	switch(caso){
+
+		/************************BUSCAR ID EN JERARQUIA DESDE AMBITO************************/
+		case CASO_1:
+			fprintf(pf, "CASO 1 -- OK\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_2:
+			fprintf(pf, "CASO 2 -- ERR\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_3:
+			fprintf(pf, "CASO 3 -- OK\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_4:
+			fprintf(pf, "CASO 4 -- ERR\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_5:
+			fprintf(pf, "CASO 5 -- OK\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_6:
+			fprintf(pf, "CASO 6 -- OK\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break; 
+		case CASO_7:
+			fprintf(pf, "CASO 7 -- ERR\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_8:
+			fprintf(pf, "CASO 8 -- OK\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_9:
+			fprintf(pf, "CASO 9 -- ERR\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_10:
+			fprintf(pf, "CASO 10 -- OK\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_11:
+			fprintf(pf, "CASO 11 -- ERR\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_12:
+			fprintf(pf, "CASO 12 -- OK\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+		case CASO_13:
+			fprintf(pf, "CASO 13 -- OK\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break; 
+		case CASO_14:
+			fprintf(pf, "CASO 14 -- ERR\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_15:
+			fprintf(pf, "CASO 15 -- ERR\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_16:
+			fprintf(pf, "CASO 16 -- OK\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_17:
+			fprintf(pf, "CASO 17 -- OK\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break; 
+		case CASO_18:
+			fprintf(pf, "CASO 18 -- ERR\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+		case CASO_19:
+			fprintf(pf, "CASO 19 -- ERR\n"
+				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			break;
+
+
 		/************************BUSCAR ID NO CUALIFICADO************************/
-		case ERROR:
+		case CASO_20:
 			fprintf(pf, "CASO 20 -- OK\n"
 				"-->Elemento %s en buscarIdNoCualificado desde (%s) ENCONTRADO en main.\n", elem->id, ambito_desde);
 			break;
@@ -43,50 +122,10 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 				"-->FALLO en la busqueda en buscarIdNoCualificado desde %s\n", ambito_desde);
 			break;
 
-		/************************BUSCAR PARA DECLARAR MIEMBRO CLASE************************/
-		case CASO_49:
-			fprintf(pf, "CASO 49\n"
-				"Buscar para declarar miembro clase: ERR-> %s YA ESTA",elem->id);
-			break;
-		case CASO_50:
-			fprintf(pf, "CASO 50\n"
-				"Buscar para declarar miembro clase: OK-> NO ESTA en %s", ambito_desde);
-			break;
 
-		/************************BUSCAR PARA DECLARAR MIEMBRO INSTANCIA************************/
-		case CASO_51:
-			fprintf(pf, "CASO 51\n"
-				"Buscar para declarar miembro instancia: ERR -> %s YA ESTA Y NO SE PUEDE DECLARAR",elem->id);
-			break; 
-		case CASO_52:
-			fprintf(pf, "CASO 52\n"
-				"Buscar para declarar miembro instancia: NO EXISTE EN LA CLASE PERO PUEDE QUE SI EN LA JERARQUIA");
-			break; 
-		case CASO_53:
-			fprintf(pf, "CASO 53\n"
-				"Buscar para declarar miembro instancia: OK-> NO ESTA en la clase %s", ambito_desde);
-			break;
 
 		/************************BUSCAR ID CUALIFICADO CLASE************************/
-		case CASO_35:
-			fprintf(pf,"CASO 35\n"
-				"Buscar id cualificado: OK-> %s ESTA EN LA JERARQUIA Y ES ACCESIBLE",elem->id);
-			break;
-		case CASO_36:
-			(pf,"CASO 36\n"
-				"Buscar id cualificado clase: ERR-> ESTA EN LA JERARQUIA Y NO ES ACCESIBLE DESDE %s", ambito_desde);
-			break;
-		case CASO_37:
-			fprintf(pf,"CASO 37\n"
-				"Buscar id cualificado clase: ERR-> SE ACCEDE A ALGO CUALIFICADO POR LA CLASE %s, EXISTE LA CLASE PERO NO LO BUSCADO", ambito_desde);
-			break;
-		case CASO_38:
-			fprintf(pf,"CASO 38\n"
-				"Buscar id cualificado clase: ERR-> SE ACCEDE A ALGO CUALIFICADO POR LA CLASE , NO EXISTE LA CLASE");
-			break;
-
-		/************************BUSCAR ID CUALIFICADO CLASE************************/
-		case CASO_271:
+		case CASO_27:
 			fprintf(pf,"CASO 27.1\n"
 				"Buscar id cualificado clase desde main: OK-> %s EL ATRIBUTO EXISTE, ESTA EN LA JERARQUIA Y ES ACCESIBLE",elem->id);
 			break;
@@ -119,6 +158,26 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 				"Buscar id cualificado clase desde funcion global: ERR-> NO EXISTE LA CLASE");
 			break;
 
+
+		/************************BUSCAR ID CUALIFICADO CLASE************************/
+		case CASO_35:
+			fprintf(pf,"CASO 35\n"
+				"Buscar id cualificado: OK-> %s ESTA EN LA JERARQUIA Y ES ACCESIBLE",elem->id);
+			break;
+		case CASO_36:
+			(pf,"CASO 36\n"
+				"Buscar id cualificado clase: ERR-> ESTA EN LA JERARQUIA Y NO ES ACCESIBLE DESDE %s", ambito_desde);
+			break;
+		case CASO_37:
+			fprintf(pf,"CASO 37\n"
+				"Buscar id cualificado clase: ERR-> SE ACCEDE A ALGO CUALIFICADO POR LA CLASE %s, EXISTE LA CLASE PERO NO LO BUSCADO", ambito_desde);
+			break;
+		case CASO_38:
+			fprintf(pf,"CASO 38\n"
+				"Buscar id cualificado clase: ERR-> SE ACCEDE A ALGO CUALIFICADO POR LA CLASE , NO EXISTE LA CLASE");
+			break;
+
+		
 		/************************BUSCAR ID CUALIFICADO INSTANCIA************************/
 		case CASO_401:
 			fprintf(pf,"CASO 40.1\n"
@@ -168,6 +227,36 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 				"Buscar id cualificado instancia desde un metodo: ERR-> SE ACCEDE A UN ATRIBUTO QUE EXISTE EN LA JERARQUÍA Y NO "
 				"ESTA ACCESIBLE A TRAVÉS DE UNA INSTANCIA QUE SÍ ESTA ACCESIBLE");
 			break;
+
+		/************************BUSCAR PARA DECLARAR MIEMBRO CLASE************************/
+		case CASO_49:
+			fprintf(pf, "CASO 49\n"
+				"Buscar para declarar miembro clase: ERR-> %s YA ESTA",elem->id);
+			break;
+		case CASO_50:
+			fprintf(pf, "CASO 50\n"
+				"Buscar para declarar miembro clase: OK-> NO ESTA en %s", ambito_desde);
+			break;
+
+		/************************BUSCAR PARA DECLARAR MIEMBRO INSTANCIA************************/
+		case CASO_51:
+			fprintf(pf, "CASO 51\n"
+				"Buscar para declarar miembro instancia: ERR -> %s YA ESTA Y NO SE PUEDE DECLARAR",elem->id);
+			break; 
+		case CASO_521:
+			fprintf(pf, "CASO 52.1\n"
+				"Buscar para declarar miembro instancia: ERROR-> NO EXISTE EN LA CLASE PERO PUEDE QUE SI EN LA JERARQUIA Y NO ES ACCESIBLE. SE PUEDE DECLARAR");
+			break; 
+		case CASO_522:
+			fprintf(pf, "CASO 52.2\n"
+				"Buscar para declarar miembro instancia: OK-> NO EXISTE EN LA CLASE PERO PUEDE QUE SI EN LA JERARQUIA Y ES ACCESIBLR. NO SE PUEDE DECLARAR");
+			break;
+		case CASO_53:
+			fprintf(pf, "CASO 53\n"
+				"Buscar para declarar miembro instancia: OK-> NO ESTA en la clase %s", ambito_desde);
+			break;
+
+		
 
 		/************************BUSCAR PARA DECLARAR ID TABLA SIMBOLOS AMBITO************************/
 		case CASO_54:
@@ -228,6 +317,10 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 		case CASO_67:
 			fprintf(pf,"CASO 67\n"
 				"Buscar para declarar una variable local: ERR-> LA FUNCION NO ESTA, SE PUEDE DECLARAR");
+			break;
+		case ERROR:
+			fprintf(pf,"ERROR\n"
+				"ERROR EN EL ID %S\n", elem->id);
 			break;
 
 		default:
