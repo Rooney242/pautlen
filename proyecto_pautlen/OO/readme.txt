@@ -6,3 +6,9 @@ Para compilar se puede hacer:
 		que proponeis en la practica se encuentra en programs/programs1)
 	-make pre: por si no compila prepara los ficheros para que se pueda hacer make
 	-make clean: borra todo 
+
+Nota conceptual sobre las funciones de insercion y busqueda:
+	Estas funciones devuelven casos concretos dentro del contexto del programa,
+	para usarlas correctamente se debe tener en cuenta la libreria output.h en donde están
+	definidos. El criterio que se ha seguido es que las funciones devuelven un numero positivo
+	en caso de OK y un numero negativo en caso de ERR.
