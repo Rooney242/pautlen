@@ -17,15 +17,15 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 		/************************BUSCAR ID EN JERARQUIA DESDE AMBITO************************/
 		case CASO_1:
 			fprintf(pf, "CASO 1 -- OK\n"
-				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+				"Buscar id en jerarquia desde clase: VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
 			break;
 		case CASO_2:
-			fprintf(pf, "CASO 2 -- ERR\n"
-				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+			fprintf(pf, "CASO 2 -- OK\n"
+				"Buscar id en jerarquia desde clase: SE BUSCA UN PARÁMETRO SIN CUALIFICAR DE UN MÉTODO (%s) QUE ESTÁ EN EL MÉTODO DESDE EL MÉTOD\n", ambito_desde);
 			break;
 		case CASO_3:
 			fprintf(pf, "CASO 3 -- OK\n"
-				"Buscar id en jerarquia desde clase: OK->VARIABLE LOCAL %s DEFINIDA EN EL PROPIO MÉTODO\n", elem->id);
+				"Buscar id en jerarquia desde clase: SE BUSCA DESDE UN MÉTODO(%s), UN MÉTODO SIN CUALIFICAR QUE ES HIDDEN Y QUE EXISTE EN EL MÉTODO\n", ambito_desde);
 			break;
 		case CASO_4:
 			fprintf(pf, "CASO 4 -- ERR\n"
@@ -318,13 +318,14 @@ int	print_caso(FILE* pf, int caso, char* ambito_desde, tsa* ambito_encontrado, t
 			fprintf(pf,"CASO 67\n"
 				"Buscar para declarar una variable local: ERR-> LA FUNCION NO ESTA, SE PUEDE DECLARAR");
 			break;
-		case ERROR:
+		/*case ERROR:
 			fprintf(pf,"ERROR\n"
 				"ERROR EN EL ID %S\n", elem->id);
-			break;
+			break;*/
 
 		default:
 			/*Estos casos hacen referencia a como tomamos nosotros los casos, para una ampliacion de casos esto tiene que ser actualizado*/
+			/*TODO: cambiar los limites de los if*/
 			if(caso){
 				fprintf(pf, "Simbolo %s encontrado en %s. ", elem->id, ambito_encontrado->ambito);
 				if(caso >= 53 && caso < 271){//Es un buscar para declarar

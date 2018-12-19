@@ -512,59 +512,55 @@ int buscarIdEnJerarquiaDesdeAmbito(tsc* t, char* id, char* id_ambito, tsa** tabl
 /*Dado un id sin cualificar y el ambito desde el que se quiere acceder devuelve true si se puede llegar a ese id
 	y se tiene permiso para ello. Se devuelve la tsa encontreda y el elemento encontrado*/
 int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, tsa** tsa_encontrada, tsa_elem** elem){
-	int ret, i;
+	int ret, ret2, i;
 	char * real_id;
 	*tsa_encontrada = NULL;
 	*elem = NULL;
 	if(!t || !nombre_id || !nombre_ambito_desde) return ERROR;
 
-	/*Miramos si podemos llegar a la clase del simbolo desde donde estamos*/
-	if(strcmp(nombre_ambito_desde, TSA_MAIN)){
-		ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_ambito_desde, tsa_encontrada, elem);
-		if(ret == TRUE){/*Si se puede llegar miramos los accesos*/
-			ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
-			if(ret == TRUE){
-				if(!strcmp(TSA_MAIN, (*tsa_encontrada)->ambito)) 
-					return TRUE;/*Buscamos id desde una funcion y esta en su jerarquia*/
-				return CASO_20;/*Buscamos desde una funcion un id que no esta en la jerarquia y si en el main*/
-			}
-		}else{
-			return CASO_21;/*Se busca id desde funcion que no esta en jerarquia ni en main*/
-		}
-	}else{/*Si estamos en el main buscamos en todas las tsa*/
+	
+	/*Si estamos en el main buscamos en el main*/
+	if(!strcmp(nombre_ambito_desde, TSA_MAIN)){
 		/*Buscamos en el main*/
 		real_id = _concat_prefix(t->main->ambito, nombre_id);
 		*elem = ppal_get(t->main, real_id);
 		free(real_id);
 		if(*elem){
 			*tsa_encontrada = t->main;
-			ret= aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
-			if (ret==TRUE){
-				if(!strcmp(TSA_MAIN, (*tsa_encontrada)->ambito))
-					return CASO_22;/*Buscamos desde main un id que esta en el main*/
-				return CASO_24;/*Si desde una funcion global buscamos id y esta en esa misma funcion*/
-			}else{
-				return CASO_23;/*Se busca id desde funcion global/DIDI CREE QUE ES DESDE EL MAIN/ y no esta ni en la jerarquia ni en el main*/
+			ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
+			if (ret){
+				return CASO_22;/*Buscamos desde main un id que esta en el main*/
 			}
 		}
-		/*Si no esta buscamos en el resto de tsa*/
-		for(i=0; i<t->grafo->vertex_count; i++){
-			real_id = _concat_prefix(t->grafo->nodes[i]->tsa->ambito, nombre_id);
-			*elem = ppal_get(t->grafo->nodes[i]->tsa, real_id);
-			free(real_id);
-			if(*elem){
-				*tsa_encontrada = t->grafo->nodes[i]->tsa;
-				ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
-				if(ret == TRUE){
-					if(!strcmp(nombre_ambito_desde, (*tsa_encontrada)->ambito))
-						return CASO_24;/*Desde funcion global buscamos id definido en la misma funcion */
-					return CASO_25;/*Desde funcion global buscamos id definido en el main*/
+		return CASO_23; /*Se busca id desde funcion que no esta en ningun lado*/
+	}else{/*No estamos en el main*/
+		*tsa_encontrada = _get_tsa_from_scope(t, nombre_ambito_desde);
+
+		if(!strcmp((*tsa_encontrada)->ambito, TSA_MAIN)){/*Funcion global*/
+			ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_ambito_desde, tsa_encontrada, elem);
+			if(ret){
+				ret2 = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
+				if(ret == CASO_2 && ret2){
+					return CASO_24;
+				}else if(ret2){
+					return CASO_25;
 				}
-			}else
-			return CASO_26;/*Desde funcion global se busca id que no esta en main ni en ambito*/
+			}
+			return CASO_26;
+		}else{/*Funcion local o clase*/
+			ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_ambito_desde, tsa_encontrada, elem);
+			if(ret){
+				ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
+				if(ret){
+					if(!strcmp((*tsa_encontrada)->ambito, TSA_MAIN)){/*Esta en el main*/
+						return CASO_20;
+					}
+					return TRUE;
+				}
+			}
+			return CASO_21;
+
 		}
-		return FALSE; 
-	
 	}
 
 }
@@ -655,7 +651,7 @@ int buscarParaDeclararMiembroInstancia(tsc *t, char * nombre_ambito_desde,
 		else{
 			/*Comprobamos si es accesible desde esta clase*/
 			ret = aplicarAccesos(t, nombre_miembro, nombre_ambito_desde, (*ambito_encontrado)->ambito, elem);
-			if(ret == TRUE) return CASO_52;/*no existe en la clase pero si en la jerarquia*/
+			if(ret == TRUE) return CASO_521;/*no existe en la clase pero si en la jerarquia*/
 		}
 	}
 	*ambito_encontrado = NULL;
