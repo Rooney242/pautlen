@@ -552,14 +552,12 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 		free(real_id);
 		if(*elem){
 			*tsa_encontrada = t->main;
-			ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
-			if (ret){
-				return CASO_22;/*Buscamos desde main un id que esta en el main*/
-			}
+			return TRUE;
 		}
-		return CASO_23; /*Se busca id desde funcion que no esta en ningun lado*/
+		return FALSE;
 	}else{/*No estamos en el main*/
 		*tsa_encontrada = _get_tsa_from_scope(t, nombre_ambito_desde);
+		if((*tsa_encontrada) == NULL) return FALSE;
 
 		if(!strcmp((*tsa_encontrada)->ambito, TSA_MAIN)){/*Funcion global*/
 			ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_ambito_desde, tsa_encontrada, elem);
@@ -572,7 +570,22 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 				}
 			}
 			return CASO_26;
-		}else{/*Funcion local o clase*/
+		}else if(!strcmp((*tsa_encontrada)->ambito, nombre_ambito_desde)){/*Clase*/
+			/*Si estamos en una clase no tiene sentido buscar un id no cualificado*/
+			return FALSE;
+
+			/*ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_ambito_desde, tsa_encontrada, elem);
+			if(ret){
+				ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
+				if(ret){
+					if(!strcmp((*tsa_encontrada)->ambito, TSA_MAIN)){/*Esta en el main
+						return CASO_20;
+					}
+					return TRUE;
+				}
+			}
+			return CASO_21;*/
+		}else{/*Metodo local*/
 			ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_ambito_desde, tsa_encontrada, elem);
 			if(ret){
 				ret = aplicarAccesos(t, nombre_id, (*tsa_encontrada)->ambito, nombre_ambito_desde, elem);
@@ -583,8 +596,6 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 					return TRUE;
 				}
 			}
-			return CASO_21;
-
 		}
 	}
 
@@ -620,24 +631,80 @@ int buscarIdCualificadoClase(	tsc *t, char * nombre_clase_cualifica,
 int buscarIdCualificadoInstancia(tsc *t, char * nombre_instancia_cualifica,
 						char * nombre_id, char * nombre_ambito_desde,
 						tsa ** ambito_encontrado, tsa_elem ** elem){
-	int ret;
+	int ret1, ret2;
 	*ambito_encontrado = NULL;
 	*elem = NULL;
 	if(!t || !nombre_instancia_cualifica || !nombre_id || !nombre_ambito_desde) return ERROR;
 
 	/*Buscamos la instancia como un id no cualificado desde el ambito en el que estamos*/
-	ret = buscarIdNoCualificado(t, nombre_instancia_cualifica, nombre_ambito_desde, ambito_encontrado, elem);
-	if(ret == TRUE){
-		if((*elem)->categoria != CLASE) return FALSE;/*Comprobamos que se declaro como clase*/
-		/*Miramos si esa instancia tiene acceso al simbolo que queremos cualificar. 
-			Para hallar el nombre de la clase de la instancia buscamos en los nodos del grafo*/
-		ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, t->grafo->nodes[-(*elem)->tipo]->tsa->ambito, ambito_encontrado, elem);
-		if (ret == TRUE){
-			return  aplicarAccesos(t, nombre_id, (*ambito_encontrado)->ambito, t->grafo->nodes[-(*elem)->tipo]->tsa->ambito, elem);
+	ret1 = buscarIdNoCualificado(t, nombre_instancia_cualifica, nombre_ambito_desde, ambito_encontrado, elem);
+	if(!strcmp((*ambito_encontrado)->ambito, TSA_MAIN)){
+		ret2 = buscarIdNoCualificado(t, nombre_id, (*ambito_encontrado)->ambito, ambito_encontrado, elem);
+		if(ret2 < 0) return CASO_401;/*la instancia es global pero el atributo no existe*/
+	}  
+	if(!strcmpr(nombre_ambito_desde, TSA_MAIN)){/*Comprobamos si estamos en el main*/
+		/*Primero buscamos si la clase que cualifica existe*/
+		if(!(*ambito_encontrado)) return CASO_30;/*La clase que cualifica no existe*/
+
+		if(ret > 0){
+			/*Comprobamos que se declaro como clase*/
+			if((*elem)->categoria != CLASE) return FALSE;
+			ret =  aplicarAccesos(t, nombre_id, (*ambito_encontrado)->ambito, t->grafo->nodes[-(*elem)->tipo]->tsa->ambito, elem);
+			if (ret > 0){
+				return CASO_27;/*DESDE EL CÓDIGO DE MAIN SE BUSCA ALGO CUALIFICADO POR UNA CLASE QUE EXISTE (AA) Y EL ID BUSCADO (clasepub) ES UN ATRIBUTO
+  								QUE EXISTE EN LA CLASE, ACCESIBLE Y ATRIBUTO DE CLASE*/
+			}
+			else{
+				return CASO_28;/*DESDE EL CÓDIGO DE MAIN SE BUSCA ALGO CUALIFICADO POR UNA CLASE QUE EXISTE (AA) Y EL ID BUSCADO (clasepub) ES UN ATRIBUTO 
+								QUE EXISTE EN LA CLASE, NO ACCESIBLE*/
+			}
+		}
+		return CASO_29;/*DESDE EL CÓDIGO DE MAIN SE BUSCA ALGO CUALIFICADO POR UNA CLASE QUE EXISTE Y 
+				EL ID BUSCADO NO EXISTE*/
+	}else if(!strcmp((*ambito_encontrado)->ambito, TSA_MAIN)){/*Funcion global*/
+		/*Primero buscamos si la clase que cualifica existe*/
+		if(!(*ambito_encontrado)) return CASO_34;/*La clase que cualifica no existe*/
+
+		if(ret > 0){
+			/*Comprobamos que se declaro como clase*/
+			if((*elem)->categoria != CLASE) return FALSE;
+			ret =  aplicarAccesos(t, nombre_id, (*ambito_encontrado)->ambito, t->grafo->nodes[-(*elem)->tipo]->tsa->ambito, elem);
+			if (ret > 0){
+				return CASO_31;
+			}
+			else {
+				return CASO_32;
+			}
+		}
+		return CASO_33;
+
+	}else{/*Estamos en una clase o un metodo de una clase
+
+		/*Primero buscamos si la clase que cualifica existe*/
+		if(!(*ambito_encontrado)) return CASO_34;/*La clase que cualifica no existe*/
+
+		if(ret > 0){
+
+			/*Comprobamos que se declaro como clase*/
+			if((*elem)->categoria != CLASE) return FALSE;/*La clase no existe*/
+			/*Miramos si esa instancia tiene acceso al simbolo que queremos cualificar. 
+				Para hallar el nombre de la clase de la instancia buscamos en los nodos del grafo*/
+			ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, t->grafo->nodes[-(*elem)->tipo]->tsa->ambito, ambito_encontrado, elem);
+			if (ret > 0){
+				ret =  aplicarAccesos(t, nombre_id, (*ambito_encontrado)->ambito, t->grafo->nodes[-(*elem)->tipo]->tsa->ambito, elem);
+				if (ret > 0)
+					return CASO_31;/*DESDE UNA FUNCION GLOBAL SE BUSCA ALGO CUALIFICADO POR UNA CLASE QUE EXISTE (AA) Y EL ID BUSCADO (clasepub) ES UN ATRIBUTO
+      								QUE EXISTE EN LA CLASE, ACCESIBLE Y ATRIBUTO DE CLASE*/
+				else 
+					return CASO_32;/*DESDE UNA FUNCION GLOBAL SE BUSCA ALGO CUALIFICADO POR UNA CLASE QUE EXISTE (AA) Y EL ID BUSCADO (clasepub) ES UN ATRIBUTO 
+    								QUE EXISTE EN LA CLASE, NO ACCESIBLE*/
+			}else
+				return CASO_33;/*DESDE UNA FUNCION GLOBAL SE BUSCA ALGO CUALIFICADO POR UNA CLASE QUE EXISTE Y 
+				EL ID BUSCADO NO EXISTE*/
 		}
 	}
-	return ret;
 }
+
 
 /*Esta funcion busca si hay un atributo unico en la jerarquia de la clase donde lo intentamos declarar.*/
 int buscarParaDeclararMiembroClase(	tsc *t, char * nombre_ambito_desde, char * nombre_miembro,
