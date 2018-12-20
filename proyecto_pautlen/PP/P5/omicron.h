@@ -22,6 +22,8 @@ typedef struct tipo_atributos
    int es_direccion;
    int etiqueta;
    int clase;
+   int num_parametros;
+   int num_axpresiones;
 }	tipo_atributos;
 
 #endif

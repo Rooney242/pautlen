@@ -88,6 +88,12 @@
 %type <atributos> elemento_vector
 %type <atributos> constante_logica
 %type <atributos> constante_entera
+%type <atributos> parametros_funcion
+%type <atributos> funcion
+%type <atributos> resto_parametros_funcion
+%type <atributos> lista_expresiones
+%type <atributos> resto_lista_expresiones
+
 
 %start programa
 %left '+' '-' TOK_OR
@@ -206,6 +212,7 @@ clase:	clase_escalar
 declaracion_clase:	abrirAmbitoClase TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'
 						{
 							fprintf(fout, ";R:\tdeclaracion_clase:	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones_funcion funciones '}'\n");
+							
 						}
 					| abrirAmbitoClase '{' declaraciones_funcion funciones '}'
 						{
@@ -265,7 +272,7 @@ clase_vector: 	TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
 					{
 						strcpy(tamanio_vector_actual, $4.valor_entero);
 						if (atoi(tamanio_vector_actual) < 1 || atoi(tamanio_vector_actual) > MAX_TAMANIO_VECTOR) {
-							fprintf(stdout,"****Error semantico en linea %d:\n\tEl tamanyo del vector <%s> excede los limites permitidos (1,64)", line_count, nombre_clase_desde);
+							fprintf(stdout,"****Error semantico en lin %d:\n\tEl tamanyo del vector <%s> excede los limites permitidos (1,64).\n", line_count, nombre_clase_desde);
 							return -1;
 						}
 						fprintf(fout, ";R:\tclase_vector: 	TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'\n");
@@ -279,19 +286,19 @@ identificadores: 	TOK_IDENTIFICADOR
 							char * real_id;
 							fprintf(fout, ";R:\tidentificadores: 	TOK_IDENTIFICADOR \n");
 
-							if (buscarParaDeclararIdMain(tabla_simbolos, $1.lexema, &ambito_encontrado, &elem) == OK)
-							    {
-									fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);	
-									return -1;
-							    }
-							    else 
-							    {
-							    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
-        								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-							    	real_id = _concat_prefix(TSA_MAIN, $1.lexema);
-							    	declarar_variable(asmfile, real_id, tipo_actual, clase_actual);
-							    	free(real_id);
-							    }
+							if (buscarParaDeclararIdMain(tabla_simbolos, $1.lexema, &ambito_encontrado, &elem) > 0)
+						    {
+								fprintf(stdout,"****Error semantico en lin %d: Declaracion duplicada.\n", line_count);	
+								return -1;
+						    }
+						    else 
+						    {
+						    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
+    								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+						    	real_id = _concat_prefix(TSA_MAIN, $1.lexema);
+						    	declarar_variable(asmfile, real_id, tipo_actual, clase_actual);
+						    	free(real_id);
+						    }
 
 						}
 					| TOK_IDENTIFICADOR ',' identificadores
@@ -300,19 +307,19 @@ identificadores: 	TOK_IDENTIFICADOR
 							tsa_elem* elem = NULL;
 							char * real_id;
 							fprintf(fout, ";R:\tidentificadores:	TOK_IDENTIFICADOR ',' identificadores\n");
-							if (buscarParaDeclararIdMain(tabla_simbolos, $1.lexema, &ambito_encontrado, &elem) == OK)
-							    {							      	
-									fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
-									return -1;
-							    }
-							    else 
-							    {
-							    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
-        								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-							    	real_id = _concat_prefix(TSA_MAIN, $1.lexema);
-							    	declarar_variable(asmfile, real_id, tipo_actual, clase_actual);
-							    	free(real_id);
-							    }
+							if (buscarParaDeclararIdMain(tabla_simbolos, $1.lexema, &ambito_encontrado, &elem) > 0)
+						    {							      	
+								fprintf(stdout,"****Error semantico en lin %d: Declaracion duplicada.\n", line_count);
+								return -1;
+						    }
+						    else 
+						    {
+						    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
+    								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+						    	real_id = _concat_prefix(TSA_MAIN, $1.lexema);
+						    	declarar_variable(asmfile, real_id, tipo_actual, clase_actual);
+						    	free(real_id);
+						    }
 						}
 					;
 
@@ -329,6 +336,7 @@ funciones: 	/*vacio*/
 funcion: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR 
 			'(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
 				{
+					$$.num_parametros = $6.num_parametros;
 					fprintf(fout, ";R:\tfuncion: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");
 				}
 			;
@@ -349,20 +357,24 @@ tipo_retorno:	TOK_NONE
 
 parametros_funcion:	parametro_funcion resto_parametros_funcion
 						{
+							$$.num_parametros = 1 + $2.num_parametros;
 							fprintf(fout, ";R:\tparametros_funcion:	parametro_funcion resto_parametros_funcion\n");
 						}
 					| /*vacio*/
 						{
+							$$.num_parametros = 0;
 							fprintf(fout, ";R:\tparametros_funcion: \n");
 						}
 					;
 
 resto_parametros_funcion:	';' parametro_funcion resto_parametros_funcion 
 								{
+									$$.num_parametros = 1 + $2.num_parametros;
 									fprintf(fout, ";R:\tresto_parametros_funcion:	';' parametro_funcion resto_parametros_funcion \n");
 								}
 							| /*vacio*/
 								{
+									$$.num_parametros = 0;
 									fprintf(fout, ";R:\tresto_parametros_funcion: \n");
 								}
 							;
@@ -462,20 +474,20 @@ asignacion:	TOK_IDENTIFICADOR '=' exp
 				{
 					tsa* tsa_encontrada = NULL;
 					tsa_elem* elem = NULL;
-					if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, TSA_MAIN, &tsa_encontrada, &elem) == FALSE) {
+					if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, TSA_MAIN, &tsa_encontrada, &elem) < 0) {
 						return -1;
 					}
 					
 					if (elem->categoria == FUNCION){
-						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d Asignacion Incompatible\n", line_count, col_count);
+						fprintf(stdout,"****Error semantico en lin %d: Asignacion incompatible.\n", line_count);
 						return -1;
 					}
 					if (elem->clase == VECTOR){
-						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d Asignacion Incompatible\n", line_count, col_count);
+						fprintf(stdout,"****Error semantico en lin %d: Asignacion incompatible.\n", line_count, col_count);
 						return -1;
 					}
 					if($3.tipo != elem->tipo){
-						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d Asignacion Incompatible\n", line_count, col_count);
+						fprintf(stdout,"****Error semantico en lin %d: Asignacion incompatible.\n", line_count, col_count);
 						return -1;
 					}
 					asignar(asmfile, elem->id, $3.es_direccion);
@@ -527,7 +539,7 @@ if_exp_sentencias:	if_exp sentencias '}'
 if_exp:	TOK_IF '(' exp ')' '{' 
 			{
 				if($3.tipo != BOOLEAN){
-					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					fprintf(stdout,"****Error semantico en lin %d: Condicional con condicion de tipo int.\n", line_count);
 					return -1;
 				}
 				$$.etiqueta = etiqueta ++;
@@ -545,7 +557,7 @@ bucle:	while_exp ')' '{' sentencias '}'
 while_exp:	TOK_WHILE '(' exp
 				{
 					if($3.tipo != BOOLEAN) {
-						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+						fprintf(stdout,"****Error semantico en lin %d: Bucle con condicion de tipo int.\n", line_count);
 						return -1;
 					}
 					fprintf(fout, ";R:\twhile_exp:	TOK_WHILE '(' exp \n");
@@ -557,15 +569,16 @@ lectura:	TOK_SCANF TOK_IDENTIFICADOR
 					tsa * tsa_encontrada = NULL;
 					tsa_elem* elem = NULL;
 					/* Si al buscar el identificdor en la tabla de símbolos, no está... salir con ERROR */
-					if (buscarIdNoCualificado(tabla_simbolos, $2.lexema, TSA_MAIN, &tsa_encontrada, &elem) == FALSE){
-							return -1;
+					if (buscarIdNoCualificado(tabla_simbolos, $2.lexema, TSA_MAIN, &tsa_encontrada, &elem) < 0){
+						fprintf(stdout,"****Error semantico en lin %d: Acceso a variable no declarada (%s).", line_count, $2.lexema);
+						return -1;
 					}
 					if (elem->categoria == FUNCION){
-						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+						fprintf(stdout,"****Error semantico en lin %d: Asignacion incompatible.", line_count);
 						return -1;
 					}
 					if (elem->clase == VECTOR){
-						fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+						fprintf(stdout,"****Error semantico en lin %d: Asignacion incompatible.", line_count);
 						return -1;
 					}
 					leer(asmfile, elem->id,  elem->tipo);
@@ -608,7 +621,7 @@ exp:	exp '+' exp
 					$$.es_direccion = 0;
 				}
 				else {
-					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					fprintf(stdout,"****Error semantico en lin %d: Operacion aritmetica con operandos boolean.", line_count);	
 					return -1;
 				}
 				fprintf(fout, ";R:\texp:	exp '+' exp\n");
@@ -621,7 +634,7 @@ exp:	exp '+' exp
 					$$.es_direccion = 0;
 				}
 				else {
-					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					fprintf(stdout,"****Error semantico en lin %d: Operacion aritmetica con operandos boolean.", line_count);
 					return -1;
 				}
 				fprintf(fout, ";R:\texp:	exp '-' exp\n");
@@ -633,7 +646,7 @@ exp:	exp '+' exp
 					$$.es_direccion = 0;
 				}
 				else {
-					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					fprintf(stdout,"****Error semantico en lin %d: Operacion aritmetica con operandos boolean.", line_count);
 					return -1;
 				}
 				fprintf(fout, ";R:\texp:	exp '/' exp\n");
@@ -645,7 +658,7 @@ exp:	exp '+' exp
 					$$.es_direccion = 0;
 				}
 				else {
-					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					fprintf(stdout,"****Error semantico en lin %d: Operacion aritmetica con operandos boolean.", line_count);
 					return -1;
 				}
 				fprintf(fout, ";R:\texp:	exp '*' exp\n");
@@ -657,7 +670,7 @@ exp:	exp '+' exp
 					$$.es_direccion = 0;
 				}
 				else {
-					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					fprintf(stdout,"****Error semantico en lin %d: Operacion aritmetica con operandos boolean.", line_count);
 					return -1;
 				}
 				fprintf(fout, ";R:\texp:	'-' exp\n");
@@ -669,7 +682,7 @@ exp:	exp '+' exp
 					$$.es_direccion = 0;
 				}
 				else {
-					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					fprintf(stdout,"****Error semantico en lin %d: Operacion logica con operandos int.", line_count);
 					return -1;
 				}
 				fprintf(fout, ";R:\texp:	exp TOK_AND exp\n");
@@ -681,7 +694,7 @@ exp:	exp '+' exp
 					$$.es_direccion = 0;
 				}
 				else {
-					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					fprintf(stdout,"****Error semantico en lin %d: Operacion logica con operandos int.", line_count);
 					return -1;
 				}
 				fprintf(fout, ";R:\texp:	exp TOK_OR exp\n");
@@ -693,7 +706,7 @@ exp:	exp '+' exp
 					$$.es_direccion = 0;
 				}
 				else {
-					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					fprintf(stdout,"****Error semantico en lin %d: Operacion logica con operandos int.", line_count);
 					return -1;
 				}
 				fprintf(fout, ";R:\texp:	'!' exp\n");
@@ -702,15 +715,15 @@ exp:	exp '+' exp
 			{
 				tsa* tsa_encontrada = NULL;
 				tsa_elem* elem = NULL;
-				if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, TSA_MAIN, &tsa_encontrada, &elem) == FALSE){
+				if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, TSA_MAIN, &tsa_encontrada, &elem) < 0){
 							return -1;
 					}
 				if (elem->categoria == FUNCION){
-					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					fprintf(stdout,"****Error semantico en lin %d: Asignacion incompatible.", line_count);
 					return -1;
 				}
 				if (elem->clase == VECTOR){
-					fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+					fprintf(stdout,"****Error semantico en lin %d: Asignacion incompatible.", line_count);
 					return -1;
 				}
 				$$.tipo = elem->tipo;
@@ -748,6 +761,7 @@ exp:	exp '+' exp
 			}
 		| identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
 			{
+
 				fprintf(fout, ";R:\texp:	identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
 			}
 		| identificador_clase '.' TOK_IDENTIFICADOR
@@ -771,20 +785,24 @@ identificador_clase:	TOK_IDENTIFICADOR
 
 lista_expresiones: 	exp resto_lista_expresiones 
 						{
+							$$.num_expresiones = 1 + $2.num_expresiones;
 							fprintf(fout, ";R:\tlista_expresiones:	exp resto_lista_expresiones \n");
 						}
 					| /*vacio*/
 						{
+							$$.num_expresiones = 0;
 							fprintf(fout, ";R:\tlista_expresiones:	\n");
 						}
 					;
 
 resto_lista_expresiones:	',' exp resto_lista_expresiones 
 								{
+									$$.num_expresiones = 1 + $3.num_expresiones;
 									fprintf(fout, ";R:\tresto_lista_expresiones:	',' exp resto_lista_expresiones \n");
 								}
 							| /*vacio*/
 								{
+									$$.num_expresiones = 0;
 									fprintf(fout, ";R:\tresto_lista_expresiones:	\n");
 								}
 							;
@@ -798,7 +816,7 @@ comparacion:	exp TOK_IGUAL exp
 							$$.es_direccion = 0;
 						}
 						else {
-							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+							fprintf(stdout,"****Error semantico en lin %d: Comparacion con operandos boolean", line_count);
 							return -1;
 						}
 						fprintf(fout, ";R:\tcomparacion:	exp TOK_IGUAL exp \n");
@@ -810,7 +828,7 @@ comparacion:	exp TOK_IGUAL exp
 							$$.es_direccion = 0;
 						}
 						else {
-							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+							fprintf(stdout,"****Error semantico en lin %d: Comparacion con operandos boolean", line_count);
 							return -1;
 						}
 						fprintf(fout, ";R:\tcomparacion:	exp TOK_DISTINTO exp\n");
@@ -822,7 +840,7 @@ comparacion:	exp TOK_IGUAL exp
 							$$.es_direccion = 0;
 						}
 						else {
-							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+							fprintf(stdout,"****Error semantico en lin %d: Comparacion con operandos boolean", line_count);
 							return -1;
 						}
 						fprintf(fout, ";R:\tcomparacion:	exp TOK_MAYORIGUAL exp\n");
@@ -834,7 +852,7 @@ comparacion:	exp TOK_IGUAL exp
 							$$.es_direccion = 0;
 						}
 						else {
-							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+							fprintf(stdout,"****Error semantico en lin %d: Comparacion con operandos boolean", line_count);
 							return -1;
 						}
 						fprintf(fout, ";R:\tcomparacion:	exp TOK_MENORIGUAL exp\n");
@@ -846,7 +864,7 @@ comparacion:	exp TOK_IGUAL exp
 							$$.es_direccion = 0;
 						}
 						else {
-							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+							fprintf(stdout,"****Error semantico en lin %d: Comparacion con operandos boolean", line_count);
 							return -1;
 						}
 						fprintf(fout, ";R:\tcomparacion:	exp '>' exp\n");
@@ -858,7 +876,7 @@ comparacion:	exp TOK_IGUAL exp
 							$$.es_direccion = 0;
 						}
 						else {
-							fprintf(stdout,"ERROR SEMÁNTICO:%d:%d\n", line_count, col_count);
+							fprintf(stdout,"****Error semantico en lin %d: Comparacion con operandos boolean", line_count);
 							return -1;
 						}
 						fprintf(fout, ";R:\tcomparacion:	exp '<' exp\n");
