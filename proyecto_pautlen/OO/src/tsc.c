@@ -32,6 +32,31 @@ int _parse_symbol(char* simbolo, char ** id_ambito, char** id_simbolo){
 	return OK;
 }
 
+int get_parameters_from_function(tsc* t, char* nombre_metodo){
+	tsa* table;
+	tsa_elem* elem;
+	char* real_id;
+	table = _get_tsa_from_scope(t, nombre_metodo);
+	if(!table) return ERROR;
+
+	/*Si estamos en el main buscamos en el main*/
+	if(!strcmp(table->ambito, TSA_MAIN)){
+		/*Buscamos en el main*/
+		real_id = _concat_prefix(t->main->ambito, nombre_metodo);
+		elem = ppal_get(t->main, real_id);
+		free(real_id);
+		if(elem) return elem->tamanio;
+	}else{
+		/*Si no esta en el main buscamos en el resto de tsa*/
+		for(i=0; i<t->grafo->vertex_count; i++){
+			real_id = _concat_prefix(t->grafo->nodes[i]->tsa->ambito, nombre_id);
+			elem = ppal_get(t->grafo->nodes[i]->tsa, real_id);
+			free(real_id);
+			if(elem) return elem->tamanio;
+	}
+	return ERROR;
+}
+
 tsc* init_tsc(char * nombre){
 	tsc* t;
 	if(!nombre) return NULL;
