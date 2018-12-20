@@ -8,7 +8,8 @@ void escribir_cabecera_bss(FILE* fpasm){
 
 void escribir_subseccion_data(FILE* fpasm){
 	//Con mensaje de error de division cero
-	fprintf(fpasm,"segment .data\n\tmsg_div_cero\tdb \"ERROR: DIVISOR ES CERO\", 0");
+	fprintf(fpasm,"segment .data\n\tmsg_div_cero\tdb \"Error division por 0\", 0");
+	fprintf(fpasm, "\n\tmsg_vector\tdb \"Indice de vector fuera de rango\", 0");
 }
 
 void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano){
@@ -30,6 +31,8 @@ void escribir_fin(FILE* fpasm){
 	/* Gestion de las divisiones por 0 */
 	fprintf(fpasm, "error_div_cero:\n");
 	fprintf(fpasm, "\tpush dword msg_div_cero\n\tcall print_string\n\tadd esp, 4\n\tcall print_endofline\n\tret\n");
+	fprintf(fpasm, "error_vector:\n");
+	fprintf(fpasm, "\tpush dword msg_vector\n\tcall print_string\n\tadd esp, 4\n\tcall print_endofline\n\tret\n");
 }
 
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable){
@@ -458,6 +461,17 @@ void ifthenelse_fin(FILE * fpasm, int etiqueta){
 	fprintf(fpasm, "_fin_sino_%d:\n", etiqueta);
 }
 
+void if_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta){
+
+	fprintf(fpasm, "\tpop eax\n");
+	
+	if(exp_es_variable)
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
+	
+	fprintf(fpasm, "\tcmp eax, 0\n");
+	fprintf(fpasm, "\tje near _fin_si_%d\n", etiqueta);
+}
+
 /* Guion 12 Parte PROC */
 void declararFuncion(FILE * fpasm, char * nombre_funcion, int num_var_loc) {
 	fprintf(fpasm, "_%s:\n", nombre_funcion);
@@ -502,7 +516,7 @@ void llamarFuncion(FILE * fpasm, char * nombre_funcion, int num_argumentos) {
 }
 
 void limpiarPila(FILE * fd_asm, int num_argumentos) {
-	fprintf(fpasm, "add esp, %d\n", 4 * num_argumentos);
+	fprintf(fd_asm, "add esp, %d\n", 4 * num_argumentos);
 }
 
 void while_inicio(FILE * fpasm, int etiqueta){
@@ -525,10 +539,19 @@ void while_fin( FILE * fpasm, int etiqueta){
 	fprintf(fpasm, "_fin_while_%d:\n", etiqueta);
 }
 
-void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, 
+void escribir_elemento_vector(FILE * fpasm, char * nombre_vector, 
                    int tam_max, int exp_es_direccion){
 	
-	fprintf(fpasm, "\tmov dword edx, _%s\n", nombre);
+	fprintf(fpasm, "\tpop dword eax\n");
+	
+	if (exp_es_direccion)
+   		fprintf(fpasm, "\tmov dword eax , [eax]\n");
+
+	fprintf(fpasm, "\tcmp eax,0\n");
+	fprintf(fpasm, "\tjl near error_vector\n");
+	fprintf(fpasm, "\tcmp eax, %d\n", tam_max -1);
+	fprintf(fpasm, "\tjl near error_vector\n");
+	fprintf(fpasm, "\tmov dword edx, _%s\n", nombre_vector);
 	fprintf(fpasm, "\tlea eax, [edx + eax*4]\n");
 	fprintf(fpasm, "\tpush dword eax\n");
 	fprintf(fpasm, "\tadd eax, edx\n");
@@ -572,9 +595,9 @@ void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributo
 }
 void discardPila (FILE * fd_asm){
 	/*Como la direccion de la instancia esta ya en la cima de la pila llamo directamente a free*/
-	/*fprintf(fd_asm, "\tpop dword eax\n");
+	fprintf(fd_asm, "\tpop dword eax\n");
 	fprintf(fd_asm, "\tmov dword ebx, [eax]\n");
-	fprintf(fd_asm, "\tpush dword [eax]\n");*/
+	fprintf(fd_asm, "\tpush dword [eax]\n");
 	fprintf(fd_asm, "\tcall free\n");
 	fprintf(fd_asm, "\tadd esp, 4\n");
 	return;

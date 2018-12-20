@@ -141,6 +141,8 @@ int _parse_symbol(char* simbolo, char ** id_ambito, char** id_simbolo);
 
 char* _concat_prefix(char* prefix, char* symbol);
 
+int get_parameters_from_function(tsc* t, char* nombre_metodo);
+
 
 
 #endif

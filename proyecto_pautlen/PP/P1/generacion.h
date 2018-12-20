@@ -145,6 +145,8 @@ void ifthenelse_fin_then( FILE * fpasm, int etiqueta);
 
 void ifthenelse_fin( FILE * fpasm, int etiqueta);
 
+void if_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
+
 
 void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc);
 void retornarFuncion(FILE * fd_asm, int es_variable);

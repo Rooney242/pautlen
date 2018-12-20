@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "generador_nasm.h"
+#include "generacion.h"
 
 
 
@@ -52,8 +52,6 @@ int main(int argc, char ** argv)
 	// discard c;
 	escribir_operando(fd_asm,"c",1);
 	discardPila(fd_asm);
-
-
 
 	// b = instanceof B;
 	instance_of(fd_asm,"B",2);
