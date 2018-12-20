@@ -576,13 +576,18 @@ int buscarIdCualificadoClase(	tsc *t, char * nombre_clase_cualifica,
 	if(!t || !nombre_clase_cualifica || !nombre_id || !nombre_ambito_desde) return ERROR;
  	/*Primero buscamos si la clase que cualifica existe*/
 	*ambito_encontrado = _get_tsa_from_scope(t, nombre_clase_cualifica);
-	if(!(*ambito_encontrado)) return ERROR;/*La clase que cualifica no existe*/
+	if(!(*ambito_encontrado)) return CASO_38;/*La clase que cualifica no existe*/
  	/*Si existe la clase que cualifica miramos si se puede llegar a ese simbolo desde ella en su jerarquia*/
 	ret = buscarIdEnJerarquiaDesdeAmbito(t, nombre_id, nombre_clase_cualifica, ambito_encontrado, elem);
 	if(ret == TRUE){/*Aplicamos accesos desde la clase en la que nos encontramos*/
-		return aplicarAccesos(t, nombre_id, (*ambito_encontrado)->ambito, nombre_ambito_desde, elem);
+		ret= aplicarAccesos(t, nombre_id, (*ambito_encontrado)->ambito, nombre_ambito_desde, elem);
+		if (ret == TRUE)
+			return CASO_35;/*Acceso desde clase a atributos de clases desde clase, existe*/
+		else
+			return CASO_36;/*Acceso desde método a atributo de clase, que existe pero no está accesible en la jerarquía */
+
 	}else{
-		return ret;
+		return CASO_37;/*Existe la clase que cualifica pero no el atributo*/
 	}
  }
 
@@ -625,11 +630,11 @@ int buscarParaDeclararMiembroClase(	tsc *t, char * nombre_ambito_desde, char * n
 	if(ret == TRUE){
 		/*Comprobamos si es accesible desde esta clase*/
 		ret = aplicarAccesos(t, nombre_miembro, nombre_ambito_desde, (*ambito_encontrado)->ambito, elem);
-		if(ret == TRUE) return CASO_49;
+		if(ret == TRUE) return CASO_49;/* YA ESTÁ EN LA CLASE NO SE PUEDE DECLARAR*/
 	}
 	*ambito_encontrado = NULL;
 	*elem = NULL;
-	return CASO_50;
+	return CASO_50;/*NO ESTÁ EN LA CLASE SE PUEDE DECLARAR*/
 }
 
 /*Esta funcion busca si hay un atributo en la jerarquia de la clase donde lo intentamos declarar.*/
