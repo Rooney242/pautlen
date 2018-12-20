@@ -39,7 +39,7 @@
 #define NINGUNO 1 //(exposed)
 #define HIDDEN 2 //(hidden) 
 #define SECRET 3 //(secret)
-#define EXPOSED 4 //(exposed)
+#define EXPOSED 4 //(exposed) 
 
 /*Tipo miembro*/
 #define MIEMBRO_UNICO 1

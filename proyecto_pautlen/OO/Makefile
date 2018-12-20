@@ -33,7 +33,7 @@ PRACTICA4 = prueba_TS
 
 
 
-all: hash graph tsa tsc output generador_tsc generador_nasm
+all: hash graph tsa tsc output generador_tsc
 
 all-test: graph-test tsc-test dot-test generador_tsc-test 
 
