@@ -19,7 +19,7 @@ TAB = y.tab
 all: flex bison
 	@echo Hacer make de las carpetas PP/P1 y OO para que funcione
 	@echo Compilado del ejercicio
-	@$(CC) $(LIB) -I ../P1 -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) ../P1/generacion.o
+	@$(CC) $(LIB) -I ../P1 -Wall -o omicron $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) ../P1/generacion.o
 	@echo Make success
 
 flex:
@@ -34,7 +34,7 @@ asm:
 	./omicron
 
 debug:
-	@$(CC) -ggdb $(LIB) -I ../P1 -Wall -o $(EJ) $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) ../P1/generacion.o
+	@$(CC) -ggdb $(LIB) -I ../P1 -Wall -o omicron $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) ../P1/generacion.o
 	@echo Make success
 
 .PHONY : clean all

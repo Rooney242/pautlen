@@ -23,7 +23,7 @@ typedef struct tipo_atributos
    int etiqueta;
    int clase;
    int num_parametros;
-   int num_axpresiones;
+   int num_expresiones;
 }	tipo_atributos;
 
 #endif

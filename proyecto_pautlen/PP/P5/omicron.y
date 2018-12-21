@@ -14,11 +14,15 @@
 
 	int tipo_actual;                                                                
 	int clase_actual;
-	char tamanio_vector_actual[15];
+	int * tipo_parametros;
+	int pos_parametro_actual;
+   	int num_parametros_actual;
+	int tamanio_vector_actual;
 
 	tsc * tabla_simbolos;
     tsa* tsa_aux;
     tsa_elem * elem_aux;
+
     char nombre_clase_desde[ID_MAX];
 
 
@@ -93,6 +97,8 @@
 %type <atributos> resto_parametros_funcion
 %type <atributos> lista_expresiones
 %type <atributos> resto_lista_expresiones
+%type <atributos> fn_name
+%type <atributos> idpf
 
 
 %start programa
@@ -118,6 +124,7 @@ inicio_tsc:		{
 
 
 escritura1: 	{
+					strcpy(nombre_clase_desde,TSA_MAIN); 
   					escribir_subseccion_data(asmfile);
     				escribir_cabecera_bss(asmfile);
          	 	}
@@ -191,20 +198,20 @@ modificadores_acceso: /*vacio*/
 clase:	clase_escalar
 			{
 				clase_actual = ESCALAR;
-				strcpy(nombre_clase_desde, $1.lexema);
+				//strcpy(nombre_clase_desde, $1.lexema);
 				fprintf(fout, ";R:\tclase:	clase_escalar\n");
 			}
 		| clase_vector
 			{
 				clase_actual = VECTOR;
-				strcpy(nombre_clase_desde, $1.lexema);
+				//strcpy(nombre_clase_desde, $1.lexema);
 				fprintf(fout, ";R:\tclase:	clase_vector\n");
 			}
 		| clase_objeto
 			{
 
 				clase_actual = OBJETO;
-				strcpy(nombre_clase_desde, $1.lexema);
+				//strcpy(nombre_clase_desde, $1.lexema);
 				fprintf(fout, ";R:\tclase:	clase_objeto\n");
 			}
 		;
@@ -222,7 +229,7 @@ declaracion_clase:	abrirAmbitoClase TOK_INHERITS identificadores '{' declaracion
 
 abrirAmbitoClase: 	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR
 					{
-						/* Abrimos el ambito de la clase */
+						/* Abrimos el ambito de la clase 
 						if(!abrirClase(tabla_simbolos, $3.lexema)) {
 							fprintf(stdout,"ERROR AL ABRIR CLASE :%d:%d\n", line_count, col_count);
 							return -1;
@@ -232,7 +239,7 @@ abrirAmbitoClase: 	modificadores_clase TOK_CLASS TOK_IDENTIFICADOR
 					        fprintf(stdout, "ERROR AL ABRIR AMBITO CLASE :%d:%d\n", line_count, col_count);
 					        return 0;
 					    }
-
+						*/
 					}
 					;
 
@@ -269,9 +276,9 @@ clase_objeto: 	'{' TOK_IDENTIFICADOR '}'
 				;
 
 clase_vector: 	TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
-					{
-						strcpy(tamanio_vector_actual, $4.valor_entero);
-						if (atoi(tamanio_vector_actual) < 1 || atoi(tamanio_vector_actual) > MAX_TAMANIO_VECTOR) {
+					{	
+						tamanio_vector_actual = atoi($4.valor_entero);
+						if (tamanio_vector_actual < 1 || tamanio_vector_actual > MAX_TAMANIO_VECTOR) {
 							fprintf(stdout,"****Error semantico en lin %d:\n\tEl tamanyo del vector <%s> excede los limites permitidos (1,64).\n", line_count, nombre_clase_desde);
 							return -1;
 						}
@@ -293,10 +300,13 @@ identificadores: 	TOK_IDENTIFICADOR
 						    }
 						    else 
 						    {
+						    	if (clase_actual != VECTOR)
+						    		tamanio_vector_actual = 0;
 						    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
-    								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-						    	real_id = _concat_prefix(TSA_MAIN, $1.lexema);
+    								0, 0, 0, 0, 0, 0, tamanio_vector_actual, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+						    	real_id = _concat_prefix(nombre_clase_desde, $1.lexema);
 						    	declarar_variable(asmfile, real_id, tipo_actual, clase_actual);
+						    	tamanio_vector_actual = 0;
 						    	free(real_id);
 						    }
 
@@ -314,10 +324,13 @@ identificadores: 	TOK_IDENTIFICADOR
 						    }
 						    else 
 						    {
+						    	if (clase_actual != VECTOR)
+						    		tamanio_vector_actual = 0;
 						    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
-    								0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-						    	real_id = _concat_prefix(TSA_MAIN, $1.lexema);
-						    	declarar_variable(asmfile, real_id, tipo_actual, clase_actual);
+    								0, 0, 0, 0, 0, 0, tamanio_vector_actual, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+						    	real_id = _concat_prefix(nombre_clase_desde, $1.lexema);
+						    	declarar_variable(asmfile, real_id, tipo_actual, tamanio_vector_actual);
+						    	tamanio_vector_actual = 0;
 						    	free(real_id);
 						    }
 						}
@@ -333,13 +346,30 @@ funciones: 	/*vacio*/
 				}
 			;
 
-funcion: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR 
-			'(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
+funcion: 	fn_declaration sentencias '}'
 				{
-					$$.num_parametros = $6.num_parametros;
 					fprintf(fout, ";R:\tfuncion: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");
 				}
 			;
+
+fn_declaration:	fn_complete_name '{' declaraciones_funcion
+
+fn_complete_name:	fn_name '(' param_init parametros_funcion ')' 
+				{
+
+				}
+
+param_init:	{
+
+			}
+
+fn_name: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR 
+				{
+					strcpy($$.lexema,$4.lexema);
+				}
+
+			
+
 
 tipo_retorno:	TOK_NONE
 					{
@@ -357,30 +387,33 @@ tipo_retorno:	TOK_NONE
 
 parametros_funcion:	parametro_funcion resto_parametros_funcion
 						{
-							$$.num_parametros = 1 + $2.num_parametros;
+							//$$.num_parametros = 1 + $2.num_parametros;
 							fprintf(fout, ";R:\tparametros_funcion:	parametro_funcion resto_parametros_funcion\n");
 						}
 					| /*vacio*/
 						{
-							$$.num_parametros = 0;
+							//$$.num_parametros = 0;
 							fprintf(fout, ";R:\tparametros_funcion: \n");
 						}
 					;
 
 resto_parametros_funcion:	';' parametro_funcion resto_parametros_funcion 
 								{
-									$$.num_parametros = 1 + $2.num_parametros;
+									//$$.num_parametros = 1 + $2.num_parametros;
 									fprintf(fout, ";R:\tresto_parametros_funcion:	';' parametro_funcion resto_parametros_funcion \n");
 								}
 							| /*vacio*/
 								{
-									$$.num_parametros = 0;
+									//$$.num_parametros = 0;
 									fprintf(fout, ";R:\tresto_parametros_funcion: \n");
 								}
 							;
 
 idpf:	TOK_IDENTIFICADOR
-			{
+			{	
+				strcpy($$.lexema,$1.lexema);
+				num_parametros_actual ++;	
+				tipo_parametros = (int*)realloc(tipo_parametros, num_parametros_actual*sizeof(int));
 				fprintf(fout, ";R:\tidpf: TOK_IDENTIFICADOR\n");
 			}
 
@@ -474,7 +507,8 @@ asignacion:	TOK_IDENTIFICADOR '=' exp
 				{
 					tsa* tsa_encontrada = NULL;
 					tsa_elem* elem = NULL;
-					if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, TSA_MAIN, &tsa_encontrada, &elem) < 0) {
+					if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, nombre_clase_desde, &tsa_encontrada, &elem) < 0) {
+						fprintf(stdout,"****Error semantico en lin %d: Acceso a variable no declarada (%s).", line_count, $1.lexema);
 						return -1;
 					}
 					
@@ -483,11 +517,11 @@ asignacion:	TOK_IDENTIFICADOR '=' exp
 						return -1;
 					}
 					if (elem->clase == VECTOR){
-						fprintf(stdout,"****Error semantico en lin %d: Asignacion incompatible.\n", line_count, col_count);
+						fprintf(stdout,"****Error semantico en lin %d: Asignacion incompatible.\n", line_count);
 						return -1;
 					}
 					if($3.tipo != elem->tipo){
-						fprintf(stdout,"****Error semantico en lin %d: Asignacion incompatible.\n", line_count, col_count);
+						fprintf(stdout,"****Error semantico en lin %d: Asignacion incompatible.\n", line_count);
 						return -1;
 					}
 					asignar(asmfile, elem->id, $3.es_direccion);
@@ -495,6 +529,11 @@ asignacion:	TOK_IDENTIFICADOR '=' exp
 				}
 			| elemento_vector '=' exp
 				{
+					if($1.tipo != $3.tipo){
+						fprintf(stdout,"****Error semantico en lin %d: Asignacion incompatible.\n", line_count);
+						return -1;
+					}
+					asignarDestinoEnPila(asmfile, $3.es_direccion);
 					fprintf(fout, ";R:\tasignacion:	elemento_vector '=' exp\n");
 				}
 			| elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
@@ -513,6 +552,20 @@ asignacion:	TOK_IDENTIFICADOR '=' exp
 
 elemento_vector:	TOK_IDENTIFICADOR '[' exp ']'
 						{
+							tsa* tsa_encontrada = NULL;
+							tsa_elem* elem = NULL;
+
+							if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, nombre_clase_desde, &tsa_encontrada, &elem) < 0){
+								fprintf(stdout,"****Error semantico en lin %d: Acceso a variable no declarada (%s).", line_count, $1.lexema);
+								return -1;
+							}
+
+							if ($3.tipo != INT){
+								fprintf(stdout,"****Error semantico en lin %d: El indice en una operacion de indexacion tien que ser de tipo entero.", line_count);
+								return -1;
+							}
+							$$.tipo = elem->tipo;
+							escribir_elemento_vector(asmfile, elem->id, elem->tamanio, $3.es_direccion);
 							fprintf(fout, ";R:\telemento_vector:	TOK_IDENTIFICADOR '[' exp ']'\n");
 						}
 					;
@@ -569,7 +622,7 @@ lectura:	TOK_SCANF TOK_IDENTIFICADOR
 					tsa * tsa_encontrada = NULL;
 					tsa_elem* elem = NULL;
 					/* Si al buscar el identificdor en la tabla de símbolos, no está... salir con ERROR */
-					if (buscarIdNoCualificado(tabla_simbolos, $2.lexema, TSA_MAIN, &tsa_encontrada, &elem) < 0){
+					if (buscarIdNoCualificado(tabla_simbolos, $2.lexema, nombre_clase_desde, &tsa_encontrada, &elem) < 0){
 						fprintf(stdout,"****Error semantico en lin %d: Acceso a variable no declarada (%s).", line_count, $2.lexema);
 						return -1;
 					}
@@ -595,7 +648,7 @@ escritura:	TOK_PRINTF exp
 					//Hacer para ambitos esto_concat_prefix(t->main->ambito, nombre_id)
 					char * real_id;
 					if ($2.es_direccion){
-						real_id = _concat_prefix(TSA_MAIN, $2.lexema);
+						real_id = _concat_prefix(nombre_clase_desde, $2.lexema);
 						escribir_operando(asmfile, real_id, $2.es_direccion);
 						free(real_id);
 					}
@@ -629,7 +682,7 @@ exp:	exp '+' exp
 		| exp '-' exp
 			{
 				if($1.tipo == INT && $3.tipo == INT){
-
+					restar(asmfile, $1.es_direccion, $3.es_direccion);
 					$$.tipo = 1;
 					$$.es_direccion = 0;
 				}
@@ -642,6 +695,7 @@ exp:	exp '+' exp
 		| exp '/' exp
 			{
 				if($1.tipo == INT && $3.tipo == INT){
+					dividir(asmfile, $1.es_direccion, $3.es_direccion);
 					$$.tipo = 1;
 					$$.es_direccion = 0;
 				}
@@ -654,6 +708,7 @@ exp:	exp '+' exp
 		| exp '*' exp
 			{
 				if($1.tipo == INT && $3.tipo == INT){
+					multiplicar(asmfile, $1.es_direccion, $3.es_direccion);
 					$$.tipo = 1;
 					$$.es_direccion = 0;
 				}
@@ -666,6 +721,7 @@ exp:	exp '+' exp
 		| '-' exp %prec MENOSU
 			{
 				if($2.tipo == INT){
+					cambiar_signo(asmfile,  $2.es_direccion);
 					$$.tipo = 1;
 					$$.es_direccion = 0;
 				}
@@ -678,6 +734,7 @@ exp:	exp '+' exp
 		| exp TOK_AND exp
 			{
 				if($1.tipo == BOOLEAN && $3.tipo == BOOLEAN){
+					y(asmfile, $1.es_direccion, $3.es_direccion);
 					$$.tipo = BOOLEAN;
 					$$.es_direccion = 0;
 				}
@@ -690,6 +747,7 @@ exp:	exp '+' exp
 		| exp TOK_OR exp
 			{
 				if($1.tipo == BOOLEAN && $3.tipo == BOOLEAN){
+					o(asmfile, $1.es_direccion, $3.es_direccion);
 					$$.tipo = BOOLEAN;
 					$$.es_direccion = 0;
 				}
@@ -702,6 +760,8 @@ exp:	exp '+' exp
 		| '!' exp
 			{
 				if($2.tipo == BOOLEAN){
+					no(asmfile, $2.es_direccion, etiqueta);
+					etiqueta ++;
 					$$.tipo = BOOLEAN;
 					$$.es_direccion = 0;
 				}
@@ -715,7 +775,7 @@ exp:	exp '+' exp
 			{
 				tsa* tsa_encontrada = NULL;
 				tsa_elem* elem = NULL;
-				if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, TSA_MAIN, &tsa_encontrada, &elem) < 0){
+				if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, nombre_clase_desde, &tsa_encontrada, &elem) < 0){
 							return -1;
 					}
 				if (elem->categoria == FUNCION){
@@ -752,7 +812,7 @@ exp:	exp '+' exp
 		| elemento_vector
 			{
 				$$.tipo = $1.tipo;
-				$$.es_direccion = $1.es_direccion;
+				$$.es_direccion = 1;
 				fprintf(fout, ";R:\texp:	elemento_vector\n");
 			}
 		| TOK_IDENTIFICADOR '(' lista_expresiones ')'

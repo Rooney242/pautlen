@@ -18,7 +18,7 @@ void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano){
 
 void escribir_segmento_codigo(FILE* fpasm){
 	fprintf(fpasm,"segment .text\n\tglobal main\n\textern scan_int, print_int, scan_float, print_float," 
-	"scan_boolean, print_boolean\n\textern print_endofline, print_blank, print_string\n\textern alfa_malloc, alfa_free, ld_float\n");
+	"scan_boolean, print_boolean\n\textern print_endofline, print_blank, print_string\n\textern malloc, free, ld_float\n");
 }
 
 void escribir_inicio_main(FILE* fpasm){
@@ -48,7 +48,7 @@ void asignar(FILE* fpasm, char* nombre, int es_variable){
 	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable == 1){
 		//Sacamos la variable de pila
-		fprintf(fpasm, "\tpop dword eax\n");
+		fprintf(fpasm, "\tpop dword eax\n"); 
 		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 		//La asignamos a la referencia
 		fprintf(fpasm, "\tmov dword [_%s], eax\n", nombre);
@@ -308,7 +308,7 @@ void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 	fprintf(fpasm, "\tjmp near _fin_menor_igual_%d\n", etiqueta);
 	fprintf(fpasm, "_menor_igual_%d:\n", etiqueta);
 	fprintf(fpasm, "\tpush 1\n");
-	fprintf(fpasm, "_fin_menor_gual_%d:\n", etiqueta);
+	fprintf(fpasm, "_fin_menor_igual_%d:\n", etiqueta);
 	
 }
 
@@ -476,8 +476,8 @@ void if_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta){
 void declararFuncion(FILE * fpasm, char * nombre_funcion, int num_var_loc) {
 	fprintf(fpasm, "_%s:\n", nombre_funcion);
 	fprintf(fpasm, "\tpush ebp\n");
-	fprintf(fpasm, "\tmov ebp, esp");
-	fprintf(fpasm, "\tsub esp, %d", 4*num_var_loc);
+	fprintf(fpasm, "\tmov ebp, esp\n");
+	fprintf(fpasm, "\tsub esp, %d\n", 4*num_var_loc);
 }
 
 void retornarFuncion(FILE * fpasm, int es_variable) {
@@ -550,11 +550,9 @@ void escribir_elemento_vector(FILE * fpasm, char * nombre_vector,
 	fprintf(fpasm, "\tcmp eax,0\n");
 	fprintf(fpasm, "\tjl near error_vector\n");
 	fprintf(fpasm, "\tcmp eax, %d\n", tam_max -1);
-	fprintf(fpasm, "\tjl near error_vector\n");
+	fprintf(fpasm, "\tjg near error_vector\n");
 	fprintf(fpasm, "\tmov dword edx, _%s\n", nombre_vector);
 	fprintf(fpasm, "\tlea eax, [edx + eax*4]\n");
-	fprintf(fpasm, "\tpush dword eax\n");
-	fprintf(fpasm, "\tadd eax, edx\n");
 	fprintf(fpasm, "\tpush dword eax\n");
 }
 
@@ -628,7 +626,7 @@ void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo){
 	fprintf(fd_asm, "\tpop dword ebx\n");
 
 	/*Apuntamos al offset del atributo de la isntancia sumando el de la instancia con el del atributo*/
-	fprintf(fd_asm, "\tmov dword ecx, [_offset_%s\n", nombre_atributo);
+	fprintf(fd_asm, "\tmov dword ecx, [_offset_%s]\n", nombre_atributo);
 	fprintf(fd_asm, "\tlea ecx, [ebx+ecx]\n");
 
 	/*Dejo la direccion en la pila*/
@@ -641,6 +639,7 @@ void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo){
 // - escribirParametro 
 // - escribirVariableLocal
 void asignarDestinoEnPila(FILE* fd_asm, int es_variable){
+
 	/*Cargamos la direccion donde hay que dejarlo*/
 	fprintf(fd_asm, "\tpop dword eax\n");
 
