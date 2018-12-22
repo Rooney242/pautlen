@@ -607,8 +607,10 @@ void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * n
 
 	/*Hacemos ebx apuntar al comienzo de la tabla de metodos sobreescribibles*/
 	fprintf(fd_asm, "\tmov dword ebx, [ebx]\n");
+	fprintf(fd_asm, "\tmov dword ebx, [ebx]\n");
 
 	/*Sumamos el offset de la tabla de simbolos y el del metodo*/
+	printf("--------------->_offset_%s\n", nombre_metodo);
 	fprintf(fd_asm, "\tmov dword ecx, [_offset_%s]\n", nombre_metodo);
 	fprintf(fd_asm, "\tlea ecx, [ebx+ecx]\n");
 
