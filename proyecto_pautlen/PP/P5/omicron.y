@@ -817,11 +817,18 @@ exp:	exp '+' exp
 			}
 		| TOK_IDENTIFICADOR '(' lista_expresiones ')'
 			{
+				if ($3.num_expresiones != get_parameters_from_function(tabla_simbolos, $1.lexema)){
+					fprintf(stdout,"****Error semantico en lin %d: Numero de argumentos en la funcion \"%s\" incorrecto", line_count, $1.lexema);
+					return -1;
+				}
 				fprintf(fout, ";R:\texp:	TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
 			}
 		| identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
 			{
-
+				if ($5.num_expresiones != get_parameters_from_function(tabla_simbolos, $3.lexema)){
+					fprintf(stdout,"****Error semantico en lin %d: Numero de argumentos en la funcion \"%s\" incorrecto", line_count, $1.lexema);
+					return -1;
+				}
 				fprintf(fout, ";R:\texp:	identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
 			}
 		| identificador_clase '.' TOK_IDENTIFICADOR
