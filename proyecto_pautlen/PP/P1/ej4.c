@@ -97,7 +97,7 @@ int main(int argc, char ** argv)
     escribir(fd_asm,1,ENTERO);
 
     
-    //escribirVariableLocal(fd_asm,1);
+    escribirVariableLocal(fd_asm,1);
     escribirVariableLocal(fd_asm,2);
     retornarFuncion(fd_asm, 1);
 
@@ -132,10 +132,10 @@ int main(int argc, char ** argv)
 
 
 // c2 = factorial(c1);
- //   escribir_operando(fd_asm,"c1",1);
-//    operandoEnPilaAArgumento(fd_asm,1);
-   // llamarFuncion(fd_asm,"main_factorial@o2",1);
-//    asignar(fd_asm,"c2",0);
+  escribir_operando(fd_asm,"c1",1);
+  operandoEnPilaAArgumento(fd_asm,1);
+  llamarFuncion(fd_asm,"main_factorial@o2",1);
+  asignar(fd_asm,"c2",0);
 
 // discard c1;
     escribir_operando(fd_asm,"c1",1);
@@ -171,7 +171,6 @@ int main(int argc, char ** argv)
     escribir_operando(fd_asm,"c1",1);
     accederAtributoInstanciaDePila(fd_asm, "aiC2");
     asignarDestinoEnPila(fd_asm, 0);
-
 
 
 
@@ -280,10 +279,6 @@ int main(int argc, char ** argv)
     etiqueta = etiquetas[cima_etiquetas];    
     ifthenelse_fin(fd_asm, etiqueta);
     cima_etiquetas--;
-
-
-
-
 
 // m = 0;
     escribir_operando(fd_asm,"0",0);
@@ -467,8 +462,6 @@ int main(int argc, char ** argv)
     while_fin(fd_asm, etiqueta);
 //    GESTIÓN DE ETIQUETAS FIN BLOQUE
     cima_etiquetas--;
-
-
 
 // printf c2.aiC2;
     escribir_operando(fd_asm,"c2",1);

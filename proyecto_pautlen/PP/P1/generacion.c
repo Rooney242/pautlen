@@ -381,7 +381,7 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 		etiquetas ni si he puesto bien la sintaxis de los jump*/
 		
 	fprintf(fpasm, "\tcmp eax, edx\n");
-	fprintf(fpasm, "\tjle near _mayor_%d\n", etiqueta);
+	fprintf(fpasm, "\tjg near _mayor_%d\n", etiqueta);
 	fprintf(fpasm, "\tpush 0\n");
 	fprintf(fpasm, "\tjmp near _fin_mayor_%d\n", etiqueta);
 	fprintf(fpasm, "_mayor_%d:\n", etiqueta);
@@ -494,10 +494,12 @@ void retornarFuncion(FILE * fpasm, int es_variable) {
 
 void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros) {
 	fprintf(fpasm, "\tlea eax, [ebp+%d]\n", 4 + 4 * (num_total_parametros - pos_parametro));
+	fprintf(fpasm, "\tpush dword eax\n");
 }
 
 void escribirVariableLocal(FILE* fpasm, int posicion_variable_local) {
 	fprintf(fpasm, "\tlea eax, [ebp-%d]\n", 4 * posicion_variable_local);
+	fprintf(fpasm, "\tpush dword eax\n");
 }
 
 // TODO Creo que no hace falta comprobar el caso de que no sea variable porque se
@@ -510,9 +512,9 @@ void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable) {
 }
 
 void llamarFuncion(FILE * fpasm, char * nombre_funcion, int num_argumentos) {
-	fprintf(fpasm, "call _%s\n", nombre_funcion);
-	fprintf(fpasm, "add esp, 4*%d\n", num_argumentos);
-	fprintf(fpasm, "push dword eax\n");
+	fprintf(fpasm, "\tcall _%s\n", nombre_funcion);
+	fprintf(fpasm, "\tadd esp, 4*%d\n", num_argumentos);
+	fprintf(fpasm, "\tpush dword eax\n");
 }
 
 void limpiarPila(FILE * fd_asm, int num_argumentos) {
