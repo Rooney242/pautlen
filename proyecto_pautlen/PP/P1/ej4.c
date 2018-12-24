@@ -172,9 +172,6 @@ int main(int argc, char ** argv)
     accederAtributoInstanciaDePila(fd_asm, "aiC2");
     asignarDestinoEnPila(fd_asm, 0);
 
-
-
-
 // m = 20;
     escribir_operando(fd_asm,"20",0);
     escribir_operando(fd_asm,"m",1);

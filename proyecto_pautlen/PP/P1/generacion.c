@@ -484,7 +484,7 @@ void retornarFuncion(FILE * fpasm, int es_variable) {
 	fprintf(fpasm, "\tpop dword eax\n");
 
 	if (es_variable)
-		fprintf(fpasm, "\tmov eax, dword [eax]\n");
+		fprintf(fpasm, "\tmov eax, [eax]\n");
 
 	fprintf(fpasm, "\tmov dword esp, ebp\n");
 	fprintf(fpasm, "\tpop dword ebp\n");
@@ -513,7 +513,7 @@ void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable) {
 
 void llamarFuncion(FILE * fpasm, char * nombre_funcion, int num_argumentos) {
 	fprintf(fpasm, "\tcall _%s\n", nombre_funcion);
-	fprintf(fpasm, "\tadd esp, 4*%d\n", num_argumentos);
+	fprintf(fpasm, "\tadd esp, %d\n", 4*num_argumentos);
 	fprintf(fpasm, "\tpush dword eax\n");
 }
 
@@ -612,7 +612,6 @@ void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * n
 	fprintf(fd_asm, "\tmov dword ebx, [ebx]\n");
 
 	/*Sumamos el offset de la tabla de simbolos y el del metodo*/
-	printf("--------------->_offset_%s\n", nombre_metodo);
 	fprintf(fd_asm, "\tmov dword ecx, [_offset_%s]\n", nombre_metodo);
 	fprintf(fd_asm, "\tlea ecx, [ebx+ecx]\n");
 

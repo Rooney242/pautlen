@@ -18,12 +18,14 @@
 	int pos_parametro_actual;
    	int num_parametros_actual;
 	int tamanio_vector_actual;
+	int ambito;
 
 	tsc * tabla_simbolos;
     tsa* tsa_aux;
     tsa_elem * elem_aux;
 
     char nombre_clase_desde[ID_MAX];
+    char nombre_ambito_desde[ID_MAX];
 
 
 %}
@@ -99,6 +101,11 @@
 %type <atributos> resto_lista_expresiones
 %type <atributos> fn_name
 %type <atributos> idpf
+%type <atributos> fn_complete_name
+%type <atributos> tipo_retorno
+%type <atributos> sentencia_simple
+%type <atributos> retorno_funcion
+%type <atributos> fn_declaration
 
 
 %start programa
@@ -125,6 +132,7 @@ inicio_tsc:		{
 
 escritura1: 	{
 					strcpy(nombre_clase_desde,TSA_MAIN); 
+					ambito = 0;
   					escribir_subseccion_data(asmfile);
     				escribir_cabecera_bss(asmfile);
          	 	}
@@ -348,24 +356,49 @@ funciones: 	/*vacio*/
 
 funcion: 	fn_declaration sentencias '}'
 				{
+					ambito = 0;
+					cerrarAmbitoEnClase(tabla_simbolos, nombre_clase_desde, $1.lexema);
 					fprintf(fout, ";R:\tfuncion: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");
 				}
-			;
+			
 
 fn_declaration:	fn_complete_name '{' declaraciones_funcion
+				{
+					strcpy($$.lexema,$1.lexema);
+				}
 
 fn_complete_name:	fn_name '(' param_init parametros_funcion ')' 
 				{
+					int i;
+					int tipo = INT;
+					char * real_id;
+					char funcion[MAX_LONG_ID+1];
+					strcpy(funcion,$1.lexema);
 
+					for(i=0;i<num_parametros_actual;i++){
+						strcat(funcion,"@");
+						strcat(funcion,tipo_parametros[0]);
+					}
+					if($1.tipo == BOOLEAN)
+						tipo = BOOLEAN;
+					abrirAmbitoEnClase(tabla_simbolos, nombre_clase_desde, funcion, METODO_SOBREESCRIBIBLE, EXPOSED, tipo, 0, 0);
+					real_id = _concat_prefix(nombre_clase_desde, funcion);
+					declararFuncion(asmfile, real_id, num_parametros_actual);
+					strcpy(nombre_ambito_desde, real_id);
+    				free(real_id);
+					strcpy($$.lexema, funcion);
+					ambito = 1;
 				}
 
 param_init:	{
-
+				num_parametros_actual = 0;
+				free(tipo_parametros);
 			}
 
 fn_name: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR 
 				{
 					strcpy($$.lexema,$4.lexema);
+					$$.tipo = $3.tipo;
 				}
 
 			
@@ -377,10 +410,12 @@ tipo_retorno:	TOK_NONE
 					}
 				| tipo
 					{
+						$$.tipo=$1.tipo;
 						fprintf(fout, ";R:\ttipo_retorno:	tipo\n");
 					}
 				| clase_objeto
 					{
+						$$.tipo=$1.tipo;
 						fprintf(fout, ";R:\ttipo_retorno:	clase_objeto\n");
 					}
 				;
@@ -411,7 +446,12 @@ resto_parametros_funcion:	';' parametro_funcion resto_parametros_funcion
 
 idpf:	TOK_IDENTIFICADOR
 			{	
-				strcpy($$.lexema,$1.lexema);
+				tsa* tsa_encontrada = NULL;
+				tsa_elem* elem = NULL;
+				if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, nombre_clase_desde, &tsa_encontrada, &elem) < 0) {
+					fprintf(stdout,"****Error semantico en lin %d: Acceso a variable no declarada (%s).", line_count, $1.lexema);
+					return -1;
+				}
 				num_parametros_actual ++;	
 				tipo_parametros = (int*)realloc(tipo_parametros, num_parametros_actual*sizeof(int));
 				fprintf(fout, ";R:\tidpf: TOK_IDENTIFICADOR\n");
@@ -471,6 +511,7 @@ sentencia_simple:	asignacion
 						}
 					| retorno_funcion 
 						{
+							retornarFuncion(asmfile, $1.tipo);
 							fprintf(fout, ";R:\tsentencia_simple:	retorno_funcion\n");
 						}
 					| identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
