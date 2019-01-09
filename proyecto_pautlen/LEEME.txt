@@ -1,6 +1,6 @@
 Para ejecutar el compilador ejecute make dentro de los siguientes directorios:
 1.	OO
-2.	PP/P1
+2.	PP/P1 (make generacion)
 3.	PP/P5
 
 El ejecutable estara dentro de PP/P5 con el nombre "pruebaCompilador"

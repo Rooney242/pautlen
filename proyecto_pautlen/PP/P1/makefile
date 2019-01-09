@@ -7,7 +7,11 @@ all:
 	#./ej
 	#valgrind --leak-check=full ./ej
 
+generacion:
+	gcc -Wall -c generacion.c -o generacion.o
+
 clean :
+	@rm generacion.o
 	@rm ej4
 	@rm ej.o
 	@rm ts.o
