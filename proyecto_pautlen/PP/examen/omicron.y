@@ -613,7 +613,7 @@ elemento_vector:	TOK_IDENTIFICADOR '[' exp ']'
 						}
 					;
 
-condicional:	if_exp ')' '{' sentencias '}' 
+condicional:	if_exp_sentencias
 					{
 						ifthen_fin(asmfile, $1.etiqueta);
 						fprintf(fout, ";R:\tcondicional:	if_exp ')' '{' sentencias '}' \n");
@@ -638,8 +638,8 @@ if_exp:	TOK_IF '(' exp ')' '{'
 					fprintf(stdout,"****Error semantico en lin %d: Condicional con condicion de tipo int.\n", line_count);
 					return -1;
 				}
-				$$.etiqueta = etiqueta ++;
 				ifthenelse_inicio(asmfile, $3.es_direccion, $$.etiqueta);
+				$$.etiqueta = etiqueta ++;
 				fprintf(fout, ";R:\tif_exp:	TOK_IF '(' exp ')' '{' \n");
 			}
 			;
@@ -657,9 +657,9 @@ while_exp:	TOK_WHILE '(' exp
 						fprintf(stdout,"****Error semantico en lin %d: Bucle con condicion de tipo int.\n", line_count);
 						return -1;
 					}
-					$$.etiqueta = etiqueta ++;
 					while_inicio(asmfile, etiqueta);
 					while_exp_pila(asmfile, $3.es_direccion, etiqueta);
+					$$.etiqueta = etiqueta ++;
 					fprintf(fout, ";R:\twhile_exp:	TOK_WHILE '(' exp \n");
 				}
 				;
