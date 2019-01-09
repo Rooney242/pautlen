@@ -41,7 +41,6 @@ int parser_line(char* line, FILE* out, tsc** p_omicron, class_info ** p_class_in
     char** nombres_padres;
     int categoria = 0, tipo_basico = 0, estructura = 0, tipo_acceso = 0, tipo_miembro = 0, posicion_metodo_sobreescribible = 0;
 
-
 	token = strtok(line, DELIMITADOR);
 
 	/*Caso de que sea un comentario, se ignora*/
