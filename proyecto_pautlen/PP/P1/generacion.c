@@ -1,5 +1,7 @@
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "generacion.h"
 
 void escribir_cabecera_bss(FILE* fpasm){
@@ -575,7 +577,7 @@ char * claseATabla(char * nombre_fuente_clase){
 void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia){
 	char* nombre_final;
 	/*Meto el espacio que quiero reservar*/
-	fprintf(fd_asm, "\tpush %d\n", numero_atributos_instancia*4);
+	fprintf(fd_asm, "\tpush %d\n", (numero_atributos_instancia)*4);
 
 	fprintf(fd_asm, "\tcall malloc\n");
 

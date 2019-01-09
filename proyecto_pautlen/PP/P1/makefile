@@ -8,8 +8,8 @@ all:
 	valgrind --leak-check=full ./ej
 
 clean :
-	@rm generacion.o
 	@rm ej4
+	@rm ej4.asm
 	@rm ej.o
 	@rm ts.o
 	@rm ej

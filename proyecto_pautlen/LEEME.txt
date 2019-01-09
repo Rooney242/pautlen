@@ -5,7 +5,7 @@ Para ejecutar el compilador ejecute make dentro de los siguientes directorios:
 
 El ejecutable estara dentro de PP/P5 con el nombre "pruebaCompilador"
 
-El comando es: ./pruebaCompilador <fichero_entrada> <fichero_salida_analisis (no el asm)>
+El comando es: ./pruebaCompilador <fichero_entrada> <fichero_salida_analisis_semantico/sintactico (no el asm)>
 
 El fichero del codigo asm sera omicron.asm
 

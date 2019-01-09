@@ -19,6 +19,7 @@
    	int num_parametros_actual;
 	int tamanio_vector_actual;
 	int ambito;
+	int es_variable_actual;
 
 	tsc * tabla_simbolos;
     tsa* tsa_aux;
@@ -359,6 +360,7 @@ funcion: 	fn_declaration sentencias '}'
 					ambito = 0;
 					cerrarAmbitoEnClase(tabla_simbolos, nombre_clase_desde, $1.lexema);
 					fprintf(fout, ";R:\tfuncion: 	TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");
+					retornarFuncion(fd_asm, es_variable_actual);
 				}
 			
 
@@ -381,10 +383,10 @@ fn_complete_name:	fn_name '(' param_init parametros_funcion ')'
 					}
 					if($1.tipo == BOOLEAN)
 						tipo = BOOLEAN;
-					abrirAmbitoEnClase(tabla_simbolos, nombre_clase_desde, funcion, METODO_SOBREESCRIBIBLE, EXPOSED, tipo, 0, 0);
+					abrirAmbitoClase(tabla_simbolos, funcion, METODO_SOBREESCRIBIBLE, EXPOSED, tipo, 0, 0);
 					real_id = _concat_prefix(nombre_clase_desde, funcion);
 					declararFuncion(asmfile, real_id, num_parametros_actual);
-					strcpy(nombre_ambito_desde, real_id);
+					strcpy(nombre_ambito_desde, funcion);
     				free(real_id);
 					strcpy($$.lexema, funcion);
 					ambito = 1;
@@ -894,6 +896,8 @@ identificador_clase:	TOK_IDENTIFICADOR
 lista_expresiones: 	exp resto_lista_expresiones 
 						{
 							$$.num_expresiones = 1 + $2.num_expresiones;
+							escribir_operando(asmfile, $1.lexema, $1.es_direccion);
+							operandoEnPilaAArgumento(asmfile, $1.es_direccion);
 							fprintf(fout, ";R:\tlista_expresiones:	exp resto_lista_expresiones \n");
 						}
 					| /*vacio*/
@@ -906,11 +910,12 @@ lista_expresiones: 	exp resto_lista_expresiones
 resto_lista_expresiones:	',' exp resto_lista_expresiones 
 								{
 									$$.num_expresiones = 1 + $3.num_expresiones;
+									escribir_operando(asmfile, $1.lexema, $1.es_direccion);
+									operandoEnPilaAArgumento(asmfile, $1.es_direccion);
 									fprintf(fout, ";R:\tresto_lista_expresiones:	',' exp resto_lista_expresiones \n");
 								}
 							| /*vacio*/
 								{
-									$$.num_expresiones = 0;
 									fprintf(fout, ";R:\tresto_lista_expresiones:	\n");
 								}
 							;
