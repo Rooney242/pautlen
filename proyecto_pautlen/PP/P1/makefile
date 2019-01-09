@@ -5,7 +5,10 @@ all:
 	nasm -felf32 -g ts.asm
 	gcc -o ej -m32 ej.o ts.o olib.o 
 	#./ej
-	valgrind --leak-check=full ./ej
+	#valgrind --leak-check=full ./ej
+
+generacion:
+	gcc -Wall -c generacion.c -o generacion.o
 
 clean :
 	@rm ej4

@@ -41,7 +41,6 @@ int parser_line(char* line, FILE* out, tsc** p_omicron, class_info ** p_class_in
     char** nombres_padres;
     int categoria = 0, tipo_basico = 0, estructura = 0, tipo_acceso = 0, tipo_miembro = 0, posicion_metodo_sobreescribible = 0;
 
-
 	token = strtok(line, DELIMITADOR);
 
 	/*Caso de que sea un comentario, se ignora*/
@@ -76,11 +75,9 @@ int parser_line(char* line, FILE* out, tsc** p_omicron, class_info ** p_class_in
 		if(!strcmp(token, DECLARAR_MAIN)){
 			nombre_simbolo = strtok(NULL, DELIMITADOR);
 
-			_parse_symbol(nombre_simbolo, &nombre_ambito, &nombre_simbolo);
-
 			ret = buscarParaDeclararIdMain(*p_omicron, nombre_simbolo, &tsa_aux, &elem_aux);
 
-			print_caso(out, ret, TRUE, nombre_ambito_desde, tsa_aux, elem_aux);
+			print_caso(out, ret, TRUE, TSA_MAIN, tsa_aux, elem_aux);
     		tsa_aux = NULL;
     		elem_aux = NULL;
 
@@ -153,6 +150,7 @@ int parser_line(char* line, FILE* out, tsc** p_omicron, class_info ** p_class_in
 			nombre_ambito_desde = strtok(NULL, DELIMITADOR);
 
 			ret = buscarIdCualificadoClase(*p_omicron, nombre_clase_cualifica, nombre_simbolo, nombre_ambito_desde, &tsa_aux, &elem_aux);
+
 			print_caso(out, ret, FALSE, nombre_ambito_desde, tsa_aux, elem_aux);
     		tsa_aux = NULL;
     		elem_aux = NULL;
@@ -228,11 +226,11 @@ int parser_line(char* line, FILE* out, tsc** p_omicron, class_info ** p_class_in
 
 		_parse_symbol(nombre_simbolo, &nombre_ambito, &nombre_simbolo);
 
-		abrirAmbitoEnClase(*p_omicron, nombre_ambito, nombre_simbolo, FUNCION, NINGUNO, 0, 0, 0);
+		abrirAmbitoEnClase(*p_omicron, TSA_MAIN, nombre_simbolo, FUNCION, NINGUNO, 0, 0, 0);
 
 		strcpy((*p_main_info)->nombre_metodo_temp, nombre_simbolo);
 
-		print_hash_table_from_met(out, *p_omicron, nombre_ambito, nombre_simbolo);
+		print_hash_table_from_met(out, *p_omicron, TSA_MAIN, nombre_simbolo);
 
 	}else if(!strcmp(token, CERRAR_AMBITO_TSA_MAIN)){
 		print_command(out, token, TRUE);
