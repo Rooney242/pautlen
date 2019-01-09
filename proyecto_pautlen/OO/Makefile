@@ -95,3 +95,4 @@ clean :
 	@rm -f $(PRACTICA4)
 	@rm -f grafo.dot
 	@rm -f $(OBJ_FOLDER)*.o
+	@rm -f output/*.out

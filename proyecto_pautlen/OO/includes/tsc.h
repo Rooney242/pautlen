@@ -143,6 +143,8 @@ char* _concat_prefix(char* prefix, char* symbol);
 
 int get_parameters_from_function(tsc* t, char* nombre_metodo);
 
+tsa* get_class(tsc* t, char* id_clase);
+
 
 
 #endif

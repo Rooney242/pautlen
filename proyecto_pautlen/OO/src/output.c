@@ -12,6 +12,8 @@
 int	print_caso(FILE* pf, int caso, int es_declarar, char* ambito_desde, tsa* ambito_encontrado, tsa_elem* elem){
 	if(!pf) return ERROR;
 
+	if(caso == ERROR) return ERROR;
+
 	if(caso){
 		fprintf(pf, "--> Simbolo %s encontrado en %s. ", elem->id, ambito_encontrado->ambito);
 		if(es_declarar){
@@ -58,7 +60,7 @@ int print_hash_table_from_met(FILE* pf, tsc* p_tsc, char* id_clase, char* metodo
 	tsa* t;
 	if(!pf || !id_clase || !metodo) return ERROR;
 
-	t = _get_tsa_from_scope(p_tsc, metodo);
+	t = get_class(p_tsc, id_clase);
 
 	simbolos = (char**) malloc(sizeof(char*)*t->met->e_num);
 	ht_list_keys(t->met, simbolos, t->met->e_num);

@@ -120,7 +120,10 @@ int cerrarMain(tsc* t, int num_atributos_clase, int num_atributos_instancia,
 }
 
 tsa* get_class(tsc* t, char* id_clase){
-	return get_node_tsa(t->grafo, id_clase);
+	tsa* aux;
+	aux = get_node_tsa(t->grafo, id_clase);
+	if (aux) return aux;
+	return t->main;
 }
 
 /*Inserta una clase en el grafo*/
@@ -225,7 +228,6 @@ int abrirAmbitoEnClase(tsc * t, char * id_clase, char* id_ambito, int categoria,
 	if(!t || !clase) return ERROR;
 
 	pref_simbolo = _concat_prefix(id_clase, id_ambito);
-
 	ret = open_scope_met(clase, pref_simbolo, categoria, acceso_metodo, tipo_metodo, posicion_metodo_sobreescribible, tamanio);
 	free(pref_simbolo);
 	return ret;
@@ -394,16 +396,21 @@ tsa* _get_tsa_from_scope(tsc* t, char* scope){
 	if(!t || !scope) return NULL;
 	if(!strcmp(scope, TSA_MAIN)) return t->main;
 	table = get_node_tsa(t->grafo, scope);
+
 	if(!table){/*Caso de estar en el ambito de una funcion o error, vemos todos los ambitos*/
-		for(i=0; i<t->grafo->vertex_count || !elem; i++){
-			function = _concat_prefix(t->grafo->nodes[i]->name, scope);
-			table = t->grafo->nodes[i]->tsa;
-			elem = ppal_get(table, function); 
-			free(function);
+		for(i=0; i<t->grafo->vertex_count && !elem; i++){
+			if(t->grafo->nodes[i]){
+				function = _concat_prefix(t->grafo->nodes[i]->name, scope);
+				table = t->grafo->nodes[i]->tsa;
+				elem = ppal_get(table, function); 
+				free(function);
+			}
 		}
 		if(!elem){/*Puede estar en el main*/
+			function = _concat_prefix(TSA_MAIN, scope);
 			table = t->main;
 			elem = ppal_get(t->main, function);
+			free(function);
 		}
 		if(!elem){/*error*/
 			table = NULL;
@@ -547,6 +554,7 @@ int buscarIdNoCualificado(tsc* t, char* nombre_id, char* nombre_ambito_desde, ts
 	
 	/*Si estamos en el main buscamos en el main*/
 	if(!strcmp(nombre_ambito_desde, TSA_MAIN)){
+
 		/*Buscamos en el main*/
 		real_id = _concat_prefix(t->main->ambito, nombre_id);
 		*elem = ppal_get(t->main, real_id);
