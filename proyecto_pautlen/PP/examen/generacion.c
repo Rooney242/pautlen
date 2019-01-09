@@ -643,12 +643,12 @@ void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo){
 // - escribirVariableLocal
 void asignarDestinoEnPila(FILE* fd_asm, int es_variable){
 
-	/*Cargamos la direccion donde hay que dejarlo*/
-	fprintf(fd_asm, "\tpop dword eax\n");
-
 	/*Cargamos el valor a asignar*/
 	fprintf(fd_asm, "\tpop dword ebx\n");
 	if (es_variable) fprintf(fd_asm, "\tmov dword ebx, [ebx]\n");
+
+	/*Cargamos la direccion donde hay que dejarlo*/
+	fprintf(fd_asm, "\tpop dword eax\n");
 
 	/*Asignamos el valor*/
 	fprintf(fd_asm, "\tmov [eax], ebx\n");

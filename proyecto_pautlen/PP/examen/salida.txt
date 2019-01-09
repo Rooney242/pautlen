@@ -1,0 +1,50 @@
+;D:	main
+;D:	{
+;D:	int
+;R:	modificadores_acceso: 
+;R:	tipo: 	TOK_INT 
+;R:	clase_escalar: tipo
+;R:	clase:	clase_escalar
+;D:	x1
+;D:	,
+;D:	x2
+;D:	;
+;R:	identificadores: 	TOK_IDENTIFICADOR 
+;R:	identificadores:	TOK_IDENTIFICADOR ',' identificadores
+;R:	declaracion:	modificadores_acceso clase identificadores ';'
+;D:	scanf
+;R:	declaraciones:	declaracion
+;R:	funciones: 
+;D:	x1
+;D:	;
+;R:	lectura:	TOK_SCANF TOK_IDENTIFICADOR 
+;R:	sentencia_simple:	lectura
+;R:	sentencia:	sentencia_simple ';' 
+;D:	scanf
+;D:	x2
+;D:	;
+;R:	lectura:	TOK_SCANF TOK_IDENTIFICADOR 
+;R:	sentencia_simple:	lectura
+;R:	sentencia:	sentencia_simple ';' 
+;D:	printf
+;D:	3
+;R:	constante_entera:	TOK_CONSTANTE_ENTERA 
+;R:	constante:	constante_entera 
+;R:	exp:	constante 
+;D:	+
+;D:	x1
+;D:	+
+;R:	exp:	TOK_IDENTIFICADOR
+;R:	exp:	exp '+' exp
+;D:	x2
+;D:	;
+;R:	exp:	TOK_IDENTIFICADOR
+;R:	exp:	exp '+' exp
+;R:	escritura:	TOK_PRINTF exp
+;R:	sentencia_simple:	escritura
+;R:	sentencia:	sentencia_simple ';' 
+;D:	}
+;R:	sentencias:	sentencia 
+;R:	sentencias:	sentencia sentencias 
+;R:	sentencias:	sentencia sentencias 
+;R:	programa: 	TOK_MAIN '{' declaraciones funciones sentencias '}'

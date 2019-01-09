@@ -25,12 +25,12 @@ int main(int argc, char **argv){
 		return -1;
 	}
 
-	if ((fout = fopen(argv[2],"w")) == NULL){
+	if ((asmfile = fopen(argv[2],"w")) == NULL){
 		printf("Error al abrir el fichero de salida\n");
 		return -1;
 	}
 
-	asmfile = fopen("omicron.asm","w");
+	fout = fopen("salida.txt","w");
 	yyout = fopen("residuo.txt","w");
 
 	yyparse();

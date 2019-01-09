@@ -18,7 +18,7 @@ TAB = y.tab
 
 all: generacion flex bison
 	@echo Compilado del ejercicio
-	@$(CC) $(LIB) -Wall -o omicron $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) generacion.o
+	@$(CC) $(LIB) -Wall -o compilador $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) generacion.o
 	@echo Make success
 
 generacion:

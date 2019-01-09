@@ -106,6 +106,8 @@
 %type <atributos> sentencia_simple
 %type <atributos> retorno_funcion
 %type <atributos> fn_declaration
+%type <atributos> bucle
+%type <atributos> while_exp
 
 
 %start programa
@@ -645,6 +647,7 @@ if_exp:	TOK_IF '(' exp ')' '{'
 bucle:	while_exp ')' '{' sentencias '}'
 			{
 				fprintf(fout, ";R:\tbucle: 	while_exp ')' '{' sentencias '}'\n");
+				while_fin(asmfile, $1.etiqueta);
 			}
 		;
 
@@ -654,6 +657,9 @@ while_exp:	TOK_WHILE '(' exp
 						fprintf(stdout,"****Error semantico en lin %d: Bucle con condicion de tipo int.\n", line_count);
 						return -1;
 					}
+					$$.etiqueta = etiqueta ++;
+					while_inicio(asmfile, etiqueta);
+					while_exp_pila(asmfile, $3.es_direccion, etiqueta);
 					fprintf(fout, ";R:\twhile_exp:	TOK_WHILE '(' exp \n");
 				}
 				;
@@ -932,6 +938,8 @@ comparacion:	exp TOK_IGUAL exp
 				| exp TOK_DISTINTO exp
 					{
 						if($1.tipo == INT && $3.tipo == INT){
+							distinto(asmfile, $1.es_direccion, $3.es_direccion, etiqueta);
+							etiqueta ++;
 							$$.tipo = BOOLEAN;
 							$$.es_direccion = 0;
 						}
@@ -944,6 +952,8 @@ comparacion:	exp TOK_IGUAL exp
 				| exp TOK_MAYORIGUAL exp
 					{
 						if($1.tipo == INT && $3.tipo == INT){
+							mayor_igual(asmfile, $1.es_direccion, $3.es_direccion, etiqueta);
+							etiqueta ++;
 							$$.tipo = BOOLEAN;
 							$$.es_direccion = 0;
 						}
@@ -956,6 +966,8 @@ comparacion:	exp TOK_IGUAL exp
 				| exp TOK_MENORIGUAL exp
 					{
 						if($1.tipo == INT && $3.tipo == INT){
+							menor_igual(asmfile, $1.es_direccion, $3.es_direccion, etiqueta);
+							etiqueta ++;
 							$$.tipo = BOOLEAN;
 							$$.es_direccion = 0;
 						}
@@ -968,6 +980,8 @@ comparacion:	exp TOK_IGUAL exp
 				| exp '>' exp
 					{
 						if($1.tipo == INT && $3.tipo == INT){
+							mayor(asmfile, $1.es_direccion, $3.es_direccion, etiqueta);
+							etiqueta ++;
 							$$.tipo = BOOLEAN;
 							$$.es_direccion = 0;
 						}
@@ -980,6 +994,8 @@ comparacion:	exp TOK_IGUAL exp
 				| exp '<' exp
 					{
 						if($1.tipo == INT && $3.tipo == INT){
+							menor(asmfile, $1.es_direccion, $3.es_direccion, etiqueta);
+							etiqueta ++;
 							$$.tipo = BOOLEAN;
 							$$.es_direccion = 0;
 						}
