@@ -1,7 +1,7 @@
 #ifndef GENERADOR_TSC_H
 #define GENERADOR_TSC_H
 
-#define DELIMITADOR "\t"
+#define DELIMITADOR "\t, "
 #define COMENTARIO '#'
 
 #define INICIA_TSC "inicia_tsc" //---Iniciar la tabla de símbolos de clases
