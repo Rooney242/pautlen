@@ -23,7 +23,7 @@
 	tsc * tabla_simbolos;
     tsa* tsa_aux;
     tsa_elem * elem_aux;
-
+ 
     char nombre_clase_desde[ID_MAX];
     char nombre_ambito_desde[ID_MAX];
 
@@ -108,7 +108,7 @@
 %type <atributos> fn_declaration
 %type <atributos> bucle
 %type <atributos> while_exp
-
+%type <atributos> ini_while
 
 %start programa
 %left '+' '-' TOK_OR
@@ -311,12 +311,12 @@ identificadores: 	TOK_IDENTIFICADOR
 						    else 
 						    {
 						    	if (clase_actual != VECTOR)
-						    		tamanio_vector_actual = 0;
+						    		tamanio_vector_actual = 1;
 						    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
     								0, 0, 0, 0, 0, 0, tamanio_vector_actual, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 						    	real_id = _concat_prefix(nombre_clase_desde, $1.lexema);
-						    	declarar_variable(asmfile, real_id, tipo_actual, clase_actual);
-						    	tamanio_vector_actual = 0;
+						    	declarar_variable(asmfile, real_id, tipo_actual, tamanio_vector_actual);
+						    	tamanio_vector_actual = 1;
 						    	free(real_id);
 						    }
 
@@ -335,12 +335,12 @@ identificadores: 	TOK_IDENTIFICADOR
 						    else 
 						    {
 						    	if (clase_actual != VECTOR)
-						    		tamanio_vector_actual = 0;
+						    		tamanio_vector_actual = 1;
 						    	insertarSimboloEnMain(tabla_simbolos, $1.lexema, VARIABLE, tipo_actual, clase_actual,0, 
     								0, 0, 0, 0, 0, 0, tamanio_vector_actual, 0, 0, 0, 0, 0, 0, 0, EXPOSED, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 						    	real_id = _concat_prefix(nombre_clase_desde, $1.lexema);
 						    	declarar_variable(asmfile, real_id, tipo_actual, tamanio_vector_actual);
-						    	tamanio_vector_actual = 0;
+						    	tamanio_vector_actual = 1;
 						    	free(real_id);
 						    }
 						}
@@ -450,7 +450,7 @@ idpf:	TOK_IDENTIFICADOR
 			{	
 				tsa* tsa_encontrada = NULL;
 				tsa_elem* elem = NULL;
-				if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, nombre_clase_desde, &tsa_encontrada, &elem) < 0) {
+				if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, nombre_clase_desde, &tsa_encontrada, &elem) == FALSE) {
 					fprintf(stdout,"****Error semantico en lin %d: Acceso a variable no declarada (%s).", line_count, $1.lexema);
 					return -1;
 				}
@@ -550,7 +550,7 @@ asignacion:	TOK_IDENTIFICADOR '=' exp
 				{
 					tsa* tsa_encontrada = NULL;
 					tsa_elem* elem = NULL;
-					if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, nombre_clase_desde, &tsa_encontrada, &elem) < 0) {
+					if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, nombre_clase_desde, &tsa_encontrada, &elem) == FALSE) {
 						fprintf(stdout,"****Error semantico en lin %d: Acceso a variable no declarada (%s).", line_count, $1.lexema);
 						return -1;
 					}
@@ -598,7 +598,7 @@ elemento_vector:	TOK_IDENTIFICADOR '[' exp ']'
 							tsa* tsa_encontrada = NULL;
 							tsa_elem* elem = NULL;
 
-							if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, nombre_clase_desde, &tsa_encontrada, &elem) < 0){
+							if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, nombre_clase_desde, &tsa_encontrada, &elem) == FALSE){
 								fprintf(stdout,"****Error semantico en lin %d: Acceso a variable no declarada (%s).", line_count, $1.lexema);
 								return -1;
 							}
@@ -613,7 +613,7 @@ elemento_vector:	TOK_IDENTIFICADOR '[' exp ']'
 						}
 					;
 
-condicional:	if_exp_sentencias
+condicional:	if_exp sentencias '}'
 					{
 						ifthen_fin(asmfile, $1.etiqueta);
 						fprintf(fout, ";R:\tcondicional:	if_exp ')' '{' sentencias '}' \n");
@@ -638,8 +638,8 @@ if_exp:	TOK_IF '(' exp ')' '{'
 					fprintf(stdout,"****Error semantico en lin %d: Condicional con condicion de tipo int.\n", line_count);
 					return -1;
 				}
-				ifthenelse_inicio(asmfile, $3.es_direccion, $$.etiqueta);
 				$$.etiqueta = etiqueta ++;
+				ifthenelse_inicio(asmfile, $3.es_direccion, $$.etiqueta);
 				fprintf(fout, ";R:\tif_exp:	TOK_IF '(' exp ')' '{' \n");
 			}
 			;
@@ -651,18 +651,23 @@ bucle:	while_exp ')' '{' sentencias '}'
 			}
 		;
 
-while_exp:	TOK_WHILE '(' exp
+while_exp:	ini_while '(' exp
 				{
 					if($3.tipo != BOOLEAN) {
 						fprintf(stdout,"****Error semantico en lin %d: Bucle con condicion de tipo int.\n", line_count);
 						return -1;
 					}
-					while_inicio(asmfile, etiqueta);
-					while_exp_pila(asmfile, $3.es_direccion, etiqueta);
-					$$.etiqueta = etiqueta ++;
+					$$.etiqueta = $1.etiqueta;
+					while_exp_pila(asmfile, $3.es_direccion, $1.etiqueta);
 					fprintf(fout, ";R:\twhile_exp:	TOK_WHILE '(' exp \n");
 				}
 				;
+
+ini_while: TOK_WHILE
+				{	
+					$$.etiqueta = etiqueta ++;
+					while_inicio(asmfile, $$.etiqueta);
+				}
 
 lectura:	TOK_SCANF TOK_IDENTIFICADOR 
 				{
@@ -686,6 +691,7 @@ lectura:	TOK_SCANF TOK_IDENTIFICADOR
 				}
 			| TOK_SCANF elemento_vector
 				{
+					leer_vector(asmfile, $2.tipo);
 					fprintf(fout, ";R:\tlectura:	TOK_SCANF elemento_vector \n");
 				}
 			;
@@ -822,7 +828,8 @@ exp:	exp '+' exp
 			{
 				tsa* tsa_encontrada = NULL;
 				tsa_elem* elem = NULL;
-				if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, nombre_clase_desde, &tsa_encontrada, &elem) < 0){
+				if (buscarIdNoCualificado(tabla_simbolos, $1.lexema, nombre_clase_desde, &tsa_encontrada, &elem) == FALSE){
+							fprintf(stdout,"****Error semantico en lin %d: Acceso a variable no declarada (%s).", line_count, $1.lexema);
 							return -1;
 					}
 				if (elem->categoria == FUNCION){

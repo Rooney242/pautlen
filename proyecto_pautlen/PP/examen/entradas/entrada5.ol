@@ -21,6 +21,6 @@ main {
 	}
 	else
 	{
-		printf 0;
+		printf a[0];
 	}
 }

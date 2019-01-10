@@ -209,6 +209,8 @@ Puede ser un valor concreto (en ese caso exp_es_direccion vale 0)
 Según se especifica en el material, es suficiente con utilizar dos registros para realizar esta tarea. 
 */
 
+void leer_vector(FILE* fpasm, int tipo);
+
 /******************* NUEVAS OO *********************************************/
 char * claseATabla(char * nombre_fuente_clase);
 void instance_of (FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia); 

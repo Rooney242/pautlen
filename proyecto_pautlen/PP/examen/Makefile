@@ -35,7 +35,7 @@ asm:
 	@$(CC) -m32 -o omicron omicron.o olib.o
 	./omicron
 
-debug:
+debug: generacion flex bison
 	@$(CC) -ggdb $(LIB) -Wall -o omicron $(EJ).c $(LEX) $(TAB).c $(OBJ_FOLDER_DEPS) generacion.o
 	@echo Make success
 
@@ -50,4 +50,6 @@ clean :
 	@rm -f y.output
 	@rm -f omicron.asm
 	@rm -f omicron.o
+	@rm -f compilador
 	@rm -f omicron
+	@rm -f generacion.o

@@ -444,7 +444,7 @@ void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta){
 	fprintf(fpasm, "\tcmp eax, 0\n");
 	fprintf(fpasm, "\tje near _fin_si_%d\n", etiqueta);
 }
-
+ 
 void ifthen_fin(FILE * fpasm, int etiqueta){
 
 	fprintf(fpasm, "_fin_si_%d:\n", etiqueta);
@@ -557,6 +557,20 @@ void escribir_elemento_vector(FILE * fpasm, char * nombre_vector,
 	fprintf(fpasm, "\tlea eax, [edx + eax*4]\n");
 	fprintf(fpasm, "\tpush dword eax\n");
 }
+
+void leer_vector(FILE* fpasm, int tipo) {
+
+    if(tipo == BOOLEANO){ 
+    	fprintf(fpasm, "\tcall scan_boolean\n");
+    } else { 
+    	fprintf(fpasm, "\tcall scan_int\n");
+    }
+
+    /* Restauramos pila */
+    fprintf(fpasm, "\tadd esp, 4\n");
+
+}
+
 
 
 /******************* NUEVAS OO *********************************************/

@@ -11,22 +11,22 @@ main {
         {
                 if ( y1 )
                 {
-                        printf 110;
+                        printf 111;
                 }
                 else
                 {
-                        printf 111;
+                        printf 110;
                 }
         }
         else
         {
                 if ( y1 )
                 {
-                        printf 10;
+                        printf 101;
                 }
                 else
                 {
-                        printf 11;
+                        printf 100;
                 }
         }
 }
