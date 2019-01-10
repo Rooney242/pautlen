@@ -613,7 +613,7 @@ elemento_vector:	TOK_IDENTIFICADOR '[' exp ']'
 						}
 					;
 
-condicional:	if_exp ')' '{' sentencias '}' 
+condicional:	if_exp sentencias '}' 
 					{
 						ifthen_fin(asmfile, $1.etiqueta);
 						fprintf(fout, ";R:\tcondicional:	if_exp ')' '{' sentencias '}' \n");
